@@ -1,2 +1,3 @@
-# dima-v2
-Redesign and redevelopment of the DIMA Certification Sdn Bhd corporate website using modern frontend technologies, focusing on improved UI/UX, responsiveness, and structured presentation of certification services and policies.
+# DIMA Certification Website Redesign
+
+This repository contains the redesigned frontend for DIMA Certification Sdn Bhd, developed to replace the existing CMS-based website with a modern, responsive, and maintainable solution.
