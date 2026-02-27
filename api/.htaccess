@@ -1,0 +1,36 @@
+# API Directory Security Configuration
+
+# Enable mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Only allow JSON responses from this API
+    Header set Content-Type "application/json; charset=utf-8"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set proper MIME types
+AddType application/json .json
+AddType application/json .php
+
+# Deny access to sensitive files
+<FilesMatch "\.(env|config|md|sql|log)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Allow API endpoints (all .php files in this directory)
+<FilesMatch "\.php$">
+    Allow from all
+</FilesMatch>

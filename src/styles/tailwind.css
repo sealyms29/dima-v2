@@ -1,0 +1,11 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+/* Force RGB color format for Motion animations to prevent oklab errors */
+@supports (color: oklch(0 0 0)) {
+  * {
+    color-interpolation-method: rgb;
+  }
+}

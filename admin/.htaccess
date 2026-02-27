@@ -1,0 +1,28 @@
+# Admin Directory Security Configuration
+# These rules assume you've set up cPanel Directory Privacy (HTTP Basic Auth) for /admin
+
+# Enable mod_rewrite for URL rewriting if needed
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /admin/
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
+
+# Deny direct access to sensitive files
+<FilesMatch "\.(env|config|md|sql)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set proper MIME types
+AddType application/json .json
