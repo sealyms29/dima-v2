@@ -123,14 +123,14 @@ export function ComplaintAppealPage() {
 
     try {
       const submitData = {
-        complaint_type: formData.option || 'complaint',
+        complaint_type: (formData.option || 'complaint').toLowerCase(),
         programme: programme,
         iso_standard: programme === 'iso' ? isoStandard : null,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         organization: formData.organization,
-        description: formData.subject || formData.message,
+        description: formData.subject ? `${formData.subject}\n\n${formData.message}` : formData.message,
         evidence: formData.message,
       };
 
@@ -153,6 +153,12 @@ export function ComplaintAppealPage() {
         }, 4000);
       } else if (data.errors) {
         setErrors(data.errors);
+        // Show any unmapped error keys as general error
+        const unmapped = Object.entries(data.errors)
+          .filter(([key]) => !['name','email','phone','organization','subject','message'].includes(key))
+          .map(([, msg]) => msg)
+          .join('. ');
+        if (unmapped) setGeneralError(unmapped);
       } else {
         setGeneralError(data.message || 'Failed to submit form');
       }
