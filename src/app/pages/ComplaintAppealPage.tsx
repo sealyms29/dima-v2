@@ -21,6 +21,8 @@ import {
   HardHat,
   TreePine,
   ChevronDown,
+  Paperclip,
+  X,
 } from 'lucide-react';
 
 type Programme = '' | 'iso' | 'mspo';
@@ -105,6 +107,8 @@ export function ComplaintAppealPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState('');
+  const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleProgrammeChange = (val: Programme) => {
     setProgramme(val);
@@ -115,6 +119,27 @@ export function ComplaintAppealPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const maxFiles = 5;
+    const maxSize = 10 * 1024 * 1024; // 10MB per file
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+
+    const valid = files.filter(f => {
+      if (!allowed.includes(f.type)) return false;
+      if (f.size > maxSize) return false;
+      return true;
+    });
+
+    const combined = [...evidenceFiles, ...valid].slice(0, maxFiles);
+    setEvidenceFiles(combined);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setEvidenceFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -122,23 +147,21 @@ export function ComplaintAppealPage() {
     setGeneralError('');
 
     try {
-      const submitData = {
-        complaint_type: (formData.option || 'complaint').toLowerCase(),
-        programme: programme,
-        iso_standard: programme === 'iso' ? isoStandard : null,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        organization: formData.organization,
-        description: formData.subject ? `${formData.subject}\n\n${formData.message}` : formData.message,
-        evidence: formData.message,
-      };
+      const fd = new FormData();
+      fd.append('complaint_type', (formData.option || 'complaint').toLowerCase());
+      fd.append('programme', programme);
+      if (programme === 'iso' && isoStandard) fd.append('iso_standard', isoStandard);
+      fd.append('name', formData.name);
+      fd.append('email', formData.email);
+      fd.append('phone', formData.phone);
+      fd.append('organization', formData.organization);
+      fd.append('description', formData.subject ? `${formData.subject}\n\n${formData.message}` : formData.message);
+      evidenceFiles.forEach(file => fd.append('evidence_files[]', file));
 
       const apiBase = import.meta.env.BASE_URL;
       const response = await fetch(`${apiBase}api/complaint-create.php`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData)
+        body: fd
       });
 
       const data = await response.json();
@@ -148,6 +171,7 @@ export function ComplaintAppealPage() {
         setProgramme('');
         setIsoStandard('');
         setFormData({ name: '', email: '', phone: '', option: '', subject: '', message: '', organization: '' });
+        setEvidenceFiles([]);
         setTimeout(() => {
           setSubmitted(false);
         }, 4000);
@@ -657,6 +681,40 @@ export function ComplaintAppealPage() {
                             className={`${inputCls} resize-none ${errors.message ? 'border-red-500 bg-red-50' : ''}`}
                           />
                           {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
+                        </FieldWrap>
+
+                        {/* Evidence Upload (Optional) */}
+                        <FieldWrap label="Evidence (Optional)" icon={Paperclip}>
+                          <div className="space-y-3">
+                            <label
+                              className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#d4af37] hover:bg-amber-50/30 transition-colors"
+                            >
+                              <Paperclip size={18} className="text-gray-400" />
+                              <span className="text-sm text-gray-500">
+                                Click to upload files (PDF, JPG, PNG, WEBP &mdash; max 10MB each, up to 5 files)
+                              </span>
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                multiple
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                onChange={handleFileChange}
+                                className="hidden"
+                              />
+                            </label>
+                            {evidenceFiles.length > 0 && (
+                              <ul className="space-y-2">
+                                {evidenceFiles.map((file, idx) => (
+                                  <li key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm">
+                                    <span className="truncate mr-2">{file.name} <span className="text-gray-400">({(file.size / 1024).toFixed(0)} KB)</span></span>
+                                    <button type="button" onClick={() => removeFile(idx)} className="text-red-500 hover:text-red-700 flex-shrink-0">
+                                      <X size={16} />
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
                         </FieldWrap>
 
                         {/* Submit */}

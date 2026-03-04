@@ -409,7 +409,30 @@ if (!$submission) {
                 <?php if (!empty($submission['evidence'])): ?>
                     <div class="field-group">
                         <span class="field-label">Evidence:</span>
-                        <span class="field-value"><?php echo nl2br(htmlspecialchars($submission['evidence'])); ?></span>
+                        <span class="field-value">
+                        <?php
+                            $evidenceData = json_decode($submission['evidence'], true);
+                            if (is_array($evidenceData)):
+                                foreach ($evidenceData as $filePath):
+                                    $fileUrl = '/' . ltrim($filePath, '/');
+                                    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])):
+                        ?>
+                                        <a href="<?php echo htmlspecialchars($fileUrl); ?>" target="_blank" style="display:inline-block;margin:4px;">
+                                            <img src="<?php echo htmlspecialchars($fileUrl); ?>" alt="Evidence" style="max-width:200px;max-height:150px;border-radius:6px;border:1px solid #ddd;">
+                                        </a>
+                        <?php       elseif ($ext === 'pdf'): ?>
+                                        <a href="<?php echo htmlspecialchars($fileUrl); ?>" target="_blank" style="display:inline-block;margin:4px;padding:8px 12px;background:#f3f4f6;border-radius:6px;text-decoration:none;color:#1f2937;">
+                                            📄 <?php echo htmlspecialchars(basename($filePath)); ?>
+                                        </a>
+                        <?php       endif;
+                                endforeach;
+                            else:
+                                // Fallback for old plain-text evidence
+                                echo nl2br(htmlspecialchars($submission['evidence']));
+                            endif;
+                        ?>
+                        </span>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>

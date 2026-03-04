@@ -11,7 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
+// Support both JSON and multipart/form-data
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+if (strpos($contentType, 'application/json') !== false) {
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+} else {
+    $input = $_POST;
+}
 
 $errors = [];
 
@@ -74,15 +80,65 @@ if (empty($description)) {
     $errors['description'] = 'Description must be between 20 and 5000 characters';
 }
 
-// Evidence (optional)
-$evidence = SecurityHelper::sanitizeString($input['evidence'] ?? '');
-if (!empty($evidence) && strlen($evidence) > 5000) {
-    $errors['evidence'] = 'Evidence must not exceed 5000 characters';
+// Evidence file uploads (optional)
+$evidencePaths = [];
+$allowedMime = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+$maxFileSize = 10 * 1024 * 1024; // 10MB
+$uploadDir = __DIR__ . '/../uploads/evidence/';
+
+if (!empty($_FILES['evidence_files']['name'][0])) {
+    // Create directory if missing
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $fileCount = count($_FILES['evidence_files']['name']);
+    if ($fileCount > 5) {
+        $errors['evidence'] = 'Maximum 5 files allowed';
+    } else {
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['evidence_files']['error'][$i] !== UPLOAD_ERR_OK) {
+                $errors['evidence'] = 'One or more files failed to upload';
+                break;
+            }
+            $tmpName = $_FILES['evidence_files']['tmp_name'][$i];
+            $origName = $_FILES['evidence_files']['name'][$i];
+            $size = $_FILES['evidence_files']['size'][$i];
+            $mime = mime_content_type($tmpName);
+
+            if (!in_array($mime, $allowedMime)) {
+                $errors['evidence'] = 'Only PDF, JPG, PNG, and WEBP files are allowed';
+                break;
+            }
+            if ($size > $maxFileSize) {
+                $errors['evidence'] = 'Each file must be under 10MB';
+                break;
+            }
+
+            $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+            $safeName = uniqid('ev_', true) . '.' . $ext;
+            $destPath = $uploadDir . $safeName;
+
+            if (!move_uploaded_file($tmpName, $destPath)) {
+                $errors['evidence'] = 'Failed to save uploaded file';
+                break;
+            }
+            $evidencePaths[] = 'uploads/evidence/' . $safeName;
+        }
+    }
 }
 
 if (!empty($errors)) {
+    // Clean up any already-uploaded files on validation failure
+    foreach ($evidencePaths as $p) {
+        $full = __DIR__ . '/../' . $p;
+        if (file_exists($full)) unlink($full);
+    }
     APIResponse::send(APIResponse::validation($errors));
 }
+
+// Build evidence value: JSON array of paths or null
+$evidenceValue = !empty($evidencePaths) ? json_encode($evidencePaths) : null;
 
 // Rate limiting
 $client_ip = SecurityHelper::getClientIP();
@@ -102,7 +158,7 @@ try {
         'phone' => $phone,
         'organization' => $organization,
         'description' => $description,
-        'evidence' => !empty($evidence) ? $evidence : null,
+        'evidence' => $evidenceValue,
         'status' => 'new',
         'priority' => 'medium'
     ]);
