@@ -74,9 +74,10 @@ try {
     $total_pages = max(1, ceil($total / $per_page));
     $offset = ($page - 1) * $per_page;
 
-    // Get paginated results
-    $query_params = array_merge($params, [$per_page, $offset]);
-    $submissions_raw = Database::fetchAll("SELECT * FROM `$table` $where ORDER BY created_at DESC LIMIT ? OFFSET ?", $query_params);
+    // Get paginated results - use intval directly in SQL to avoid PDO LIMIT binding issues
+    $limit_int = intval($per_page);
+    $offset_int = intval($offset);
+    $submissions_raw = Database::fetchAll("SELECT * FROM `$table` $where ORDER BY created_at DESC LIMIT $limit_int OFFSET $offset_int", $params);
 
     // Escape output
     foreach ($submissions_raw as &$row) {

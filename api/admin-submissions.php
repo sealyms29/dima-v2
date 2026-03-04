@@ -94,11 +94,12 @@ $count_sql = "SELECT COUNT(*) as total FROM `$table` $where";
 $count_result = Database::fetchOne($count_sql, $params);
 $total = $count_result['total'] ?? 0;
 
-// Get paginated results
+// Get paginated results - use intval directly in SQL to avoid PDO LIMIT binding issues
 $offset = ($page - 1) * $per_page;
-$sql = "SELECT * FROM `$table` $where ORDER BY `$sort` $order LIMIT ? OFFSET ?";
-$query_params = array_merge($params, [$per_page, $offset]);
-$results = Database::fetchAll($sql, $query_params);
+$limit_int = intval($per_page);
+$offset_int = intval($offset);
+$sql = "SELECT * FROM `$table` $where ORDER BY `$sort` $order LIMIT $limit_int OFFSET $offset_int";
+$results = Database::fetchAll($sql, $params);
 
 // Escape output for security
 foreach ($results as &$row) {
