@@ -22,6 +22,7 @@
  */
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/NotificationHelper.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -117,6 +118,9 @@ try {
     ]));
 
     DBTransaction::commit();
+
+    // Create admin notification
+    create_notification('quotation', $quotation_id, $name, $email);
 
     // ========================================================================
     // OPTIONAL: Send Email Notification

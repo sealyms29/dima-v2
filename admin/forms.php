@@ -365,6 +365,9 @@ try {
     <div class="container">
         <header>
             <h1>Forms Management</h1>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
+            </div>
         </header>
 
         <nav>

@@ -327,6 +327,7 @@ try {
         <header>
             <h1>Admin Dashboard</h1>
             <div style="display: flex; gap: 20px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
                 <span class="user-info">Logged in as: Admin</span>
                 <a href="<?= BASE_PATH ?>/admin/logout.php" class="logout-btn">Logout</a>
             </div>

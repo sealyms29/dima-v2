@@ -6,6 +6,7 @@
  */
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/NotificationHelper.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
@@ -77,6 +78,9 @@ try {
     ]));
 
     DBTransaction::commit();
+
+    // Create admin notification
+    create_notification('contact', $contact_id, $name, $email);
 
     APIResponse::send(APIResponse::success(
         ['id' => $contact_id],

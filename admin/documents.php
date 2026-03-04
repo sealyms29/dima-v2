@@ -576,7 +576,8 @@ if (!isset($_SESSION['admin_user_id'])) {
     <div class="container">
         <header>
             <h1>📄 Documents Management</h1>
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
                 <button class="btn" onclick="openUploadModal()">+ Upload New Document</button>
                 <a href="<?= BASE_PATH ?>/admin/index.php" class="btn btn-secondary">← Back to Dashboard</a>
             </div>

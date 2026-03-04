@@ -355,7 +355,8 @@ $form_types = ['Application Form', 'Questionnaire', 'Other'];
     <div class="container">
         <header>
             <h1>Downloadable Forms</h1>
-            <div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
                 <span style="color: #666; font-size: 14px; margin-right: 20px;">Logged in as: Admin</span>
                 <a href="<?= BASE_PATH ?>/admin/logout.php" class="logout-btn">Logout</a>
             </div>

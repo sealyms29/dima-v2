@@ -6,6 +6,7 @@
  */
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/NotificationHelper.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
@@ -170,6 +171,9 @@ try {
     ]));
 
     DBTransaction::commit();
+
+    // Create admin notification (use complaint_type to distinguish complaint vs appeal)
+    create_notification($complaint_type, $complaint_id, $name, $email);
 
     APIResponse::send(APIResponse::success(
         ['id' => $complaint_id],

@@ -375,6 +375,9 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
     <div class="container">
         <header>
             <h1>Submissions Management</h1>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
+            </div>
         </header>
 
         <nav>

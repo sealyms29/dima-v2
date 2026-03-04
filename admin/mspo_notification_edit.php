@@ -311,7 +311,10 @@ $page_title = $id > 0 ? 'Edit Notification' : 'Create New Notification';
     <div class="container">
         <header>
             <h1><?php echo $page_title; ?></h1>
-            <a href="<?= BASE_PATH ?>/admin/logout.php" class="logout-btn">Logout</a>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <?php include __DIR__ . '/includes/notification-bell.php'; ?>
+                <a href="<?= BASE_PATH ?>/admin/logout.php" class="logout-btn">Logout</a>
+            </div>
         </header>
 
         <div class="breadcrumb">
