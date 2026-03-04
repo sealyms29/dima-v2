@@ -411,7 +411,8 @@ if (!$submission) {
                         <span class="field-label">Evidence:</span>
                         <span class="field-value">
                         <?php
-                            $evidenceData = json_decode($submission['evidence'], true);
+                            $rawEvidence = html_entity_decode($submission['evidence'], ENT_QUOTES, 'UTF-8');
+                            $evidenceData = json_decode($rawEvidence, true);
                             if (is_array($evidenceData)):
                                 foreach ($evidenceData as $filePath):
                                     $fileUrl = '/' . ltrim($filePath, '/');
