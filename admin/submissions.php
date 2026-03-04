@@ -465,7 +465,7 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
                                 <td><?php echo htmlspecialchars($row['phone']); ?></td>
                                 <td><?php 
                                     if ($type === 'complaint') {
-                                        echo htmlspecialchars($row['programme'] ?? '');
+                                        echo strtoupper(htmlspecialchars($row['programme'] ?? ''));
                                     } else {
                                         echo htmlspecialchars($row['company'] ?? '');
                                     }

@@ -386,12 +386,12 @@ if (!$submission) {
 
                 <div class="field-group">
                     <span class="field-label">Programme:</span>
-                    <span class="field-value"><?php echo htmlspecialchars($submission['programme'] ?? ''); ?></span>
+                    <span class="field-value"><?php echo strtoupper(htmlspecialchars($submission['programme'] ?? '')); ?></span>
                 </div>
 
                 <div class="field-group">
                     <span class="field-label">Type:</span>
-                    <span class="field-value"><?php echo htmlspecialchars($submission['complaint_type'] ?? ''); ?></span>
+                    <span class="field-value"><?php echo ucfirst(htmlspecialchars($submission['complaint_type'] ?? '')); ?></span>
                 </div>
 
                 <?php if (!empty($submission['iso_standard'])): ?>
