@@ -1,241 +1,97 @@
 import { motion, useInView } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { Calendar, Bell, Search, Download, Building2, MapPin, Clock, FileText } from 'lucide-react';
+import { Calendar, Bell, Search, Download, Clock, FileText } from 'lucide-react';
 
-interface Notification {
-  id: string;
-  companyName: string;
-  location: string;
-  auditType: 'Initial' | 'Re-certification' | 'Surveillance';
-  auditDate: string;
-  scope: string;
-  standard: string;
-  pdfFileName?: string;
+interface Document {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  year: number;
+  month: number | null;
+  audit_status: string | null;
+  file_path: string;
+  created_at: string;
+  updated_at: string;
 }
 
-interface MonthlyNotifications {
-  month: string;
-  notifications: Notification[];
-}
+const MONTH_NAMES = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
 
 export function MSPOPublicNotificationPage() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedYear, setSelectedYear] = useState<string>(String(new Date().getFullYear()));
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
 
-  const years = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
-
-  // Mock data - in real implementation, this would come from a database
-  const notificationsByYear: Record<string, Notification[]> = {
-    '2026': [
-      {
-        id: 'N2026001',
-        companyName: 'Nice Plantation',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-10',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN-Nice Plantation SV1'
-      },
-      {
-        id: 'N2026002',
-        companyName: 'Borneo Wave',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-15',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN-Borneo Wave SV1'
-      },
-      {
-        id: 'N2026003',
-        companyName: 'Sekitong',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-18',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN-Sekitong SV1'
-      },
-      {
-        id: 'N2026004',
-        companyName: 'Golden Biogreens',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-22',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN-Golden Biogreens SV1'
-      },
-      {
-        id: 'N2026005',
-        companyName: 'Green Jaya Resources',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-25',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN Green Jaya Resources (SV1)'
-      },
-      {
-        id: 'N2026006',
-        companyName: 'Karisma Plantation',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-28',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022',
-        pdfFileName: 'DMC-MSPO-PN-Karisma Plantation SV2'
-      },
-      {
-        id: 'N2026007',
-        companyName: 'DD Palm Oil Mill',
-        location: 'Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-02-28',
-        scope: 'MSPO Part 5',
-        standard: 'MSPO 2544-5:2022',
-        pdfFileName: 'DMC-MSPO-PN DD Palm Oil Mill (SV1)'
-      },
-      {
-        id: 'N2026008',
-        companyName: 'Sarawak Palm Oil Estate Sdn Bhd',
-        location: 'Mukah, Sarawak',
-        auditType: 'Initial',
-        auditDate: '2026-03-15',
-        scope: 'MSPO Part 1 & Part 4',
-        standard: 'MSPO 2544-1:2022 & MSPO 2544-4:2022'
-      },
-      {
-        id: 'N2026009',
-        companyName: 'Green Valley Plantations',
-        location: 'Bintulu, Sarawak',
-        auditType: 'Surveillance',
-        auditDate: '2026-03-22',
-        scope: 'MSPO Part 4',
-        standard: 'MSPO 2544-4:2022'
-      },
-      {
-        id: 'N2026010',
-        companyName: 'Tropical Oil Industries',
-        location: 'Sibu, Sarawak',
-        auditType: 'Re-certification',
-        auditDate: '2026-04-10',
-        scope: 'MSPO Part 5',
-        standard: 'MSPO 2544-5:2022'
+  // Fetch documents from API
+  useEffect(() => {
+    async function fetchDocuments() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/public-documents.php?category=' + encodeURIComponent('MSPO Public Notifications'));
+        const json = await res.json();
+        if (json.success) {
+          setDocuments(json.data || []);
+          // Extract unique years
+          const years = [...new Set((json.data || []).map((d: Document) => String(d.year)))].sort((a, b) => Number(b) - Number(a));
+          setAvailableYears(years.length > 0 ? years : [String(new Date().getFullYear())]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch notifications:', err);
+      } finally {
+        setLoading(false);
       }
-    ],
-    '2025': [
-      {
-        id: 'N2025001',
-        companyName: 'Malaysia Palm Industries',
-        location: 'Kuching, Sarawak',
-        auditType: 'Initial',
-        auditDate: '2025-12-20',
-        scope: 'MSPO Part 1 & Part 4',
-        standard: 'MSPO 2544-1:2022 & MSPO 2544-4:2022'
-      }
-    ],
-    '2024': [],
-    '2023': [],
-    '2022': [],
-    '2021': [],
-    '2020': []
-  };
+    }
+    fetchDocuments();
+  }, []);
 
-  const currentNotifications = notificationsByYear[selectedYear] || [];
-  
-  const filteredNotifications = currentNotifications.filter(notification =>
-    notification.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    notification.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    notification.scope.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter by year
+  const currentYearDocs = documents.filter(d => String(d.year) === selectedYear);
+
+  // Filter by search
+  const filteredDocs = currentYearDocs.filter(d =>
+    d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (d.description || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getAuditTypeColor = (type: string) => {
-    switch (type) {
-      case 'Initial':
-        return 'from-blue-500 to-blue-600';
-      case 'Re-certification':
-        return 'from-green-500 to-emerald-600';
-      case 'Surveillance':
+  // Get available months for selected year
+  const availableMonths = [...new Set(filteredDocs.map(d => d.month))].sort((a, b) => (a || 0) - (b || 0));
+
+  // Filter by selected month
+  const displayDocs = selectedMonth !== null
+    ? filteredDocs.filter(d => {
+        const monthNum = selectedMonth === '0' ? null : Number(selectedMonth);
+        return monthNum === null ? d.month === null : d.month === monthNum;
+      })
+    : [];
+
+  const getAuditStatusColor = (status: string | null) => {
+    switch (status) {
+      case 'Upcoming Audit':
         return 'from-orange-500 to-amber-600';
+      case 'Past Audit':
+        return 'from-blue-500 to-blue-600';
       default:
         return 'from-slate-500 to-slate-600';
     }
   };
 
-  const getAuditTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Initial':
-        return '🆕';
-      case 'Re-certification':
-        return '🔄';
-      case 'Surveillance':
-        return '👁️';
+  const getAuditStatusBadge = (status: string | null) => {
+    switch (status) {
+      case 'Upcoming Audit':
+        return { bg: 'bg-orange-100', text: 'text-orange-700', icon: '🔜' };
+      case 'Past Audit':
+        return { bg: 'bg-blue-100', text: 'text-blue-700', icon: '✅' };
       default:
-        return '📋';
+        return { bg: 'bg-slate-100', text: 'text-slate-700', icon: '📋' };
     }
-  };
-
-  // Group notifications by month
-  const groupNotificationsByMonth = (notifications: Notification[]): MonthlyNotifications[] => {
-    const grouped: Record<string, Notification[]> = {};
-    
-    notifications.forEach(notification => {
-      const date = new Date(notification.auditDate);
-      const monthYear = date.toLocaleDateString('en-MY', { year: 'numeric', month: 'long' });
-      
-      if (!grouped[monthYear]) {
-        grouped[monthYear] = [];
-      }
-      grouped[monthYear].push(notification);
-    });
-    
-    return Object.entries(grouped).map(([month, notifications]) => ({
-      month,
-      notifications: notifications.sort((a, b) => 
-        new Date(a.auditDate).getTime() - new Date(b.auditDate).getTime()
-      )
-    }));
-  };
-
-  const monthlyGroups = groupNotificationsByMonth(filteredNotifications);
-  
-  // Get available months for the selected year
-  const getAvailableMonths = (): string[] => {
-    const months = new Set<string>();
-    currentNotifications.forEach(notification => {
-      const date = new Date(notification.auditDate);
-      const monthName = date.toLocaleDateString('en-MY', { month: 'long' });
-      months.add(monthName);
-    });
-    return Array.from(months).sort((a, b) => {
-      const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      return monthOrder.indexOf(a) - monthOrder.indexOf(b);
-    });
-  };
-
-  const availableMonths = getAvailableMonths();
-  
-  // Filter notifications by selected month
-  const monthFilteredNotifications = selectedMonth
-    ? filteredNotifications.filter(n => {
-        const date = new Date(n.auditDate);
-        const monthName = date.toLocaleDateString('en-MY', { month: 'long' });
-        return monthName === selectedMonth;
-      })
-    : [];
-  
-  const displayNotifications = selectedMonth ? monthFilteredNotifications : [];
-
-  const handlePDFDownload = (pdfFileName: string) => {
-    // In production, this would download the actual PDF file
-    alert(`Downloading: ${pdfFileName}.pdf\n\nIn production, this would download the official public notification PDF document.`);
   };
 
   return (
@@ -312,297 +168,287 @@ export function MSPOPublicNotificationPage() {
             </div>
           </motion.div>
 
-          {/* Year Selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-12"
-          >
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-lg">
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <span className="text-slate-600 font-semibold mr-2">Select Year:</span>
-                {years.map((year, index) => (
-                  <motion.button
-                    key={year}
-                    onClick={() => setSelectedYear(year)}
-                    className={`px-6 py-3 rounded-xl font-bold text-base transition-all shadow-md ${
-                      selectedYear === year
-                        ? 'bg-gradient-to-r from-[#d4af37] to-amber-500 text-white shadow-lg scale-105'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-                    whileHover={{ scale: selectedYear === year ? 1.05 : 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {year}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mb-12"
-          >
-            <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-slate-400" size={24} />
-              <input
-                type="text"
-                placeholder="Search by company name, location, or scope..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-16 pr-6 py-5 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#d4af37] transition-colors shadow-lg text-lg"
-              />
-            </div>
-          </motion.div>
-
-          {/* Notifications Count */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="mb-8"
-          >
-            <h3 className="text-3xl font-bold text-slate-900 mb-2">
-              Public Notification ({selectedYear})
-            </h3>
-          </motion.div>
-
-          {/* Month Selection Buttons */}
-          {availableMonths.length > 0 && !selectedMonth && (
+          {/* Loading State */}
+          {loading && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
             >
-              {availableMonths.map((month, index) => (
-                <motion.button
-                  key={month}
-                  onClick={() => setSelectedMonth(month)}
-                  className="w-full max-w-xs px-8 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
-                  whileHover={{ scale: 1.05, x: 10 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {month}
-                </motion.button>
-              ))}
+              <div className="w-16 h-16 border-4 border-[#d4af37] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+              <p className="text-slate-600 text-lg">Loading notifications...</p>
             </motion.div>
           )}
 
-          {/* Back Button and Month Display */}
-          {selectedMonth && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mb-8"
-            >
-              <button
-                onClick={() => setSelectedMonth(null)}
-                className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition-colors mb-6"
-              >
-                ← Back to Month Selection
-              </button>
-              
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-slate-900">
-                  {selectedMonth} {selectedYear} Audit Schedule
-                  <span className="ml-3 text-lg font-normal text-slate-600">
-                    ({displayNotifications.length} {displayNotifications.length === 1 ? 'audit' : 'audits'} scheduled)
-                  </span>
-                </h3>
-                
-                {displayNotifications.length > 0 && (
-                  <motion.button
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Download size={20} />
-                    <span>Export {selectedMonth}</span>
-                  </motion.button>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Notifications List - Only show when month is selected */}
-          {selectedMonth && displayNotifications.length > 0 && (
-            <div className="space-y-12">
-              {/* PDF List View */}
+          {!loading && (
+            <>
+              {/* Year Selector */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="bg-white border-2 border-slate-200 rounded-3xl p-10 shadow-lg"
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mb-12"
               >
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                  Public Notification ({selectedYear}) - {selectedMonth}
-                </h3>
-                <h4 className="text-lg font-semibold text-slate-600 mb-6">Upcoming Audit</h4>
-                
-                <div className="space-y-3">
-                  {displayNotifications.filter(n => n.pdfFileName).map((notification, index) => (
-                    <motion.button
-                      key={notification.id}
-                      onClick={() => handlePDFDownload(notification.pdfFileName!)}
-                      className="w-full text-left group"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="flex items-center gap-3 py-2 border-b border-slate-100 hover:border-[#d4af37] transition-colors">
-                        <FileText className="text-[#d4af37] flex-shrink-0" size={20} />
-                        <span className="text-[#d4af37] hover:text-amber-600 font-medium transition-colors">
-                          {notification.pdfFileName}
-                        </span>
-                      </div>
-                    </motion.button>
-                  ))}
+                <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    <span className="text-slate-600 font-semibold mr-2">Select Year:</span>
+                    {availableYears.map((year, index) => (
+                      <motion.button
+                        key={year}
+                        onClick={() => { setSelectedYear(year); setSelectedMonth(null); }}
+                        className={`px-6 py-3 rounded-xl font-bold text-base transition-all shadow-md ${
+                          selectedYear === year
+                            ? 'bg-gradient-to-r from-[#d4af37] to-amber-500 text-white shadow-lg scale-105'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                        transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
+                        whileHover={{ scale: selectedYear === year ? 1.05 : 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {year}
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
-              
-              {/* Detailed Cards View */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Detailed Audit Information</h3>
-                
-                {displayNotifications.map((notification, index) => (
+
+              {/* Search Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="mb-12"
+              >
+                <div className="relative max-w-2xl mx-auto">
+                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-slate-400" size={24} />
+                  <input
+                    type="text"
+                    placeholder="Search by title or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-16 pr-6 py-5 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#d4af37] transition-colors shadow-lg text-lg"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Notifications Count */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="mb-8"
+              >
+                <h3 className="text-3xl font-bold text-slate-900 mb-2">
+                  Public Notification ({selectedYear})
+                </h3>
+              </motion.div>
+
+              {/* Month Selection Buttons */}
+              {availableMonths.length > 0 && !selectedMonth && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  className="space-y-4"
+                >
+                  {availableMonths.map((month, index) => (
+                    <motion.button
+                      key={month ?? 'no-month'}
+                      onClick={() => setSelectedMonth(month === null ? '0' : String(month))}
+                      className="w-full max-w-xs px-8 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : {}}
+                      transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
+                      whileHover={{ scale: 1.05, x: 10 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {month ? MONTH_NAMES[month] : 'General'}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Back Button and Month Display */}
+              {selectedMonth !== null && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mb-8"
+                >
+                  <button
+                    onClick={() => setSelectedMonth(null)}
+                    className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition-colors mb-6"
+                  >
+                    ← Back to Month Selection
+                  </button>
+                  
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      {selectedMonth === '0' ? 'General' : MONTH_NAMES[Number(selectedMonth)]} {selectedYear}
+                      <span className="ml-3 text-lg font-normal text-slate-600">
+                        ({displayDocs.length} {displayDocs.length === 1 ? 'notification' : 'notifications'})
+                      </span>
+                    </h3>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Notifications List - Only show when month is selected */}
+              {selectedMonth !== null && displayDocs.length > 0 && (
+                <div className="space-y-12">
+                  {/* PDF List View */}
                   <motion.div
-                    key={notification.id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="relative group"
+                    transition={{ duration: 0.6 }}
+                    className="bg-white border-2 border-slate-200 rounded-3xl p-10 shadow-lg"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                      Public Notification ({selectedYear}) - {selectedMonth === '0' ? 'General' : MONTH_NAMES[Number(selectedMonth)]}
+                    </h3>
                     
-                    <div className="relative bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-all">
-                      <div className="flex items-start justify-between gap-6 mb-6">
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className={`w-16 h-16 bg-gradient-to-br ${getAuditTypeColor(notification.auditType)} rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl shadow-lg`}>
-                            {getAuditTypeIcon(notification.auditType)}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between gap-4 mb-3">
-                              <h4 className="text-2xl font-bold text-slate-900">
-                                {notification.companyName}
-                              </h4>
-                              <span className={`px-4 py-2 bg-gradient-to-r ${getAuditTypeColor(notification.auditType)} text-white text-sm font-bold rounded-lg shadow-md whitespace-nowrap`}>
-                                {notification.auditType}
+                    <div className="space-y-3 mt-6">
+                      {displayDocs.map((doc, index) => (
+                        <motion.a
+                          key={doc.id}
+                          href={doc.file_path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full text-left group block"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: index * 0.05 }}
+                          whileHover={{ x: 5 }}
+                        >
+                          <div className="flex items-center gap-3 py-3 border-b border-slate-100 hover:border-[#d4af37] transition-colors">
+                            <FileText className="text-[#d4af37] flex-shrink-0" size={20} />
+                            <span className="text-[#d4af37] hover:text-amber-600 font-medium transition-colors flex-1">
+                              {doc.title}
+                            </span>
+                            {doc.audit_status && (
+                              <span className={`px-3 py-1 ${getAuditStatusBadge(doc.audit_status).bg} ${getAuditStatusBadge(doc.audit_status).text} text-xs font-bold rounded-full`}>
+                                {getAuditStatusBadge(doc.audit_status).icon} {doc.audit_status}
                               </span>
-                            </div>
-                            
-                            <div className="grid md:grid-cols-2 gap-4 text-slate-600">
-                              <div className="flex items-center gap-2">
-                                <MapPin className="text-[#d4af37] flex-shrink-0" size={20} />
-                                <span>{notification.location}</span>
-                              </div>
-                              
-                              <div className="flex items-center gap-2">
-                                <Calendar className="text-[#d4af37] flex-shrink-0" size={20} />
-                                <span>{new Date(notification.auditDate).toLocaleDateString('en-MY', { 
-                                  year: 'numeric', 
-                                  month: 'long', 
-                                  day: 'numeric' 
-                                })}</span>
-                              </div>
-                            </div>
+                            )}
+                            <Download className="text-slate-400 group-hover:text-[#d4af37] transition-colors flex-shrink-0" size={18} />
                           </div>
-                        </div>
-                      </div>
-                      
-                      <div className="border-t-2 border-slate-100 pt-6">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <FileText className="text-[#d4af37]" size={18} />
-                              <span className="font-semibold text-slate-900">Certification Scope:</span>
-                            </div>
-                            <p className="text-slate-700 ml-7">{notification.scope}</p>
-                          </div>
-                          
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <Building2 className="text-[#d4af37]" size={18} />
-                              <span className="font-semibold text-slate-900">Standard:</span>
-                            </div>
-                            <p className="text-slate-700 ml-7">{notification.standard}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 flex items-center gap-3">
-                          {notification.pdfFileName && (
-                            <button
-                              className="px-4 py-2 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
-                              onClick={() => handlePDFDownload(notification.pdfFileName!)}
-                            >
-                              <FileText className="inline mr-2" size={16} />
-                              Download PDF
-                            </button>
-                          )}
-                          <span className="px-3 py-1 bg-slate-100 rounded-lg text-slate-600 text-sm">
-                            ID: {notification.id}
-                          </span>
-                        </div>
-                      </div>
+                        </motion.a>
+                      ))}
                     </div>
                   </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
+                  
+                  {/* Detailed Cards View */}
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-6">Notification Details</h3>
+                    
+                    {displayDocs.map((doc, index) => (
+                      <motion.div
+                        key={doc.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="relative group"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
+                        
+                        <div className="relative bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-all">
+                          <div className="flex items-start justify-between gap-6 mb-6">
+                            <div className="flex items-start gap-4 flex-1">
+                              <div className={`w-16 h-16 bg-gradient-to-br ${getAuditStatusColor(doc.audit_status)} rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl shadow-lg`}>
+                                {getAuditStatusBadge(doc.audit_status).icon}
+                              </div>
+                              
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between gap-4 mb-3">
+                                  <h4 className="text-2xl font-bold text-slate-900">
+                                    {doc.title}
+                                  </h4>
+                                  {doc.audit_status && (
+                                    <span className={`px-4 py-2 bg-gradient-to-r ${getAuditStatusColor(doc.audit_status)} text-white text-sm font-bold rounded-lg shadow-md whitespace-nowrap`}>
+                                      {doc.audit_status}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {doc.description && (
+                                  <p className="text-slate-600 mb-3">{doc.description}</p>
+                                )}
+                                
+                                <div className="flex items-center gap-4 text-slate-500 text-sm">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="text-[#d4af37]" size={16} />
+                                    <span>{doc.month ? `${MONTH_NAMES[doc.month]} ${doc.year}` : doc.year}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="text-[#d4af37]" size={16} />
+                                    <span>Added {new Date(doc.created_at).toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="border-t-2 border-slate-100 pt-6">
+                            <a
+                              href={doc.file_path}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                            >
+                              <Download size={18} />
+                              Download PDF
+                            </a>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {/* Empty State when no audits for selected month */}
-          {selectedMonth && displayNotifications.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="text-center py-20"
-            >
-              <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Calendar className="text-slate-400" size={48} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                No Audits Scheduled
-              </h3>
-              <p className="text-slate-600 max-w-md mx-auto">
-                No audits are currently scheduled for {selectedMonth} {selectedYear}.
-              </p>
-            </motion.div>
-          )}
+              {/* Empty State when no notifications for selected month */}
+              {selectedMonth !== null && displayDocs.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center py-20"
+                >
+                  <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <Calendar className="text-slate-400" size={48} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                    No Notifications
+                  </h3>
+                  <p className="text-slate-600 max-w-md mx-auto">
+                    No notifications found for {selectedMonth === '0' ? 'General' : MONTH_NAMES[Number(selectedMonth)]} {selectedYear}.
+                  </p>
+                </motion.div>
+              )}
 
-          {/* Empty State when no audits for entire year */}
-          {!selectedMonth && availableMonths.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="text-center py-20"
-            >
-              <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Calendar className="text-slate-400" size={48} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                No Audits Scheduled
-              </h3>
-              <p className="text-slate-600 max-w-md mx-auto">
-                No audits are currently scheduled for {selectedYear}. Check back later for updates.
-              </p>
-            </motion.div>
+              {/* Empty State when no notifications for entire year */}
+              {selectedMonth === null && availableMonths.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  className="text-center py-20"
+                >
+                  <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <Calendar className="text-slate-400" size={48} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                    No Notifications
+                  </h3>
+                  <p className="text-slate-600 max-w-md mx-auto">
+                    No notifications are currently available for {selectedYear}. Check back later for updates.
+                  </p>
+                </motion.div>
+              )}
+            </>
           )}
 
           {/* Information Footer */}

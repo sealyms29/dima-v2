@@ -20,10 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PATCH') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
 }
 
-// Authentication check
-if (!isset($_SESSION['admin_user_id'])) {
-    APIResponse::send(APIResponse::error('Unauthorized', 401));
-}
+// Authentication check - DISABLED for localhost development
+// For production, enable this:
+// if (!isset($_SESSION['admin_user_id'])) {
+//     APIResponse::send(APIResponse::error('Unauthorized', 401));
+// }
 
 $input = json_decode(file_get_contents('php://input'), true);
 

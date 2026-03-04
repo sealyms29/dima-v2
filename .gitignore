@@ -2,14 +2,14 @@
 node_modules/
 vendor/
 
-# Environment
+# Environment & Secrets
 .env
 .env.local
 .env.*.local
+.env.production
 
-# Build outputs
-dist/
-build/
+# Build outputs (React dist is built on server or uploaded separately)
+# dist/
 
 # IDE
 .vscode/
@@ -23,11 +23,11 @@ build/
 Thumbs.db
 
 # Logs
-/logs/
+/logs/*.log
 error.log
 *.log
 
-# Uploads
+# Uploads (user content - not tracked in git)
 /uploads/*
 !uploads/.gitkeep
 
@@ -47,3 +47,16 @@ yarn-error.log
 # PHP
 .php_cs.cache
 coverage/
+
+# Composer
+composer.phar
+
+# Test files
+test-*.php
+
+# Staging files (not needed in production)
+.env.staging
+staging-upload/
+admin/.htaccess.bak
+public/.htaccess-production
+public/.htaccess-staging

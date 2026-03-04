@@ -99,8 +99,12 @@ export function ComplaintAppealPage() {
     option: '',
     subject: '',
     message: '',
+    organization: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState('');
 
   const handleProgrammeChange = (val: Programme) => {
     setProgramme(val);
@@ -111,16 +115,52 @@ export function ComplaintAppealPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Complaint/Appeal submitted:', { programme, isoStandard, ...formData });
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setProgramme('');
-      setIsoStandard('');
-      setFormData({ name: '', email: '', phone: '', option: '', subject: '', message: '' });
-    }, 4000);
+    setIsLoading(true);
+    setErrors({});
+    setGeneralError('');
+
+    try {
+      const submitData = {
+        complaint_type: formData.option || 'complaint',
+        programme: programme,
+        iso_standard: programme === 'iso' ? isoStandard : null,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        organization: formData.organization,
+        description: formData.subject || formData.message,
+        evidence: formData.message,
+      };
+
+      const apiBase = import.meta.env.BASE_URL;
+      const response = await fetch(`${apiBase}api/complaint-create.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submitData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitted(true);
+        setProgramme('');
+        setIsoStandard('');
+        setFormData({ name: '', email: '', phone: '', option: '', subject: '', message: '', organization: '' });
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 4000);
+      } else if (data.errors) {
+        setErrors(data.errors);
+      } else {
+        setGeneralError(data.message || 'Failed to submit form');
+      }
+    } catch (error) {
+      setGeneralError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -319,17 +359,26 @@ export function ComplaintAppealPage() {
                         </div>
                       </div>
 
-                      <form onSubmit={handleSubmit} className="space-y-5">
+                      {generalError && (
+                        <motion.div
+                          className="flex items-gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-2xl mb-4"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+                          <p className="text-red-700 font-medium">{generalError}</p>
+                        </motion.div>
+                      )}
 
-                        {/* ─── Certification Programme ─── */}
+                      <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Programme Selection */}
                         <div>
                           <p className="flex items-center gap-2 text-slate-900 font-semibold mb-3 text-sm">
-                            <FileText size={16} className="text-[#d4af37]" />
-                            Certification Programme{' '}
-                            <span className="text-[#d4af37]">*</span>
+                            <Globe size={16} className="text-[#d4af37]" />
+                            Select Programme <span className="text-[#d4af37]">*</span>
                           </p>
-                          <div className="grid sm:grid-cols-2 gap-3">
-                            {/* ISO */}
+                          <div className="flex gap-3">
+                            {/* ISO Button */}
                             <button
                               type="button"
                               onClick={() => handleProgrammeChange('iso')}
@@ -497,8 +546,9 @@ export function ComplaintAppealPage() {
                             type="text" name="name" required
                             value={formData.name} onChange={handleChange}
                             placeholder="Your full name"
-                            className={inputCls}
+                            className={`${inputCls} ${errors.name ? 'border-red-500 bg-red-50' : ''}`}
                           />
+                          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
                         </FieldWrap>
 
                         {/* Email + Phone */}
@@ -508,16 +558,18 @@ export function ComplaintAppealPage() {
                               type="email" name="email" required
                               value={formData.email} onChange={handleChange}
                               placeholder="you@email.com"
-                              className={inputCls}
+                              className={`${inputCls} ${errors.email ? 'border-red-500 bg-red-50' : ''}`}
                             />
+                            {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                           </FieldWrap>
                           <FieldWrap label="Contact Number" icon={Phone} required>
                             <input
                               type="tel" name="phone" required
                               value={formData.phone} onChange={handleChange}
                               placeholder="+60 12-345 6789"
-                              className={inputCls}
+                              className={`${inputCls} ${errors.phone ? 'border-red-500 bg-red-50' : ''}`}
                             />
+                            {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
                           </FieldWrap>
                         </div>
 
@@ -585,8 +637,9 @@ export function ComplaintAppealPage() {
                             type="text" name="subject" required
                             value={formData.subject} onChange={handleChange}
                             placeholder="Brief description of your complaint or appeal"
-                            className={inputCls}
+                            className={`${inputCls} ${errors.subject ? 'border-red-500 bg-red-50' : ''}`}
                           />
+                          {errors.subject && <p className="text-red-600 text-sm mt-1">{errors.subject}</p>}
                         </FieldWrap>
 
                         {/* Message */}
@@ -595,25 +648,40 @@ export function ComplaintAppealPage() {
                             name="message" required rows={5}
                             value={formData.message} onChange={handleChange}
                             placeholder="Provide full details including relevant dates and evidence..."
-                            className={`${inputCls} resize-none`}
+                            className={`${inputCls} resize-none ${errors.message ? 'border-red-500 bg-red-50' : ''}`}
                           />
+                          {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
                         </FieldWrap>
 
                         {/* Submit */}
                         <motion.button
                           type="submit"
-                          className="group relative w-full px-8 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-xl shadow-lg shadow-[#d4af37]/20 flex items-center justify-center gap-2 overflow-hidden cursor-pointer"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          disabled={isLoading}
+                          className="group relative w-full px-8 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-xl shadow-lg shadow-[#d4af37]/20 flex items-center justify-center gap-2 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          whileHover={!isLoading ? { scale: 1.02 } : {}}
+                          whileTap={!isLoading ? { scale: 0.98 } : {}}
                         >
                           <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-400"
                             initial={{ x: '-100%' }}
-                            whileHover={{ x: 0 }}
+                            whileHover={!isLoading ? { x: 0 } : {}}
                             transition={{ duration: 0.3 }}
                           />
-                          <Send size={18} className="relative z-10" />
-                          <span className="relative z-10">Submit Request</span>
+                          {isLoading ? (
+                            <>
+                              <motion.div
+                                className="relative z-10 w-4 h-4 border-2 border-black border-t-transparent rounded-full"
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity }}
+                              />
+                              <span className="relative z-10">Submitting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Send size={18} className="relative z-10" />
+                              <span className="relative z-10">Submit Request</span>
+                            </>
+                          )}
                         </motion.button>
 
                       </form>

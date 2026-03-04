@@ -8,9 +8,10 @@ interface PageHeroProps {
   children?: ReactNode;
   logo?: string;
   logoAlt?: string;
+  logoCaption?: string;
 }
 
-export function PageHero({ badge, title, subtitle, children, logo, logoAlt }: PageHeroProps) {
+export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logoCaption }: PageHeroProps) {
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700">
       {/* Background Pattern */}
@@ -64,6 +65,9 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt }: Pa
                   alt={logoAlt || 'Certification Document'} 
                   className="w-full h-auto object-contain"
                 />
+                {logoCaption && (
+                  <p className="text-center text-sm text-slate-600 mt-4 font-semibold">{logoCaption}</p>
+                )}
               </motion.div>
             </motion.div>
           )}

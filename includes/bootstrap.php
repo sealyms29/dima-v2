@@ -106,3 +106,22 @@ class DBTransaction {
         return self::$in_transaction;
     }
 }
+/**
+ * Log Activity Helper
+ * Records admin actions to activity log
+ */
+function log_activity($action, $table_name, $record_id, $old_value = null, $new_value = null) {
+    try {
+        Database::insert('admin_logs', [
+            'user_id' => $_SESSION['admin_user_id'] ?? null,
+            'action' => $action,
+            'table_name' => $table_name,
+            'record_id' => intval($record_id),
+            'old_value' => $old_value,
+            'new_value' => $new_value,
+            'ip_address' => SecurityHelper::getClientIP()
+        ]);
+    } catch (Exception $e) {
+        error_log('Failed to log activity: ' . $e->getMessage());
+    }
+}

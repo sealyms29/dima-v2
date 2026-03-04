@@ -77,7 +77,7 @@ export function CertificationMarkPage() {
     intro: true,
     annexes: true,
     standardsMalaysia: true,
-    mpocc: true,
+    mspo: true,
     statements: true,
     misuse: true
   });
@@ -143,10 +143,10 @@ export function CertificationMarkPage() {
                       Standards Malaysia Mark
                     </button>
                     <button
-                      onClick={() => scrollToSection('mpocc')}
+                      onClick={() => scrollToSection('mspo')}
                       className="block w-full text-left text-sm text-slate-700 hover:text-[#d4af37] hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors"
                     >
-                      MPOCC Logo
+                      MSPO Logo
                     </button>
                     <button
                       onClick={() => scrollToSection('statements')}
@@ -252,12 +252,12 @@ export function CertificationMarkPage() {
                 </div>
               </CollapsibleSection>
 
-              {/* Section 4: MPOCC Logo */}
+              {/* Section 4: MSPO Logo */}
               <CollapsibleSection
-                id="mpocc"
-                title="Certification Mark with MPOCC Logo"
-                isOpen={openSections.mpocc}
-                onToggle={() => toggleSection('mpocc')}
+                id="mspo"
+                title="Certification Mark with MSPO Logo"
+                isOpen={openSections.mspo}
+                onToggle={() => toggleSection('mspo')}
               >
                 <div className="space-y-6">
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
@@ -265,7 +265,7 @@ export function CertificationMarkPage() {
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
-                    The MPOCC logo shall be used in combination with the DIMA certification mark and may only be used by the certified client according to the following rules:
+                    The MSPO logo shall be used in combination with the DIMA certification mark and may only be used by the certified client according to the following rules:
                   </p>
                   
                   <ul className="space-y-3 pl-7">
@@ -291,7 +291,7 @@ export function CertificationMarkPage() {
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
-                    The certification mark together with the MPOCC logo may be used in documents, signs, windows, website and advertising media. When the certificate coverage/scope does not cover all activities of the certified client and/or when its use may induce an error on the certified scope, a clear description of the certificate coverage/scope shall be made together with the MPOCC logo.
+                    The certification mark together with the MSPO logo may be used in documents, signs, windows, website and advertising media. When the certificate coverage/scope does not cover all activities of the certified client and/or when its use may induce an error on the certified scope, a clear description of the certificate coverage/scope shall be made together with the MSPO logo.
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">

@@ -3,11 +3,26 @@
  * Admin Dashboard - Main Overview Page
  */
 
-require_once __DIR__ . '/../includes/bootstrap.php';
+header('Content-Type: text/html; charset=utf-8');
+
+// Include config and start session
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/Database.php';
+require_once __DIR__ . '/../includes/SecurityHelper.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'secure' => SESSION_SECURE,
+        'httponly' => SESSION_HTTPONLY,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
 
 // Authentication check
 if (!isset($_SESSION['admin_user_id'])) {
-    header('Location: /admin/login.php');
+    header('Location: ' . BASE_PATH . '/admin/login.php');
     exit;
 }
 
@@ -313,21 +328,24 @@ try {
             <h1>Admin Dashboard</h1>
             <div style="display: flex; gap: 20px; align-items: center;">
                 <span class="user-info">Logged in as: Admin</span>
-                <a href="/admin/logout.php" class="logout-btn">Logout</a>
+                <a href="<?= BASE_PATH ?>/admin/logout.php" class="logout-btn">Logout</a>
             </div>
         </header>
 
         <nav>
-            <a href="/admin/" class="active">Dashboard</a>
-            <a href="/admin/submissions.php">Submissions</a>
-            <a href="/admin/forms.php">Forms</a>
-            <a href="/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/" class="active">Dashboard</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php">Submissions</a>
+            <a href="<?= BASE_PATH ?>/admin/documents.php">Documents</a>
+            <a href="<?= BASE_PATH ?>/admin/gallery.php">Gallery</a>
+            <a href="<?= BASE_PATH ?>/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/contact-info.php">Contact Info</a>
+            <a href="<?= BASE_PATH ?>/admin/settings.php">Settings</a>
         </nav>
 
         <div class="quick-actions">
-            <a href="/admin/submissions.php?type=quotation&status=new" class="btn">View New Quotations</a>
-            <a href="/admin/submissions.php?type=contact&status=new" class="btn">View New Contacts</a>
-            <a href="/admin/submissions.php?type=complaint&status=new" class="btn">View New Complaints</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php?type=quotation&status=new" class="btn">View New Quotations</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php?type=contact&status=new" class="btn">View New Contacts</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php?type=complaint&status=new" class="btn">View New Complaints</a>
         </div>
 
         <div class="grid">
@@ -335,21 +353,21 @@ try {
                 <h3>Quotations</h3>
                 <div class="card-stat"><?php echo $quotation_new; ?></div>
                 <div class="card-substat">New / <?php echo $quotation_total; ?> Total</div>
-                <a href="/admin/submissions.php?type=quotation" class="card-link">View All →</a>
+                <a href="<?= BASE_PATH ?>/admin/submissions.php?type=quotation" class="card-link">View All →</a>
             </div>
 
             <div class="card">
                 <h3>Contact Requests</h3>
                 <div class="card-stat"><?php echo $contact_new; ?></div>
                 <div class="card-substat">New / <?php echo $contact_total; ?> Total</div>
-                <a href="/admin/submissions.php?type=contact" class="card-link">View All →</a>
+                <a href="<?= BASE_PATH ?>/admin/submissions.php?type=contact" class="card-link">View All →</a>
             </div>
 
             <div class="card">
                 <h3>Complaints & Appeals</h3>
                 <div class="card-stat"><?php echo $complaint_new; ?></div>
                 <div class="card-substat">New / <?php echo $complaint_total; ?> Total</div>
-                <a href="/admin/submissions.php?type=complaint" class="card-link">View All →</a>
+                <a href="<?= BASE_PATH ?>/admin/submissions.php?type=complaint" class="card-link">View All →</a>
             </div>
         </div>
 
@@ -380,7 +398,7 @@ try {
                                 </td>
                                 <td><?php echo date('M d, Y', strtotime($item['created_at'])); ?></td>
                                 <td>
-                                    <a href="/admin/submission-view.php?type=<?php echo $item['type']; ?>&id=<?php echo $item['id']; ?>" 
+                                    <a href="<?= BASE_PATH ?>/admin/submission-view.php?type=<?php echo $item['type']; ?>&id=<?php echo $item['id']; ?>" 
                                        style="color: #007bff; text-decoration: none;">View</a>
                                 </td>
                             </tr>

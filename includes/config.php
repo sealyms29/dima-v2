@@ -8,28 +8,47 @@
  */
 
 // ============================================================================
+// ENVIRONMENT DETECTION
+// ============================================================================
+
+// Auto-detect environment: 'production' on cPanel, 'local' on XAMPP
+if (file_exists(__DIR__ . '/../.env.production')) {
+    define('APP_ENV', 'production');
+} else {
+    define('APP_ENV', 'local');
+}
+
+// Base path: '/DIMA' for XAMPP local, '' for production (domain root)
+define('BASE_PATH', APP_ENV === 'local' ? '/DIMA' : '');
+
+// ============================================================================
 // DATABASE CONFIGURATION
 // ============================================================================
 
-// For localhost/XAMPP development
-const DB_HOST = 'localhost';
-const DB_NAME = 'dima_db';
-const DB_USER = 'dima_user';
-const DB_PASS = 'your_secure_password_here';
-
-// For production on cPanel, use environment variables or:
-// const DB_HOST = 'localhost';
-// const DB_NAME = 'cpanel_username_dbname';
-// const DB_USER = 'cpanel_username_user';
-// const DB_PASS = getenv('DB_PASSWORD'); // Set from cPanel environment
+if (APP_ENV === 'production') {
+    // Production - cPanel MySQL
+    // Create .env.production with your actual cPanel DB credentials
+    $envFile = __DIR__ . '/../.env.production';
+    $env = parse_ini_file($envFile);
+    define('DB_HOST', $env['DB_HOST'] ?? 'localhost');
+    define('DB_NAME', $env['DB_NAME'] ?? '');
+    define('DB_USER', $env['DB_USER'] ?? '');
+    define('DB_PASS', $env['DB_PASS'] ?? '');
+} else {
+    // Local XAMPP development
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'dima_production');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+}
 
 // ============================================================================
 // APPLICATION SETTINGS
 // ============================================================================
 
 const APP_NAME = 'DIMA Certification';
-const APP_URL = 'https://yourdomain.com';
-const ADMIN_URL = APP_URL . '/admin';
+define('APP_URL', APP_ENV === 'production' ? 'https://dima.my' : 'http://localhost/DIMA');
+define('ADMIN_URL', APP_URL . '/admin');
 
 // Timezone
 date_default_timezone_set('Asia/Kuala_Lumpur');
@@ -43,7 +62,7 @@ const CSRF_TOKEN_LIFETIME = 3600;
 
 // Session settings
 const SESSION_LIFETIME = 3600; // 1 hour
-const SESSION_SECURE = true;   // Only send over HTTPS
+const SESSION_SECURE = APP_ENV === 'production';  // true for HTTPS in production
 const SESSION_HTTPONLY = true; // Not accessible via JavaScript
 
 // File upload settings

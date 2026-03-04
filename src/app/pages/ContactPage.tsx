@@ -1,13 +1,24 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
 import {
-  MapPin, Phone, Mail, Clock, Send, CheckCircle2,
-  Building2, User, MessageSquare, Scale, AlertCircle,
-  ChevronRight, FileText,
+  MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle,
+  Building2, User, MessageSquare, Scale, ChevronRight, FileText,
 } from 'lucide-react';
+
+interface ContactSettings {
+  office_name?: string;
+  office_address?: string;
+  phone_1?: string;
+  phone_2?: string;
+  email_1?: string;
+  email_2?: string;
+  business_hours?: string;
+  map_lat?: string;
+  map_lng?: string;
+}
 
 export function ContactPage() {
   const ref = useRef(null);
@@ -18,44 +29,103 @@ export function ContactPage() {
     name: '', email: '', phone: '', company: '', message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState('');
+  const [settings, setSettings] = useState<ContactSettings>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const apiBase = import.meta.env.BASE_URL;
+    fetch(`${apiBase}api/public-contact-settings.php`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setSettings(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', company: '', message: '' });
-    }, 3000);
+    setIsLoading(true);
+    setErrors({});
+    setGeneralError('');
+
+    try {
+      const apiBase = import.meta.env.BASE_URL;
+      const response = await fetch(`${apiBase}api/contact-create.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 3000);
+      } else if (data.errors) {
+        setErrors(data.errors);
+      } else {
+        setGeneralError(data.message || 'Failed to submit form');
+      }
+    } catch (error) {
+      setGeneralError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const officeDetails = settings.office_name
+    ? [settings.office_name, ...(settings.office_address?.split('\n') || [])]
+    : ['DIMA Certification Sdn Bhd', 'Kuching, Sarawak', 'Malaysia'];
+
+  const phoneDetails = settings.phone_1
+    ? [settings.phone_1, ...(settings.phone_2 ? [settings.phone_2] : [])]
+    : ['+60 12-345 6789', '+60 82-123 456'];
+
+  const emailDetails = settings.email_1
+    ? [settings.email_1, ...(settings.email_2 ? [settings.email_2] : [])]
+    : ['info@dima.com.my', 'certification@dima.com.my'];
+
+  const hoursDetails = settings.business_hours
+    ? settings.business_hours.split('\n')
+    : ['Monday - Friday', '9:00 AM - 5:00 PM', 'Closed on Public Holidays'];
+
+  const mapLat = settings.map_lat || '1.4654755562789052';
+  const mapLng = settings.map_lng || '110.32736266883343';
+
   const contactInfo = [
     {
       icon: MapPin,
       title: 'Our Office',
-      details: ['DIMA Certification Sdn Bhd', 'Kuching, Sarawak', 'Malaysia'],
+      details: officeDetails,
       gradient: 'from-blue-500 to-blue-600',
     },
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+60 12-345 6789', '+60 82-123 456'],
+      details: phoneDetails,
       gradient: 'from-green-500 to-emerald-600',
     },
     {
       icon: Mail,
       title: 'Email',
-      details: ['info@dima.com.my', 'certification@dima.com.my'],
+      details: emailDetails,
       gradient: 'from-purple-500 to-purple-600',
     },
     {
       icon: Clock,
       title: 'Business Hours',
-      details: ['Monday - Friday', '9:00 AM - 5:00 PM', 'Closed on Public Holidays'],
+      details: hoursDetails,
       gradient: 'from-amber-500 to-orange-600',
     },
   ];
@@ -206,22 +276,38 @@ export function ContactPage() {
                     </motion.div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
+                      {generalError && (
+                        <motion.div
+                          className="flex items-gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-2xl"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+                          <p className="text-red-700 font-medium">{generalError}</p>
+                        </motion.div>
+                      )}
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
                           <label htmlFor="name" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
                             <User size={18} className="text-[#d4af37]" /> Full Name *
                           </label>
                           <input type="text" id="name" name="name" required value={formData.name} onChange={handleChange}
-                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                              errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
                             placeholder="John Doe" />
+                          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
                         </div>
                         <div>
                           <label htmlFor="email" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
                             <Mail size={18} className="text-[#d4af37]" /> Email Address *
                           </label>
                           <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange}
-                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                              errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
                             placeholder="john@company.com" />
+                          {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                         </div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-6">
@@ -230,16 +316,22 @@ export function ContactPage() {
                             <Phone size={18} className="text-[#d4af37]" /> Phone Number *
                           </label>
                           <input type="tel" id="phone" name="phone" required value={formData.phone} onChange={handleChange}
-                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                              errors.phone ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
                             placeholder="+60 12-345 6789" />
+                          {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
                         </div>
                         <div>
                           <label htmlFor="company" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
                             <Building2 size={18} className="text-[#d4af37]" /> Company Name *
                           </label>
                           <input type="text" id="company" name="company" required value={formData.company} onChange={handleChange}
-                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                              errors.company ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
                             placeholder="Your Company Sdn Bhd" />
+                          {errors.company && <p className="text-red-600 text-sm mt-1">{errors.company}</p>}
                         </div>
                       </div>
                       <div>
@@ -247,17 +339,33 @@ export function ContactPage() {
                           <MessageSquare size={18} className="text-[#d4af37]" /> Message
                         </label>
                         <textarea id="message" name="message" rows={5} value={formData.message} onChange={handleChange}
-                          className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400"
+                          className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                            errors.message ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                          }`}
                           placeholder="Tell us about your certification requirements..." />
+                        {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
                       </div>
-                      <motion.button type="submit"
-                        className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden"
-                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      <motion.button type="submit" disabled={isLoading}
+                        className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={!isLoading ? { scale: 1.02 } : {}} whileTap={!isLoading ? { scale: 0.98 } : {}}
                       >
                         <motion.div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-500"
-                          initial={{ x: '-100%' }} whileHover={{ x: 0 }} transition={{ duration: 0.3 }} />
-                        <Send size={22} className="relative z-10" />
-                        <span className="relative z-10">Submit Request</span>
+                          initial={{ x: '-100%' }} whileHover={!isLoading ? { x: 0 } : {}} transition={{ duration: 0.3 }} />
+                        {isLoading ? (
+                          <>
+                            <motion.div
+                              className="relative z-10 w-5 h-5 border-2 border-black border-t-transparent rounded-full"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            />
+                            <span className="relative z-10">Submitting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send size={22} className="relative z-10" />
+                            <span className="relative z-10">Submit Request</span>
+                          </>
+                        )}
                       </motion.button>
                     </form>
                   )}
@@ -272,12 +380,16 @@ export function ContactPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <div className="relative bg-slate-100 rounded-3xl overflow-hidden h-full shadow-lg min-h-[400px]">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin className="text-slate-400 mx-auto mb-4" size={48} />
-                    <p className="text-slate-600 font-semibold">Kuching, Sarawak, Malaysia</p>
-                  </div>
-                </div>
+                <iframe
+                  src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, position: 'absolute', inset: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
+                ></iframe>
               </div>
             </motion.div>
           </div>

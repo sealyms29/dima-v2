@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
-import { Send, Building2, User, Mail, Phone, MessageSquare, CheckCircle2, Sparkles } from 'lucide-react';
+import { Send, Building2, User, Mail, Phone, MessageSquare, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export function QuotationForm() {
   const [formData, setFormData] = useState({
@@ -12,23 +12,50 @@ export function QuotationForm() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState('');
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        message: ''
+    setIsLoading(true);
+    setErrors({});
+    setGeneralError('');
+
+    try {
+      const apiBase = import.meta.env.BASE_URL;
+      const response = await fetch(`${apiBase}api/quotation-create.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
-    }, 3000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          message: ''
+        });
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 3000);
+      } else if (data.errors) {
+        setErrors(data.errors);
+      } else {
+        setGeneralError(data.message || 'Failed to submit form');
+      }
+    } catch (error) {
+      setGeneralError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -120,6 +147,16 @@ export function QuotationForm() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                {generalError && (
+                  <motion.div
+                    className="flex items-gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-2xl"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+                    <p className="text-red-700 font-medium">{generalError}</p>
+                  </motion.div>
+                )}
                 {/* Name & Email Row */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <motion.div
@@ -138,10 +175,13 @@ export function QuotationForm() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                        errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                      }`}
                       placeholder="John Doe"
                       whileFocus={{ scale: 1.01 }}
                     />
+                    {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
                   </motion.div>
 
                   <motion.div
@@ -160,10 +200,13 @@ export function QuotationForm() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                        errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                      }`}
                       placeholder="john@company.com"
                       whileFocus={{ scale: 1.01 }}
                     />
+                    {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                   </motion.div>
                 </div>
 
@@ -185,10 +228,13 @@ export function QuotationForm() {
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                        errors.phone ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                      }`}
                       placeholder="+60 12-345 6789"
                       whileFocus={{ scale: 1.01 }}
                     />
+                    {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
                   </motion.div>
 
                   <motion.div
@@ -207,10 +253,13 @@ export function QuotationForm() {
                       required
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400"
+                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                        errors.company ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                      }`}
                       placeholder="Your Company Sdn Bhd"
                       whileFocus={{ scale: 1.01 }}
                     />
+                    {errors.company && <p className="text-red-600 text-sm mt-1">{errors.company}</p>}
                   </motion.div>
                 </div>
 
@@ -231,30 +280,47 @@ export function QuotationForm() {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-[#d4af37] focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400"
+                    className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                      errors.message ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
                     placeholder="Tell us how we can help you..."
                     whileFocus={{ scale: 1.01 }}
                   />
+                  {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
                 </motion.div>
 
                 {/* Submit Button */}
                 <motion.button
                   type="submit"
-                  className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden"
+                  disabled={isLoading}
+                  className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.9 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={!isLoading ? { scale: 1.02 } : {}}
+                  whileTap={!isLoading ? { scale: 0.98 } : {}}
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-500"
                     initial={{ x: '-100%' }}
-                    whileHover={{ x: 0 }}
+                    whileHover={!isLoading ? { x: 0 } : {}}
                     transition={{ duration: 0.3 }}
                   />
-                  <Send size={22} className="relative z-10" />
-                  <span className="relative z-10">Submit Request</span>
+                  {isLoading ? (
+                    <>
+                      <motion.div
+                        className="relative z-10 w-5 h-5 border-2 border-black border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      <span className="relative z-10">Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={22} className="relative z-10" />
+                      <span className="relative z-10">Submit Request</span>
+                    </>
+                  )}
                 </motion.button>
               </form>
             )}

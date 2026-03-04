@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, ChevronDown, Facebook, Youtube } from 'lucide-react';
 // Figma asset removed - use actual image file
-const imgDimaLogo = "";
+const imgDimaLogo = '/assets/1ae5d991da6738c83fb07a529bc85bd58b9805a2.png';
 import { useQuotation } from '../../QuotationContext';
 
 export function Header() {

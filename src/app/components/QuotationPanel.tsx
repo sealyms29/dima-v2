@@ -8,8 +8,21 @@ const imgISO9001Logo = '/assets/f6b29378242e360ef76c08104138a1ba5b1221cf.png';
 const imgISO14001Logo = '/assets/2d9026f9e22edaafe364adfbbe2c34557e69572a.png';
 const imgISO45001Logo = '/assets/87b8275a2bdc8c27df956c8d594d5a341e9c6866.png';
 
+interface DocInfo {
+  title: string;
+  file_path: string;
+}
+
+interface QuotationDocs {
+  [programme: string]: {
+    application_form?: DocInfo;
+    questionnaire?: DocInfo;
+  };
+}
+
 interface Certification {
   id: string;
+  programmeKey: string;
   shortName: string;
   description: string;
   logo: string;
@@ -19,6 +32,7 @@ interface Certification {
 const certifications: Certification[] = [
   {
     id: 'mspo',
+    programmeKey: 'MSPO',
     shortName: 'MSPO',
     description: 'Malaysian Sustainable Palm Oil',
     logo: imgMSPOLogo,
@@ -26,6 +40,7 @@ const certifications: Certification[] = [
   },
   {
     id: 'iso-9001',
+    programmeKey: 'ISO9001',
     shortName: 'ISO 9001',
     description: 'Quality Management System',
     logo: imgISO9001Logo,
@@ -33,6 +48,7 @@ const certifications: Certification[] = [
   },
   {
     id: 'iso-14001',
+    programmeKey: 'ISO14001',
     shortName: 'ISO 14001',
     description: 'Environmental Management System',
     logo: imgISO14001Logo,
@@ -40,6 +56,7 @@ const certifications: Certification[] = [
   },
   {
     id: 'iso-45001',
+    programmeKey: 'ISO45001',
     shortName: 'ISO 45001',
     description: 'Occupational Health & Safety',
     logo: imgISO45001Logo,
@@ -137,7 +154,11 @@ function CertificationCard({
   );
 }
 
-function ExpandedContent({ cert }: { cert: Certification }) {
+function ExpandedContent({ cert, docs }: { cert: Certification; docs: QuotationDocs }) {
+  const progDocs = docs[cert.programmeKey];
+  const appForm = progDocs?.application_form;
+  const questionnaire = progDocs?.questionnaire;
+
   return (
     <motion.div
       key={cert.id}
@@ -160,37 +181,53 @@ function ExpandedContent({ cert }: { cert: Certification }) {
       <div className="p-6 md:p-8">
         {/* Download Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <motion.a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-semibold rounded-xl shadow-md hover:shadow-xl transition-shadow duration-200 group"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          {appForm ? (
+            <motion.a
+              href={appForm.file_path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-semibold rounded-xl shadow-md hover:shadow-xl transition-shadow duration-200 group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
             >
+              <motion.div
+                whileHover={{ y: -2 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+              >
+                <Download size={20} />
+              </motion.div>
+              <span>Application Form</span>
+            </motion.a>
+          ) : (
+            <div className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-slate-100 text-slate-400 font-semibold rounded-xl cursor-not-allowed">
               <Download size={20} />
-            </motion.div>
-            <span>Application Form</span>
-          </motion.a>
+              <span>Application Form (Coming Soon)</span>
+            </div>
+          )}
 
-          <motion.a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border-2 border-[#d4af37] text-[#b8973a] font-semibold rounded-xl hover:bg-amber-50 transition-colors duration-200 group"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          {questionnaire ? (
+            <motion.a
+              href={questionnaire.file_path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border-2 border-[#d4af37] text-[#b8973a] font-semibold rounded-xl hover:bg-amber-50 transition-colors duration-200 group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
             >
+              <motion.div
+                whileHover={{ y: -2 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+              >
+                <FileText size={20} />
+              </motion.div>
+              <span>Questionnaire for Self Assessment</span>
+            </motion.a>
+          ) : (
+            <div className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border-2 border-slate-200 text-slate-400 font-semibold rounded-xl cursor-not-allowed">
               <FileText size={20} />
-            </motion.div>
-            <span>Questionnaire for Self Assessment</span>
-          </motion.a>
+              <span>Questionnaire (Coming Soon)</span>
+            </div>
+          )}
         </div>
 
         {/* Divider with animation */}
@@ -240,6 +277,20 @@ function ExpandedContent({ cert }: { cert: Certification }) {
 export function QuotationPanel() {
   const { isOpen, closePanel } = useQuotation();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [quotationDocs, setQuotationDocs] = useState<QuotationDocs>({});
+
+  // Fetch quotation documents
+  useEffect(() => {
+    const apiBase = import.meta.env.BASE_URL;
+    fetch(`${apiBase}api/public-quotation-docs.php`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setQuotationDocs(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Reset selection when panel closes
   useEffect(() => {
@@ -360,7 +411,7 @@ export function QuotationPanel() {
                       style={{ overflow: 'hidden' }}
                     >
                       <div className="pb-2">
-                        <ExpandedContent cert={selectedCert} />
+                        <ExpandedContent cert={selectedCert} docs={quotationDocs} />
                       </div>
                     </motion.div>
                   )}

@@ -35,6 +35,12 @@ The DIMA backend is a PHP/MySQL system providing:
 │   ├── submission-view.php       # View & update single submission
 │   ├── forms.php                 # Manage downloadable forms
 │   ├── content.php               # Manage content visibility
+│   ├── mspo_notifications.php    # NEW: List MSPO notifications with search/filter
+│   ├── mspo_notification_edit.php    # NEW: Create/edit/delete MSPO notifications
+│   ├── mspo_reports.php          # NEW: List MSPO reports with search/filter
+│   ├── mspo_report_edit.php      # NEW: Create/edit/delete MSPO reports
+│   ├── downloadable_forms.php    # NEW: List downloadable forms with advanced filtering
+│   ├── downloadable_form_edit.php # NEW: Create/edit/delete downloadable forms
 │   └── logout.php                # Destroy session & redirect
 ├── uploads/                      # Uploaded files (PDF attachments, etc.)
 ├── logs/                         # Error & activity logs
@@ -44,6 +50,121 @@ The DIMA backend is a PHP/MySQL system providing:
 ```
 
 ## Architecture Principles
+
+### 1. Security First
+
+- **Prepared Statements**: All DB queries use parameterized placeholders (?) to prevent SQL injection
+
+## NEW: MSPO Content Management System
+
+### Overview
+
+Three new database tables allow admins to manage public-facing content with draft/publish workflow:
+
+#### Tables
+- **`mspo_notifications`** - Public notifications with effective dates
+- **`mspo_public_summary_reports`** - Annual/periodic reports organized by year
+- **`downloadable_forms`** - Forms and documents grouped by programme
+
+#### Admin Pages (Protected)
+
+**MSPO Notifications:**
+- `/admin/mspo_notifications.php` - List all notifications, search by title/content, filter by status
+- `/admin/mspo_notification_edit.php` - Create/edit notifications with auto-publish timestamp
+
+**MSPO Reports:**
+- `/admin/mspo_reports.php` - List reports, search by title, filter by status, sort by year
+- `/admin/mspo_report_edit.php` - Create/edit report summaries with year metadata
+
+**Downloadable Forms:**
+- `/admin/downloadable_forms.php` - List forms with advanced filtering (programme, type, status)
+- `/admin/downloadable_form_edit.php` - Create/edit forms with file path and version tracking
+
+#### Features
+- ✅ Full CRUD operations (Create, Read, Update, Delete)
+- ✅ Draft/Published/Archived status workflow
+- ✅ Search and filtering on all list pages
+- ✅ Auto-timestamps for published_at when status changes
+- ✅ PDO prepared statements for all queries
+- ✅ Responsive admin UI with consistent styling
+- ✅ Form validation and error handling
+
+#### Public Display Pages
+
+- `/public/mspo-notifications.php` - Show published notifications by date
+- `/public/mspo-reports.php` - Show published reports grouped by year  
+- `/public/downloadable-forms.php` - Show active forms grouped by programme with download links
+
+Only content marked as `published` (notifications/reports) or `active` (forms) appears publicly.
+
+### Database Schema
+
+```sql
+-- MSPO Notifications Table
+CREATE TABLE mspo_notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    content LONGTEXT NOT NULL,
+    effective_date DATE,
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    published_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_published_at (published_at)
+) ENGINE=InnoDB CHARSET=utf8mb4;
+
+-- MSPO Public Summary Reports Table
+CREATE TABLE mspo_public_summary_reports (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    report_title VARCHAR(255) NOT NULL,
+    summary_text LONGTEXT NOT NULL,
+    year INT,
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    published_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_year (year)
+) ENGINE=InnoDB CHARSET=utf8mb4;
+
+-- Downloadable Forms Table
+CREATE TABLE downloadable_forms (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    form_name VARCHAR(255) NOT NULL,
+    form_type ENUM('Application Form', 'Questionnaire', 'Other') NOT NULL,
+    programme ENUM('MSPO', 'ISO9001', 'ISO14001', 'ISO45001', 'General') NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    version_label VARCHAR(50),
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_programme (programme)
+) ENGINE=InnoDB CHARSET=utf8mb4;
+```
+
+### Adding Content
+
+1. **Login to admin panel** at `/admin/`
+2. **Choose module:**
+   - Notifications → Create notification with content and effective date
+   - Reports → Create report with year and summary
+   - Forms → Upload/link PDF and associate with programme
+3. **Save as Draft** to prepare, then change status to **Published** when ready
+4. **Public pages update automatically** - content appears on `/public/` pages immediately
+
+### Implementation Details
+
+- All admin pages follow same patterns: list page + edit page
+- Validation ensures required fields before saving
+- Status changes automatically set `published_at` timestamp
+- Delete confirmation dialogs prevent accidental removal
+- Database timestamps track creation and modification times
+- All user input escaped with `htmlspecialchars()` on output
+- All DB queries use PDO prepared statements
+
+---
 
 ### 1. Security First
 
@@ -241,8 +362,76 @@ const handleSubmit = async (e) => {
 - Archive old submissions over 1 year old
 - Implement query result caching for admin dashboard
 
+## Deployment Guide (Phase 2 - MSPO Content Management)
+
+### Files to Deploy
+
+**Admin Pages** (6 files to `/public_html/admin/`):
+```
+mspo_notifications.php
+mspo_notification_edit.php
+mspo_reports.php
+mspo_report_edit.php
+downloadable_forms.php
+downloadable_form_edit.php
+```
+
+**Public Pages** (3 files to `/public_html/public/` or `/`):
+```
+mspo-notifications.php
+mspo-reports.php
+downloadable-forms.php
+```
+
+**Database Migration** (1 file):
+```
+database_updates.sql
+```
+
+### Setup Steps
+
+1. **Upload PHP Files**
+   - Upload 6 admin files to cPanel File Manager → `/public_html/admin/`
+   - Upload 3 public files to cPanel File Manager → `/public_html/public/`
+
+2. **Import Database Schema**
+   - Open cPanel → phpMyAdmin
+   - Select database `dima_production`
+   - Click "Import" tab
+   - Upload `database_updates.sql`
+   - Click "Go" to execute migration
+   - Verify 3 new tables created: `mspo_notifications`, `mspo_public_summary_reports`, `downloadable_forms`
+
+3. **Verify Installation**
+   - Admin pages: `https://staging.example.com/admin/mspo_notifications.php`
+   - Public pages: `https://staging.example.com/public/mspo-notifications.php`
+
+4. **Add Navigation Links** (Update React frontend or existing pages to link to):
+   - `/public/mspo-notifications.php` from MSPO info page
+   - `/public/mspo-reports.php` from MSPO info page  
+   - `/public/downloadable-forms.php` from Forms page
+
+### Testing Checklist
+
+- [ ] Admin pages load without errors (check browser console)
+- [ ] Can create a new notification/report/form
+- [ ] Can edit existing records
+- [ ] Can delete records with confirmation
+- [ ] Search and filter work on list pages
+- [ ] Status changes update published_at timestamp
+- [ ] Public pages show published/active content only
+- [ ] Database logs show no errors
+- [ ] File permissions are correct (644 for PHP, 755 for directories)
+
+---
+
+## Monitoring & Maintenance
+
 ## Future Enhancements
 
+- [x] MSPO Notifications Management (Completed Phase 2)
+- [x] MSPO Public Summary Reports Management (Completed Phase 2)
+- [x] Downloadable Forms Management (Completed Phase 2)
 - [ ] Email notifications on form submission
 - [ ] Admin user authentication via database (instead of .htaccess)
 - [ ] Two-factor authentication for admin panel

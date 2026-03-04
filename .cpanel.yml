@@ -1,0 +1,26 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/$USER/public_html
+    # Copy React build output
+    - /bin/cp dist/index.html $DEPLOYPATH/
+    - /bin/cp -R dist/assets $DEPLOYPATH/
+    # Copy PHP directories
+    - /bin/cp -R api $DEPLOYPATH/
+    - /bin/cp -R admin $DEPLOYPATH/
+    - /bin/cp -R includes $DEPLOYPATH/
+    - /bin/cp -R public $DEPLOYPATH/
+    # Copy config files
+    - /bin/cp .htaccess $DEPLOYPATH/
+    - /bin/cp composer.json $DEPLOYPATH/
+    - /bin/cp composer.lock $DEPLOYPATH/
+    # Create required directories
+    - /bin/mkdir -p $DEPLOYPATH/uploads/documents
+    - /bin/mkdir -p $DEPLOYPATH/uploads/gallery
+    - /bin/mkdir -p $DEPLOYPATH/uploads/quotation-forms
+    - /bin/mkdir -p $DEPLOYPATH/logs
+    # Set permissions
+    - /bin/chmod -R 755 $DEPLOYPATH/uploads
+    - /bin/chmod -R 755 $DEPLOYPATH/logs
+    # Install Composer dependencies (PHPMailer)
+    - cd $DEPLOYPATH && php composer.phar install --no-dev --optimize-autoloader 2>/dev/null; true

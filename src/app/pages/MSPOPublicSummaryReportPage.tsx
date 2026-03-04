@@ -1,205 +1,68 @@
 import { motion, useInView } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { FileText, Calendar, Download, Award, Building2, CheckCircle } from 'lucide-react';
+import { FileText, Calendar, Download, Award, CheckCircle, Clock } from 'lucide-react';
 
-interface SummaryReport {
-  id: string;
+interface Document {
+  id: number;
   title: string;
-  companyName: string;
-  auditType: 'Initial' | 'Re-certification' | 'Surveillance';
-  standard: string;
-  pdfFileName: string;
-  certificationDate?: string;
+  description: string;
+  category: string;
+  year: number;
+  month: number | null;
+  audit_status: string | null;
+  file_path: string;
+  created_at: string;
+  updated_at: string;
 }
 
-interface MonthData {
-  month: string;
-  reports: SummaryReport[];
-}
+const MONTH_NAMES = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
 
 export function MSPOPublicSummaryReportPage() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const [selectedYear, setSelectedYear] = useState('2025');
+  const [selectedYear, setSelectedYear] = useState<string>(String(new Date().getFullYear()));
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
 
-  const years = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
-
-  // Mock data - in real implementation, this would come from a database
-  const reportsByYear: Record<string, MonthData[]> = {
-    '2025': [
-      {
-        month: 'JANUARY',
-        reports: [
-          {
-            id: 'R2025001',
-            title: 'AUDIT REPORT SUMMARY – RECERTIFICATION PALMSIDE PLANTATION SDN BHD',
-            companyName: 'Palmside Plantation Sdn Bhd',
-            auditType: 'Re-certification',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Palmside Plantation RC',
-            certificationDate: '2025-01-15'
-          },
-          {
-            id: 'R2025002',
-            title: 'AUDIT REPORT SUMMARY – SINONG PELITA MATU SDN BHD',
-            companyName: 'Sinong Pelita Matu Sdn Bhd',
-            auditType: 'Initial',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Sinong Pelita Matu',
-            certificationDate: '2025-01-18'
-          },
-          {
-            id: 'R2025003',
-            title: 'AUDIT REPORT SUMMARY – UNISTATE SEA FOOD (SABAH) SDN BHD',
-            companyName: 'Unistate Sea Food (Sabah) Sdn Bhd',
-            auditType: 'Surveillance',
-            standard: 'MSPO 2544-5:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Unistate Sea Food SV1',
-            certificationDate: '2025-01-20'
-          },
-          {
-            id: 'R2025004',
-            title: 'AUDIT REPORT SUMMARY – SARAWAK GREEN PLANTATION SDN BHD RECERT',
-            companyName: 'Sarawak Green Plantation Sdn Bhd',
-            auditType: 'Re-certification',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Sarawak Green Plantation RC',
-            certificationDate: '2025-01-22'
-          },
-          {
-            id: 'R2025005',
-            title: 'AUDIT REPORT SUMMARY – RICH RETURNS PLANTATION SDN BHD',
-            companyName: 'Rich Returns Plantation Sdn Bhd',
-            auditType: 'Initial',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Rich Returns Plantation',
-            certificationDate: '2025-01-25'
-          },
-          {
-            id: 'R2025006',
-            title: 'AUDIT REPORT SUMMARY – LL PROSPECT SDN BHD',
-            companyName: 'LL Prospect Sdn Bhd',
-            auditType: 'Surveillance',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-LL Prospect SV2',
-            certificationDate: '2025-01-28'
-          },
-          {
-            id: 'R2025007',
-            title: 'AUDIT SUMMARY REPORT SCCS LCH PALM OIL MILL SDN BHD',
-            companyName: 'SCCS LCH Palm Oil Mill Sdn Bhd',
-            auditType: 'Surveillance',
-            standard: 'MSPO 2544-5:2022',
-            pdfFileName: 'DMC-MSPO-PSR-SCCS LCH Palm Oil Mill SV1',
-            certificationDate: '2025-01-29'
-          },
-          {
-            id: 'R2025008',
-            title: 'AUDIT REPORT SUMMARY – LCH Palm Oil Mill Sdn Bhd',
-            companyName: 'LCH Palm Oil Mill Sdn Bhd',
-            auditType: 'Re-certification',
-            standard: 'MSPO 2544-5:2022',
-            pdfFileName: 'DMC-MSPO-PSR-LCH Palm Oil Mill RC',
-            certificationDate: '2025-01-30'
-          },
-          {
-            id: 'R2025009',
-            title: 'AUDIT REPORT SUMMARY KTS AGRICULTURE DEVELOPMENT SDN BHD',
-            companyName: 'KTS Agriculture Development Sdn Bhd',
-            auditType: 'Initial',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-KTS Agriculture Development',
-            certificationDate: '2025-01-31'
-          },
-          {
-            id: 'R2025010',
-            title: 'AUDIT REPORT SUMMARY Golden Green Plantation SB RECERTIFICATION',
-            companyName: 'Golden Green Plantation SB',
-            auditType: 'Re-certification',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Golden Green Plantation RC',
-            certificationDate: '2025-01-31'
-          }
-        ]
-      },
-      {
-        month: 'FEBRUARY',
-        reports: [
-          {
-            id: 'R2025011',
-            title: 'AUDIT REPORT SUMMARY – TROPICAL PALM ESTATES SDN BHD',
-            companyName: 'Tropical Palm Estates Sdn Bhd',
-            auditType: 'Initial',
-            standard: 'MSPO 2544-4:2022',
-            pdfFileName: 'DMC-MSPO-PSR-Tropical Palm Estates'
-          }
-        ]
-      },
-      {
-        month: 'MARCH',
-        reports: []
-      },
-      {
-        month: 'APRIL',
-        reports: []
-      },
-      {
-        month: 'MAY',
-        reports: []
-      },
-      {
-        month: 'JUNE',
-        reports: []
-      },
-      {
-        month: 'JULY',
-        reports: []
+  // Fetch documents from API
+  useEffect(() => {
+    async function fetchDocuments() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/public-documents.php?category=' + encodeURIComponent('MSPO Public Report Summary'));
+        const json = await res.json();
+        if (json.success) {
+          setDocuments(json.data || []);
+          const years = [...new Set((json.data || []).map((d: Document) => String(d.year)))].sort((a, b) => Number(b) - Number(a));
+          setAvailableYears(years.length > 0 ? years : [String(new Date().getFullYear())]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch reports:', err);
+      } finally {
+        setLoading(false);
       }
-    ],
-    '2024': [],
-    '2023': [],
-    '2022': [],
-    '2021': [],
-    '2020': [],
-    '2026': []
-  };
-
-  const currentYearData = reportsByYear[selectedYear] || [];
-  const availableMonths = currentYearData.filter(m => m.reports.length > 0);
-  const selectedMonthData = currentYearData.find(m => m.month === selectedMonth);
-
-  const handlePDFDownload = (pdfFileName: string, reportTitle: string) => {
-    alert(`Downloading: ${pdfFileName}.pdf\n\nReport: ${reportTitle}\n\nIn production, this would download the official MSPO public summary report PDF document.`);
-  };
-
-  const getAuditTypeColor = (type: string) => {
-    switch (type) {
-      case 'Initial':
-        return 'from-blue-500 to-blue-600';
-      case 'Re-certification':
-        return 'from-green-500 to-emerald-600';
-      case 'Surveillance':
-        return 'from-orange-500 to-amber-600';
-      default:
-        return 'from-slate-500 to-slate-600';
     }
-  };
+    fetchDocuments();
+  }, []);
 
-  const getAuditTypeBadge = (type: string) => {
-    switch (type) {
-      case 'Initial':
-        return { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Initial Certification' };
-      case 'Re-certification':
-        return { bg: 'bg-green-100', text: 'text-green-700', label: 'Re-certification' };
-      case 'Surveillance':
-        return { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Surveillance Audit' };
-      default:
-        return { bg: 'bg-slate-100', text: 'text-slate-700', label: type };
-    }
-  };
+  // Filter by year
+  const currentYearDocs = documents.filter(d => String(d.year) === selectedYear);
+
+  // Get available months for selected year
+  const availableMonths = [...new Set(currentYearDocs.map(d => d.month))].sort((a, b) => (a || 0) - (b || 0));
+
+  // Filter by selected month
+  const displayDocs = selectedMonth !== null
+    ? currentYearDocs.filter(d => {
+        const monthNum = selectedMonth === '0' ? null : Number(selectedMonth);
+        return monthNum === null ? d.month === null : d.month === monthNum;
+      })
+    : [];
 
   return (
     <PageLayout>
@@ -275,247 +138,257 @@ export function MSPOPublicSummaryReportPage() {
             </div>
           </motion.div>
 
-          {/* Year Selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-12"
-          >
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-lg">
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <span className="text-slate-600 font-semibold mr-2">Select Year:</span>
-                {years.map((year, index) => (
-                  <motion.button
-                    key={year}
-                    onClick={() => {
-                      setSelectedYear(year);
-                      setSelectedMonth(null);
-                    }}
-                    className={`px-6 py-3 rounded-xl font-bold text-base transition-all shadow-md ${
-                      selectedYear === year
-                        ? 'bg-gradient-to-r from-[#d4af37] to-amber-500 text-white shadow-lg scale-105'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-                    whileHover={{ scale: selectedYear === year ? 1.05 : 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {year}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Page Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="mb-8"
-          >
-            <h3 className="text-3xl font-bold text-slate-900 mb-2">
-              Public Summary Report
-            </h3>
-          </motion.div>
-
-          {/* Month Selection Buttons */}
-          {!selectedMonth && availableMonths.length > 0 && (
+          {/* Loading State */}
+          {loading && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
             >
-              {currentYearData.map((monthData, index) => {
-                if (monthData.reports.length === 0) return null;
-                
-                return (
-                  <motion.button
-                    key={monthData.month}
-                    onClick={() => setSelectedMonth(monthData.month)}
-                    className="w-full max-w-md px-10 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all uppercase"
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
-                    whileHover={{ scale: 1.05, x: 10 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {monthData.month} {selectedYear}
-                  </motion.button>
-                );
-              })}
+              <div className="w-16 h-16 border-4 border-[#d4af37] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+              <p className="text-slate-600 text-lg">Loading reports...</p>
             </motion.div>
           )}
 
-          {/* Back Button and Report List */}
-          {selectedMonth && selectedMonthData && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <button
-                onClick={() => setSelectedMonth(null)}
-                className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition-colors mb-8"
-              >
-                ← Back to Month Selection
-              </button>
-
-              {/* Report Header */}
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-slate-900">
-                  Public Summary Report ({selectedMonth}){selectedYear}
-                </h3>
-                
-                <motion.button
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Download size={20} />
-                  <span>Export All</span>
-                </motion.button>
-              </div>
-
-              {/* PDF Report List */}
+          {!loading && (
+            <>
+              {/* Year Selector */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="bg-white border-2 border-slate-200 rounded-3xl p-10 shadow-lg mb-12"
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mb-12"
               >
-                <div className="space-y-1">
-                  {selectedMonthData.reports.map((report, index) => (
-                    <motion.button
-                      key={report.id}
-                      onClick={() => handlePDFDownload(report.pdfFileName, report.title)}
-                      className="w-full text-left group"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="flex items-start gap-3 py-3 border-b border-slate-100 hover:border-[#d4af37] transition-colors">
-                        <FileText className="text-[#d4af37] flex-shrink-0 mt-1" size={20} />
-                        <span className="text-[#d4af37] hover:text-amber-600 font-medium transition-colors text-lg">
-                          {report.title}
-                        </span>
-                      </div>
-                    </motion.button>
-                  ))}
+                <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    <span className="text-slate-600 font-semibold mr-2">Select Year:</span>
+                    {availableYears.map((year, index) => (
+                      <motion.button
+                        key={year}
+                        onClick={() => {
+                          setSelectedYear(year);
+                          setSelectedMonth(null);
+                        }}
+                        className={`px-6 py-3 rounded-xl font-bold text-base transition-all shadow-md ${
+                          selectedYear === year
+                            ? 'bg-gradient-to-r from-[#d4af37] to-amber-500 text-white shadow-lg scale-105'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                        transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
+                        whileHover={{ scale: selectedYear === year ? 1.05 : 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {year}
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
 
-              {/* Detailed Report Cards */}
-              <h3 className="text-2xl font-bold text-slate-900 mb-6">Detailed Report Information</h3>
-              <div className="space-y-6">
-                {selectedMonthData.reports.map((report, index) => {
-                  const badge = getAuditTypeBadge(report.auditType);
-                  
-                  return (
-                    <motion.div
-                      key={report.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="relative group"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
-                      
-                      <div className="relative bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-all">
-                        <div className="flex items-start justify-between gap-6 mb-6">
-                          <div className="flex items-start gap-4 flex-1">
-                            <div className={`w-16 h-16 bg-gradient-to-br ${getAuditTypeColor(report.auditType)} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                              <Award className="text-white" size={32} />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-start gap-3 mb-3">
-                                <h4 className="text-xl font-bold text-slate-900 flex-1">
-                                  {report.companyName}
-                                </h4>
-                                <span className={`px-4 py-2 ${badge.bg} ${badge.text} text-sm font-bold rounded-lg whitespace-nowrap`}>
-                                  {badge.label}
-                                </span>
-                              </div>
-                              
-                              <p className="text-slate-600 mb-4 leading-relaxed">
-                                {report.title}
-                              </p>
-                              
-                              <div className="grid md:grid-cols-2 gap-4 text-slate-600">
-                                <div className="flex items-center gap-2">
-                                  <Building2 className="text-[#d4af37] flex-shrink-0" size={18} />
-                                  <span className="font-semibold">Standard:</span>
-                                  <span>{report.standard}</span>
-                                </div>
-                                
-                                {report.certificationDate && (
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="text-[#d4af37] flex-shrink-0" size={18} />
-                                    <span className="font-semibold">Date:</span>
-                                    <span>{new Date(report.certificationDate).toLocaleDateString('en-MY', { 
-                                      year: 'numeric', 
-                                      month: 'long', 
-                                      day: 'numeric' 
-                                    })}</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="border-t-2 border-slate-100 pt-6">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                              <span className="px-3 py-1 bg-slate-100 rounded-lg text-slate-600 text-sm">
-                                Report ID: {report.id}
-                              </span>
-                              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-semibold">
-                                ✓ Published
-                              </span>
-                            </div>
-                            
-                            <button
-                              className="px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
-                              onClick={() => handlePDFDownload(report.pdfFileName, report.title)}
-                            >
-                              <FileText className="inline mr-2" size={18} />
-                              Download PDF
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
+              {/* Page Title */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="mb-8"
+              >
+                <h3 className="text-3xl font-bold text-slate-900 mb-2">
+                  Public Summary Report ({selectedYear})
+                </h3>
+              </motion.div>
 
-          {/* Empty State when no reports for entire year */}
-          {!selectedMonth && availableMonths.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="text-center py-20"
-            >
-              <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <FileText className="text-slate-400" size={48} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                No Reports Available
-              </h3>
-              <p className="text-slate-600 max-w-md mx-auto">
-                No public summary reports are currently available for {selectedYear}. Check back later for updates.
-              </p>
-            </motion.div>
+              {/* Month Selection Buttons */}
+              {selectedMonth === null && availableMonths.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  className="space-y-4"
+                >
+                  {availableMonths.map((month, index) => (
+                    <motion.button
+                      key={month ?? 'no-month'}
+                      onClick={() => setSelectedMonth(month === null ? '0' : String(month))}
+                      className="w-full max-w-md px-10 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all uppercase"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : {}}
+                      transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
+                      whileHover={{ scale: 1.05, x: 10 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {month ? MONTH_NAMES[month] : 'General'} {selectedYear}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Back Button and Report List */}
+              {selectedMonth !== null && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <button
+                    onClick={() => setSelectedMonth(null)}
+                    className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition-colors mb-8"
+                  >
+                    ← Back to Month Selection
+                  </button>
+
+                  {/* Report Header */}
+                  <div className="flex items-center justify-between mb-8">
+                    <h3 className="text-3xl font-bold text-slate-900">
+                      Public Summary Report ({selectedMonth === '0' ? 'General' : MONTH_NAMES[Number(selectedMonth)]}) {selectedYear}
+                    </h3>
+                  </div>
+
+                  {displayDocs.length > 0 && (
+                    <>
+                      {/* PDF Report List */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="bg-white border-2 border-slate-200 rounded-3xl p-10 shadow-lg mb-12"
+                      >
+                        <div className="space-y-1">
+                          {displayDocs.map((doc, index) => (
+                            <motion.a
+                              key={doc.id}
+                              href={doc.file_path}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full text-left group block"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.4, delay: index * 0.05 }}
+                              whileHover={{ x: 5 }}
+                            >
+                              <div className="flex items-center gap-3 py-3 border-b border-slate-100 hover:border-[#d4af37] transition-colors">
+                                <FileText className="text-[#d4af37] flex-shrink-0 mt-0.5" size={20} />
+                                <span className="text-[#d4af37] hover:text-amber-600 font-medium transition-colors text-lg flex-1">
+                                  {doc.title}
+                                </span>
+                                <Download className="text-slate-400 group-hover:text-[#d4af37] transition-colors flex-shrink-0" size={18} />
+                              </div>
+                            </motion.a>
+                          ))}
+                        </div>
+                      </motion.div>
+
+                      {/* Detailed Report Cards */}
+                      <h3 className="text-2xl font-bold text-slate-900 mb-6">Report Details</h3>
+                      <div className="space-y-6">
+                        {displayDocs.map((doc, index) => (
+                          <motion.div
+                            key={doc.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="relative group"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
+                            
+                            <div className="relative bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-all">
+                              <div className="flex items-start justify-between gap-6 mb-6">
+                                <div className="flex items-start gap-4 flex-1">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <Award className="text-white" size={32} />
+                                  </div>
+                                  
+                                  <div className="flex-1">
+                                    <div className="flex items-start gap-3 mb-3">
+                                      <h4 className="text-xl font-bold text-slate-900 flex-1">
+                                        {doc.title}
+                                      </h4>
+                                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-semibold whitespace-nowrap">
+                                        ✓ Published
+                                      </span>
+                                    </div>
+                                    
+                                    {doc.description && (
+                                      <p className="text-slate-600 mb-4 leading-relaxed">
+                                        {doc.description}
+                                      </p>
+                                    )}
+                                    
+                                    <div className="flex items-center gap-4 text-slate-500 text-sm">
+                                      <div className="flex items-center gap-1">
+                                        <Calendar className="text-[#d4af37]" size={16} />
+                                        <span>{doc.month ? `${MONTH_NAMES[doc.month]} ${doc.year}` : doc.year}</span>
+                                      </div>
+                                      <div className="flex items-center gap-1">
+                                        <Clock className="text-[#d4af37]" size={16} />
+                                        <span>Published {new Date(doc.created_at).toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="border-t-2 border-slate-100 pt-6">
+                                <a
+                                  href={doc.file_path}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                                >
+                                  <Download size={18} />
+                                  Download PDF
+                                </a>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Empty state for selected month */}
+                  {displayDocs.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-center py-20"
+                    >
+                      <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <FileText className="text-slate-400" size={48} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                        No Reports Available
+                      </h3>
+                      <p className="text-slate-600 max-w-md mx-auto">
+                        No reports found for {selectedMonth === '0' ? 'General' : MONTH_NAMES[Number(selectedMonth)]} {selectedYear}.
+                      </p>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Empty State when no reports for entire year */}
+              {selectedMonth === null && availableMonths.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  className="text-center py-20"
+                >
+                  <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <FileText className="text-slate-400" size={48} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                    No Reports Available
+                  </h3>
+                  <p className="text-slate-600 max-w-md mx-auto">
+                    No public summary reports are currently available for {selectedYear}. Check back later for updates.
+                  </p>
+                </motion.div>
+              )}
+            </>
           )}
 
           {/* Information Footer */}

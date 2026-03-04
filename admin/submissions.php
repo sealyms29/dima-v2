@@ -3,11 +3,26 @@
  * Admin Submissions List Page
  */
 
-require_once __DIR__ . '/../includes/bootstrap.php';
+header('Content-Type: text/html; charset=utf-8');
+
+// Include config and start session
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/Database.php';
+require_once __DIR__ . '/../includes/SecurityHelper.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'secure' => SESSION_SECURE,
+        'httponly' => SESSION_HTTPONLY,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
 
 // Authentication check
 if (!isset($_SESSION['admin_user_id'])) {
-    header('Location: /admin/login.php');
+    header('Location: ' . BASE_PATH . '/admin/login.php');
     exit;
 }
 
@@ -23,7 +38,7 @@ if (!in_array($type, ['quotation', 'contact', 'complaint'])) {
 }
 
 // Build API URL
-$api_url = 'http://localhost/api/admin-submissions.php?type=' . urlencode($type) . '&page=' . $page;
+$api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submissions.php?type=' . urlencode($type) . '&page=' . $page;
 if (!empty($status)) {
     $api_url .= '&status=' . urlencode($status);
 }
@@ -46,7 +61,8 @@ if ($response) {
 }
 
 $submissions = $response_data['submissions'] ?? [];
-$pagination = $response_data['pagination'] ?? [];
+$pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page' => 1, 'total_records' => 0];
+
 
 ?>
 <!DOCTYPE html>
@@ -319,10 +335,13 @@ $pagination = $response_data['pagination'] ?? [];
         </header>
 
         <nav>
-            <a href="/admin/">Dashboard</a>
-            <a href="/admin/submissions.php" class="active">Submissions</a>
-            <a href="/admin/forms.php">Forms</a>
-            <a href="/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/">Dashboard</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php" class="active">Submissions</a>
+            <a href="<?= BASE_PATH ?>/admin/documents.php">Documents</a>
+            <a href="<?= BASE_PATH ?>/admin/gallery.php">Gallery</a>
+            <a href="<?= BASE_PATH ?>/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/contact-info.php">Contact Info</a>
+            <a href="<?= BASE_PATH ?>/admin/settings.php">Settings</a>
         </nav>
 
         <?php if (!empty($error_message)): ?>
@@ -416,7 +435,7 @@ $pagination = $response_data['pagination'] ?? [];
                                 </td>
                                 <td><?php echo date('M d, Y', strtotime($row['created_at'])); ?></td>
                                 <td>
-                                    <a href="/admin/submission-view.php?type=<?php echo htmlspecialchars($type); ?>&id=<?php echo htmlspecialchars($row['id']); ?>" 
+                                    <a href="<?= BASE_PATH ?>/admin/submission-view.php?type=<?php echo htmlspecialchars($type); ?>&id=<?php echo htmlspecialchars($row['id']); ?>" 
                                        class="action-link">View</a>
                                 </td>
                             </tr>

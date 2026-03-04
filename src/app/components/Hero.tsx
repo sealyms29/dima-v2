@@ -2,8 +2,8 @@ import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight, Sparkles } from 'lucide-react';
-// Figma asset removed - use actual image file
-const imgHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
+// Fallback hero image
+const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
 
 interface HeroProps {
@@ -13,6 +13,7 @@ interface HeroProps {
 
 export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
   const [scrollY, setScrollY] = useState(0);
+  const [imgHero, setImgHero] = useState(defaultHero);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const navigate = useNavigate();
@@ -25,6 +26,18 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch hero image from database
+  useEffect(() => {
+    fetch('/api/public-gallery.php?section=hero')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          setImgHero(data.data[0].file_path);
+        }
+      })
+      .catch(() => { /* keep default */ });
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -189,15 +202,14 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
 
           {/* Stats */}
           <motion.div 
-            className="grid grid-cols-3 gap-8 mt-20 pt-12 border-t border-white/10"
+            className="grid grid-cols-2 gap-8 mt-20 pt-12 border-t border-white/10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
             {[
               { label: 'Established', value: '2018' },
-              { label: 'Certifications', value: '100+' },
-              { label: 'Expert Auditors', value: '25+' }
+              { label: 'Certifications', value: '100+' }
             ].map((stat, index) => (
               <motion.div 
                 key={index}

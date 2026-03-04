@@ -2,9 +2,9 @@ import { PageLayout } from '../components/shared/PageLayout';
 import { Hero } from '../components/Hero';
 import { QuotationCTA } from '../components/QuotationCTA';
 import { motion, useInView } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Sparkles, Calendar } from 'lucide-react';
-// Figma assets removed - use actual image files
+// Static assets for company overview & accreditation (not admin-managed)
 const imgTeamPhoto = '/assets/96ff7a0755cc20b25bbf7b4dd3c95cef7add2941.png';
 const imgOffice1 = '/assets/c5cb03644bd86d72dab99e848ae8f9b1512ef00d.png';
 const imgOffice2 = '/assets/f803cd79b767f951e7f7ac21c263a4aa722e6bee.png';
@@ -12,29 +12,50 @@ const imgMSPO = '/assets/660c856aa747ee61d8736225fb4e8a2223cba616.png';
 const imgAccreditation = '/assets/d592e4a60fc48dd30356faa8a70601227c755ba1.png';
 const imgAuditVisit = '/assets/75de96ee0834675ede75a8ff86e49d03c12883ed.png';
 
+// Fallback gallery if no images uploaded yet
+const fallbackGallery = [
+  { src: imgAuditVisit, alt: "DIMA Audit Visit Team" },
+  { src: imgTeamPhoto, alt: "Professional Team Meeting" },
+  { src: imgOffice1, alt: "Audit Site Inspection" },
+  { src: imgOffice2, alt: "Client Consultation" },
+  { src: imgAuditVisit, alt: "Documentation Review" },
+  { src: imgTeamPhoto, alt: "Team Collaboration" }
+];
+
+interface GalleryImage {
+  src: string;
+  alt: string;
+}
+
 export function HomePage() {
   const ref = useRef(null);
   const galleryRef = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const isGalleryInView = useInView(galleryRef, { once: true, amount: 0.2 });
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(fallbackGallery);
 
-  // Gallery images - using available images as examples
-  const galleryImages = [
-    { src: imgAuditVisit, alt: "DIMA Audit Visit Team" },
-    { src: imgTeamPhoto, alt: "Professional Team Meeting" },
-    { src: imgOffice1, alt: "Audit Site Inspection" },
-    { src: imgOffice2, alt: "Client Consultation" },
-    { src: imgAuditVisit, alt: "Documentation Review" },
-    { src: imgTeamPhoto, alt: "Team Collaboration" }
-  ];
+  // Fetch gallery images from database
+  useEffect(() => {
+    fetch('/api/public-gallery.php?section=gallery')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          setGalleryImages(data.data.map((img: any) => ({
+            src: img.file_path,
+            alt: img.alt_text || img.title || 'Gallery image'
+          })));
+        }
+      })
+      .catch(() => { /* keep fallback */ });
+  }, []);
 
   const handlePrev = () => {
-    setSelectedImage((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+    setSelectedImage((prev) => (prev === 0 ? galleryImages.length - 1 : prev! - 1));
   };
 
   const handleNext = () => {
-    setSelectedImage((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+    setSelectedImage((prev) => (prev === galleryImages.length - 1 ? 0 : prev! + 1));
   };
 
   return (

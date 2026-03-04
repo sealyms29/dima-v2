@@ -4,11 +4,26 @@
  * Manage visibility of ISO content blocks (read-only content, visibility toggles only)
  */
 
-require_once __DIR__ . '/../includes/bootstrap.php';
+header('Content-Type: text/html; charset=utf-8');
+
+// Include config and start session
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/Database.php';
+require_once __DIR__ . '/../includes/SecurityHelper.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'secure' => SESSION_SECURE,
+        'httponly' => SESSION_HTTPONLY,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
 
 // Authentication check
 if (!isset($_SESSION['admin_user_id'])) {
-    header('Location: /admin/login.php');
+    header('Location: ' . BASE_PATH . '/admin/login.php');
     exit;
 }
 
@@ -74,7 +89,7 @@ try {
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -85,11 +100,19 @@ try {
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 20px;
             border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 28px;
             color: #1a1a1a;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
         }
 
         nav {
@@ -111,9 +134,37 @@ try {
             font-size: 14px;
         }
 
+        nav a:hover {
+            background: #e0e0e0;
+        }
+
         nav a.active {
             background: #007bff;
             color: white;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
         }
 
         .message {
@@ -272,14 +323,20 @@ try {
 <body>
     <div class="container">
         <header>
-            <h1>Content Management</h1>
+            <h1>📝 Content Management</h1>
+            <div class="header-actions">
+                <a href="<?= BASE_PATH ?>/admin/index.php" class="btn btn-secondary">← Back to Dashboard</a>
+            </div>
         </header>
 
         <nav>
-            <a href="/admin/">Dashboard</a>
-            <a href="/admin/submissions.php">Submissions</a>
-            <a href="/admin/forms.php">Forms</a>
-            <a href="/admin/content.php" class="active">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/">Dashboard</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php">Submissions</a>
+            <a href="<?= BASE_PATH ?>/admin/documents.php">Documents</a>
+            <a href="<?= BASE_PATH ?>/admin/gallery.php">Gallery</a>
+            <a href="<?= BASE_PATH ?>/admin/content.php" class="active">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/contact-info.php">Contact Info</a>
+            <a href="<?= BASE_PATH ?>/admin/settings.php">Settings</a>
         </nav>
 
         <?php if (isset($_SESSION['message'])): ?>

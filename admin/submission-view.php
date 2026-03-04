@@ -3,11 +3,26 @@
  * Admin Submission Detail Page
  */
 
-require_once __DIR__ . '/../includes/bootstrap.php';
+header('Content-Type: text/html; charset=utf-8');
+
+// Include config and start session
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/Database.php';
+require_once __DIR__ . '/../includes/SecurityHelper.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'secure' => SESSION_SECURE,
+        'httponly' => SESSION_HTTPONLY,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
 
 // Authentication check
 if (!isset($_SESSION['admin_user_id'])) {
-    header('Location: /admin/login.php');
+    header('Location: ' . BASE_PATH . '/admin/login.php');
     exit;
 }
 
@@ -15,7 +30,7 @@ $type = $_GET['type'] ?? '';
 $id = intval($_GET['id'] ?? 0);
 
 if (!in_array($type, ['quotation', 'contact', 'complaint']) || $id <= 0) {
-    header('Location: /admin/submissions.php');
+    header('Location: ' . BASE_PATH . '/admin/submissions.php');
     exit;
 }
 
@@ -24,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notes = SecurityHelper::sanitizeString($_POST['notes'] ?? '');
 
     // Send to API
-    $api_url = 'http://localhost/api/admin-submissions-update.php';
+    $api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submissions-update.php';
     $post_data = json_encode([
         'type' => $type,
         'id' => $id,
@@ -51,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch submission detail
-$api_url = 'http://localhost/api/admin-submission-detail.php?type=' . urlencode($type) . '&id=' . $id;
+$api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submission-detail.php?type=' . urlencode($type) . '&id=' . $id;
 $response = @file_get_contents($api_url);
 $submission = null;
 
@@ -63,7 +78,7 @@ if ($response) {
 }
 
 if (!$submission) {
-    header('Location: /admin/submissions.php?type=' . urlencode($type));
+    header('Location: ' . BASE_PATH . '/admin/submissions.php?type=' . urlencode($type));
     exit;
 }
 
@@ -284,13 +299,16 @@ if (!$submission) {
         </header>
 
         <nav>
-            <a href="/admin/">Dashboard</a>
-            <a href="/admin/submissions.php">Submissions</a>
-            <a href="/admin/forms.php">Forms</a>
-            <a href="/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/">Dashboard</a>
+            <a href="<?= BASE_PATH ?>/admin/submissions.php">Submissions</a>
+            <a href="<?= BASE_PATH ?>/admin/documents.php">Documents</a>
+            <a href="<?= BASE_PATH ?>/admin/gallery.php">Gallery</a>
+            <a href="<?= BASE_PATH ?>/admin/content.php">Content</a>
+            <a href="<?= BASE_PATH ?>/admin/contact-info.php">Contact Info</a>
+            <a href="<?= BASE_PATH ?>/admin/settings.php">Settings</a>
         </nav>
 
-        <a href="/admin/submissions.php?type=<?php echo urlencode($type); ?>" class="back-link">← Back to Submissions</a>
+        <a href="<?= BASE_PATH ?>/admin/submissions.php?type=<?php echo urlencode($type); ?>" class="back-link">← Back to Submissions</a>
 
         <?php if (isset($_SESSION['message'])): ?>
             <div class="message"><?php echo htmlspecialchars($_SESSION['message']); unset($_SESSION['message']); ?></div>

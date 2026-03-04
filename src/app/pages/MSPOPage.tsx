@@ -55,6 +55,22 @@ export function MSPOPage() {
       icon: Award,
       gradient: "from-amber-500 to-orange-600",
       action: () => navigate('/mspo-logo-usage')
+    },
+    {
+      title: "MSPO Announcement",
+      description: "Latest announcements from the official MSPO website",
+      icon: ExternalLink,
+      gradient: "from-purple-500 to-indigo-600",
+      action: () => window.open('https://mspo.org.my/announcement/', '_blank'),
+      external: true
+    },
+    {
+      title: "MSPO Circular",
+      description: "Official circulars and updates from MSPO",
+      icon: ExternalLink,
+      gradient: "from-teal-500 to-cyan-600",
+      action: () => window.open('https://mspo.org.my/circular/', '_blank'),
+      external: true
     }
   ];
 
@@ -94,6 +110,7 @@ export function MSPOPage() {
         subtitle="Promoting sustainable practices in palm oil production across Malaysia"
         logo={imgMSPOLogo}
         logoAlt="Malaysian Sustainable Palm Oil"
+        logoCaption="MSPO/4-2-0014"
       />
 
       {/* Main Content */}
@@ -212,7 +229,12 @@ export function MSPOPage() {
                           <doc.icon size={24} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-lg mb-1">{doc.title}</h4>
+                          <h4 className="font-bold text-lg mb-1">
+                            {doc.title}
+                            {'external' in doc && (
+                              <span className="ml-2 text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full align-middle">External</span>
+                            )}
+                          </h4>
                           <p className="text-white/80 text-sm">{doc.description}</p>
                         </div>
                       </div>

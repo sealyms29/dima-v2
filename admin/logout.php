@@ -3,11 +3,15 @@
  * Admin Logout Page
  */
 
-require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/config.php';
+
+// Start session to destroy it
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Clear session
 session_destroy();
 
-// Redirect to dashboard (will redirect to login)
-header('Location: /admin/');
-exit;
+// Redirect to login
+header('Location: ' . BASE_PATH . '/admin/login.php');
