@@ -26,20 +26,19 @@ if (!isset($_SESSION['admin_user_id'])) {
     exit;
 }
 
-$type = $_GET['type'] ?? 'quotation';
+$type = $_GET['type'] ?? 'contact';
 $status = $_GET['status'] ?? '';
 $search = $_GET['q'] ?? '';
 $page = intval($_GET['page'] ?? 1);
 if ($page < 1) $page = 1;
 
 // Validate type
-if (!in_array($type, ['quotation', 'contact', 'complaint'])) {
-    $type = 'quotation';
+if (!in_array($type, ['contact', 'complaint'])) {
+    $type = 'contact';
 }
 
 // Direct database query instead of HTTP API call
 $tables = [
-    'quotation' => 'quotations',
     'contact' => 'contacts',
     'complaint' => 'complaints'
 ];
@@ -395,8 +394,6 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
         <?php endif; ?>
 
         <div class="tabs">
-            <button class="tab-btn <?php echo $type === 'quotation' ? 'active' : ''; ?>" 
-                    onclick="window.location.href='?type=quotation'">Quotations</button>
             <button class="tab-btn <?php echo $type === 'contact' ? 'active' : ''; ?>" 
                     onclick="window.location.href='?type=contact'">Contact Requests</button>
             <button class="tab-btn <?php echo $type === 'complaint' ? 'active' : ''; ?>" 
