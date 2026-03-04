@@ -578,7 +578,7 @@ if (!isset($_SESSION['admin_user_id'])) {
             <h1>📄 Documents Management</h1>
             <div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
                 <?php include __DIR__ . '/includes/notification-bell.php'; ?>
-                <button class="btn" onclick="openUploadModal()">+ Upload New Document</button>
+                <button class="btn" id="uploadBtnHeader" onclick="openUploadForActiveTab()">+ Upload Report</button>
                 <a href="<?= BASE_PATH ?>/admin/index.php" class="btn btn-secondary">← Back to Dashboard</a>
             </div>
         </header>
@@ -598,24 +598,17 @@ if (!isset($_SESSION['admin_user_id'])) {
 
         <!-- Section Tabs -->
         <div class="section-tabs">
-            <button class="section-tab active" onclick="switchTab('mspo')" id="tabMspo">📄 MSPO Documents</button>
+            <button class="section-tab active" onclick="switchTab('reports')" id="tabReports">📊 Public Summary Reports</button>
+            <button class="section-tab" onclick="switchTab('notifications')" id="tabNotifications">🔔 Public Notifications</button>
             <button class="section-tab" onclick="switchTab('quotation')" id="tabQuotation">📋 Quotation Forms</button>
         </div>
 
-        <!-- Tab 1: MSPO Documents -->
-        <div class="tab-panel active" id="panelMspo">
+        <!-- Tab 1: MSPO Public Summary Reports -->
+        <div class="tab-panel active" id="panelReports">
         <div class="controls">
             <div class="control-group">
-                <label style="margin-bottom: 0;">Category:</label>
-                <select id="categoryFilter" onchange="filterDocuments()">
-                    <option value="">All Categories</option>
-                    <option value="MSPO Public Report Summary">MSPO Public Report Summary</option>
-                    <option value="MSPO Public Notifications">MSPO Public Notifications</option>
-                </select>
-            </div>
-            <div class="control-group">
                 <label style="margin-bottom: 0;">Status:</label>
-                <select id="statusFilter" onchange="filterDocuments()">
+                <select id="reportStatusFilter" onchange="filterReports()">
                     <option value="">All Status</option>
                     <option value="Active">Active</option>
                     <option value="Archived">Archived</option>
@@ -623,19 +616,65 @@ if (!isset($_SESSION['admin_user_id'])) {
             </div>
             <div class="control-group">
                 <label style="margin-bottom: 0;">Year:</label>
-                <select id="yearFilter" onchange="filterDocuments()">
+                <select id="reportYearFilter" onchange="filterReports()">
                     <option value="">All Years</option>
                 </select>
             </div>
-            <input type="search" id="searchInput" placeholder="Search by name..." onkeyup="filterDocuments()">
+            <input type="search" id="reportSearchInput" placeholder="Search by name..." onkeyup="filterReports()">
         </div>
 
-        <div class="table-container" id="tableContainer">
-            <table id="documentsTable">
+        <div class="table-container">
+            <table>
                 <thead>
                     <tr>
                         <th>Document Name</th>
-                        <th>Category</th>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsBody">
+                    <tr><td colspan="6" class="no-data">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        </div><!-- /panelReports -->
+
+        <!-- Tab 2: MSPO Public Notifications -->
+        <div class="tab-panel" id="panelNotifications">
+        <div class="controls">
+            <div class="control-group">
+                <label style="margin-bottom: 0;">Audit Status:</label>
+                <select id="notifAuditFilter" onchange="filterNotifications()">
+                    <option value="">All</option>
+                    <option value="Upcoming Audit">Upcoming Audit</option>
+                    <option value="Past Audit">Past Audit</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label style="margin-bottom: 0;">Status:</label>
+                <select id="notifStatusFilter" onchange="filterNotifications()">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Archived">Archived</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label style="margin-bottom: 0;">Year:</label>
+                <select id="notifYearFilter" onchange="filterNotifications()">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+            <input type="search" id="notifSearchInput" placeholder="Search by name..." onkeyup="filterNotifications()">
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Document Name</th>
                         <th>Year</th>
                         <th>Month</th>
                         <th>Audit Status</th>
@@ -644,14 +683,12 @@ if (!isset($_SESSION['admin_user_id'])) {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="documentsBody">
-                    <tr>
-                        <td colspan="8" class="no-data">Loading documents...</td>
-                    </tr>
+                <tbody id="notificationsBody">
+                    <tr><td colspan="7" class="no-data">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
-        </div><!-- /panelMspo -->
+        </div><!-- /panelNotifications -->
 
         <!-- Tab 2: Quotation Forms -->
         <div class="tab-panel" id="panelQuotation">
@@ -703,68 +740,93 @@ if (!isset($_SESSION['admin_user_id'])) {
         </div>
     </div>
 
-    <!-- Upload Modal -->
-    <div class="modal" id="uploadModal">
+    <!-- Upload Modal for Reports -->
+    <div class="modal" id="uploadReportModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Upload New Document</h2>
-                <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+                <h2>Upload Public Summary Report</h2>
+                <button class="close-btn" onclick="closeModal('uploadReportModal')">&times;</button>
             </div>
-            <form id="uploadForm" onsubmit="handleUpload(event)">
+            <form id="uploadReportForm" onsubmit="handleUploadReport(event)">
                 <div class="form-group">
                     <label>Document Name *</label>
-                    <input type="text" id="docTitle" required placeholder="e.g., MSPO Public Summary Report 2024">
+                    <input type="text" id="reportTitle" required placeholder="e.g., MSPO Public Summary Report 2024">
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="docDescription" placeholder="Brief description of the document"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Category *</label>
-                    <select id="docCategory" required onchange="toggleUploadAuditStatus()">
-                        <option value="">Select Category</option>
-                        <option value="MSPO Public Report Summary">MSPO Public Report Summary</option>
-                        <option value="MSPO Public Notifications">MSPO Public Notifications</option>
-                    </select>
+                    <textarea id="reportDescription" placeholder="Brief description of the document"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Year *</label>
-                    <input type="number" id="docYear" required min="2000" max="2100" placeholder="e.g., 2024">
+                    <input type="number" id="reportYear" required min="2000" max="2100" placeholder="e.g., 2024">
                 </div>
                 <div class="form-group">
                     <label>Month <small style="color:#999;">(optional)</small></label>
-                    <select id="docMonth">
+                    <select id="reportMonth">
                         <option value="">-- No month --</option>
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
                     </select>
                 </div>
-                <div class="form-group" id="uploadAuditStatusGroup" style="display:none;">
-                    <label>Audit Status</label>
-                    <select id="docAuditStatus">
-                        <option value="">-- Select --</option>
+                <div class="form-group">
+                    <label>PDF File *</label>
+                    <input type="file" id="reportFile" accept=".pdf" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('uploadReportModal')">Cancel</button>
+                    <button type="submit" class="btn">Upload Document <span class="spinner" id="reportSpinner"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Modal for Notifications -->
+    <div class="modal" id="uploadNotifModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Public Notification</h2>
+                <button class="close-btn" onclick="closeModal('uploadNotifModal')">&times;</button>
+            </div>
+            <form id="uploadNotifForm" onsubmit="handleUploadNotif(event)">
+                <div class="form-group">
+                    <label>Document Name *</label>
+                    <input type="text" id="notifTitle" required placeholder="e.g., MSPO Public Notification - December 2024">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="notifDescription" placeholder="Brief description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Year *</label>
+                    <input type="number" id="notifYear" required min="2000" max="2100" placeholder="e.g., 2024">
+                </div>
+                <div class="form-group">
+                    <label>Month <small style="color:#999;">(optional)</small></label>
+                    <select id="notifMonth">
+                        <option value="">-- No month --</option>
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Audit Status *</label>
+                    <select id="notifAuditStatus" required>
+                        <option value="">-- Select Audit Status --</option>
                         <option value="Upcoming Audit">Upcoming Audit</option>
                         <option value="Past Audit">Past Audit</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>PDF File *</label>
-                    <input type="file" id="docFile" accept=".pdf" required>
-                    <div class="file-preview" id="filePreview"></div>
+                    <input type="file" id="notifFile" accept=".pdf" required>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
-                    <button type="submit" class="btn">Upload Document <span class="spinner" id="uploadSpinner"></span></button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('uploadNotifModal')">Cancel</button>
+                    <button type="submit" class="btn">Upload Document <span class="spinner" id="notifSpinner"></span></button>
                 </div>
             </form>
         </div>
@@ -846,57 +908,67 @@ if (!isset($_SESSION['admin_user_id'])) {
     </div>
 
     <script>
-        // ── Tab Switching ────────────────────────────
+        // ── Active tab tracking ──────────────────────
+        let activeTab = 'reports';
+
         function switchTab(tab) {
-            document.getElementById('panelMspo').classList.toggle('active', tab === 'mspo');
+            activeTab = tab;
+            document.getElementById('panelReports').classList.toggle('active', tab === 'reports');
+            document.getElementById('panelNotifications').classList.toggle('active', tab === 'notifications');
             document.getElementById('panelQuotation').classList.toggle('active', tab === 'quotation');
-            document.getElementById('tabMspo').classList.toggle('active', tab === 'mspo');
+            document.getElementById('tabReports').classList.toggle('active', tab === 'reports');
+            document.getElementById('tabNotifications').classList.toggle('active', tab === 'notifications');
             document.getElementById('tabQuotation').classList.toggle('active', tab === 'quotation');
+
+            // Update header upload button label
+            const btn = document.getElementById('uploadBtnHeader');
+            if (tab === 'reports') btn.textContent = '+ Upload Report';
+            else if (tab === 'notifications') btn.textContent = '+ Upload Notification';
+            else btn.textContent = '+ Upload New Document';
+            btn.style.display = (tab === 'quotation') ? 'none' : 'inline-block';
         }
 
+        function openUploadForActiveTab() {
+            if (activeTab === 'reports') document.getElementById('uploadReportModal').classList.add('active');
+            else if (activeTab === 'notifications') document.getElementById('uploadNotifModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            const form = document.getElementById(id).querySelector('form');
+            if (form) form.reset();
+        }
+
+        // ── Data ─────────────────────────────────────
         let allDocuments = [];
         const MONTH_NAMES = ['', 'January', 'February', 'March', 'April', 'May', 'June',
                              'July', 'August', 'September', 'October', 'November', 'December'];
 
-        // Load documents on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadDocuments();
-            populateYearFilter();
+            populateYearFilters();
         });
 
-        function populateYearFilter() {
-            const select = document.getElementById('yearFilter');
+        function populateYearFilters() {
             const currentYear = new Date().getFullYear();
-            for (let y = currentYear + 1; y >= 2000; y--) {
-                const opt = document.createElement('option');
-                opt.value = y;
-                opt.textContent = y;
-                select.appendChild(opt);
-            }
-        }
-
-        // Show/hide audit status in Upload form
-        function toggleUploadAuditStatus() {
-            const cat = document.getElementById('docCategory').value;
-            document.getElementById('uploadAuditStatusGroup').style.display = 
-                cat === 'MSPO Public Notifications' ? 'block' : 'none';
-        }
-
-        // Show/hide audit status in Edit form
-        function toggleEditAuditStatus() {
-            const cat = document.getElementById('editCategory').value;
-            document.getElementById('editAuditStatusGroup').style.display = 
-                cat === 'MSPO Public Notifications' ? 'block' : 'none';
+            ['reportYearFilter', 'notifYearFilter'].forEach(id => {
+                const select = document.getElementById(id);
+                for (let y = currentYear + 1; y >= 2000; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = y;
+                    select.appendChild(opt);
+                }
+            });
         }
 
         async function loadDocuments() {
             try {
                 const response = await fetch('<?= BASE_PATH ?>/api/admin-documents.php');
                 const result = await response.json();
-                
                 if (result.success) {
                     allDocuments = result.data || [];
-                    renderTable(allDocuments);
+                    renderReports();
+                    renderNotifications();
                 } else {
                     showError(result.message || 'Failed to load documents');
                 }
@@ -906,131 +978,156 @@ if (!isset($_SESSION['admin_user_id'])) {
             }
         }
 
-        function renderTable(documents) {
-            const tbody = document.getElementById('documentsBody');
-            
-            if (documents.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No documents found</td></tr>';
+        // ── Reports table ────────────────────────────
+        function getReports() {
+            return allDocuments.filter(d => d.category === 'MSPO Public Report Summary');
+        }
+
+        function filterReports() {
+            const status = document.getElementById('reportStatusFilter').value;
+            const year = document.getElementById('reportYearFilter').value;
+            const search = document.getElementById('reportSearchInput').value.toLowerCase();
+
+            const filtered = getReports().filter(doc => {
+                return (!status || doc.status === status)
+                    && (!year || String(doc.year) === year)
+                    && (!search || doc.title.toLowerCase().includes(search));
+            });
+            renderReportsTable(filtered);
+        }
+
+        function renderReports() { renderReportsTable(getReports()); }
+
+        function renderReportsTable(docs) {
+            const tbody = document.getElementById('reportsBody');
+            if (docs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">No reports found</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = documents.map(doc => {
+            tbody.innerHTML = docs.map(doc => {
                 const monthStr = doc.month ? MONTH_NAMES[parseInt(doc.month)] : '-';
-                const auditBadge = doc.audit_status 
-                    ? `<span class="badge ${doc.audit_status === 'Upcoming Audit' ? 'badge-upcoming' : 'badge-past'}">${doc.audit_status}</span>` 
+                return `<tr>
+                    <td><strong>${truncate(doc.title, 50)}</strong></td>
+                    <td>${doc.year || '-'}</td>
+                    <td>${monthStr}</td>
+                    <td><span class="badge ${doc.status === 'Active' ? 'badge-active' : 'badge-archived'}">${doc.status}</span></td>
+                    <td>${formatDate(doc.updated_at)}</td>
+                    <td><div class="actions">
+                        <button class="btn btn-small" onclick="openEditModal(${doc.id})">Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="confirmDelete(${doc.id})">Delete</button>
+                        <a href="${doc.file_path}" class="btn btn-small" target="_blank">Preview</a>
+                    </div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ── Notifications table ──────────────────────
+        function getNotifications() {
+            return allDocuments.filter(d => d.category === 'MSPO Public Notifications');
+        }
+
+        function filterNotifications() {
+            const audit = document.getElementById('notifAuditFilter').value;
+            const status = document.getElementById('notifStatusFilter').value;
+            const year = document.getElementById('notifYearFilter').value;
+            const search = document.getElementById('notifSearchInput').value.toLowerCase();
+
+            const filtered = getNotifications().filter(doc => {
+                return (!audit || doc.audit_status === audit)
+                    && (!status || doc.status === status)
+                    && (!year || String(doc.year) === year)
+                    && (!search || doc.title.toLowerCase().includes(search));
+            });
+            renderNotificationsTable(filtered);
+        }
+
+        function renderNotifications() { renderNotificationsTable(getNotifications()); }
+
+        function renderNotificationsTable(docs) {
+            const tbody = document.getElementById('notificationsBody');
+            if (docs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">No notifications found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = docs.map(doc => {
+                const monthStr = doc.month ? MONTH_NAMES[parseInt(doc.month)] : '-';
+                const auditBadge = doc.audit_status
+                    ? `<span class="badge ${doc.audit_status === 'Upcoming Audit' ? 'badge-upcoming' : 'badge-past'}">${doc.audit_status}</span>`
                     : '-';
-                return `
-                <tr>
-                    <td><strong>${truncate(doc.title, 40)}</strong></td>
-                    <td>${doc.category}</td>
+                return `<tr>
+                    <td><strong>${truncate(doc.title, 50)}</strong></td>
                     <td>${doc.year || '-'}</td>
                     <td>${monthStr}</td>
                     <td>${auditBadge}</td>
                     <td><span class="badge ${doc.status === 'Active' ? 'badge-active' : 'badge-archived'}">${doc.status}</span></td>
                     <td>${formatDate(doc.updated_at)}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn btn-small" onclick="openEditModal(${doc.id})">Edit</button>
-                            <button class="btn btn-small btn-danger" onclick="confirmDelete(${doc.id})">Delete</button>
-                            <a href="${doc.file_path}" class="btn btn-small" target="_blank">Preview</a>
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
+                    <td><div class="actions">
+                        <button class="btn btn-small" onclick="openEditModal(${doc.id})">Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="confirmDelete(${doc.id})">Delete</button>
+                        <a href="${doc.file_path}" class="btn btn-small" target="_blank">Preview</a>
+                    </div></td>
+                </tr>`;
+            }).join('');
         }
 
-        function filterDocuments() {
-            const category = document.getElementById('categoryFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            const year = document.getElementById('yearFilter').value;
-            const search = document.getElementById('searchInput').value.toLowerCase();
-
-            const filtered = allDocuments.filter(doc => {
-                const matchCategory = !category || doc.category === category;
-                const matchStatus = !status || doc.status === status;
-                const matchYear = !year || String(doc.year) === year;
-                const matchSearch = !search || doc.title.toLowerCase().includes(search);
-                return matchCategory && matchStatus && matchYear && matchSearch;
-            });
-
-            renderTable(filtered);
-        }
-
-        function openUploadModal() {
-            document.getElementById('uploadModal').classList.add('active');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
-            document.getElementById('uploadForm').reset();
-            document.getElementById('filePreview').innerHTML = '';
-            document.getElementById('uploadAuditStatusGroup').style.display = 'none';
-        }
-
-        async function handleUpload(event) {
+        // ── Upload handlers ──────────────────────────
+        async function handleUploadReport(event) {
             event.preventDefault();
-            
-            const title = document.getElementById('docTitle').value;
-            const description = document.getElementById('docDescription').value;
-            const category = document.getElementById('docCategory').value;
-            const year = document.getElementById('docYear').value;
-            const month = document.getElementById('docMonth').value;
-            const auditStatus = document.getElementById('docAuditStatus').value;
-            const file = document.getElementById('docFile').files[0];
-
-            if (!file) {
-                showError('Please select a PDF file');
-                return;
-            }
-
-            if (!year) {
-                showError('Year is required');
-                return;
-            }
-
             const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
-            formData.append('category', category);
-            formData.append('year', year);
-            formData.append('month', month);
-            formData.append('file', file);
-            if (category === 'MSPO Public Notifications' && auditStatus) {
-                formData.append('audit_status', auditStatus);
-            }
+            formData.append('title', document.getElementById('reportTitle').value);
+            formData.append('description', document.getElementById('reportDescription').value);
+            formData.append('category', 'MSPO Public Report Summary');
+            formData.append('year', document.getElementById('reportYear').value);
+            formData.append('month', document.getElementById('reportMonth').value);
+            formData.append('file', document.getElementById('reportFile').files[0]);
 
+            await doUpload(formData, 'reportSpinner', 'uploadReportModal');
+        }
+
+        async function handleUploadNotif(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('notifTitle').value);
+            formData.append('description', document.getElementById('notifDescription').value);
+            formData.append('category', 'MSPO Public Notifications');
+            formData.append('year', document.getElementById('notifYear').value);
+            formData.append('month', document.getElementById('notifMonth').value);
+            formData.append('audit_status', document.getElementById('notifAuditStatus').value);
+            formData.append('file', document.getElementById('notifFile').files[0]);
+
+            await doUpload(formData, 'notifSpinner', 'uploadNotifModal');
+        }
+
+        async function doUpload(formData, spinnerId, modalId) {
             try {
-                document.getElementById('uploadSpinner').classList.add('show');
+                document.getElementById(spinnerId).classList.add('show');
                 const response = await fetch('<?= BASE_PATH ?>/api/admin-documents-upload.php', {
-                    method: 'POST',
-                    body: formData
+                    method: 'POST', body: formData
                 });
-
                 const result = await response.json();
-
                 if (result.success) {
                     showSuccess('Document uploaded successfully');
-                    closeUploadModal();
+                    closeModal(modalId);
                     loadDocuments();
                 } else {
                     showError(result.message || 'Upload failed');
                 }
             } catch (error) {
-                console.error('Upload error:', error);
                 showError('Upload failed: ' + error.message);
             } finally {
-                document.getElementById('uploadSpinner').classList.remove('show');
+                document.getElementById(spinnerId).classList.remove('show');
             }
         }
 
+        // ── Edit modal (shared) ──────────────────────
         async function openEditModal(docId) {
             try {
                 const response = await fetch(`<?= BASE_PATH ?>/api/admin-documents.php?id=${docId}`);
                 const result = await response.json();
-                
+
                 if (result.success && result.data && result.data.length > 0) {
                     const doc = result.data[0];
-                    
+
                     document.getElementById('editDocId').value = doc.id;
                     document.getElementById('editTitle').value = doc.title;
                     document.getElementById('editDescription').value = doc.description || '';
@@ -1039,7 +1136,6 @@ if (!isset($_SESSION['admin_user_id'])) {
                     document.getElementById('editYear').value = doc.year || '';
                     document.getElementById('editMonth').value = doc.month || '';
 
-                    // Audit status
                     if (doc.category === 'MSPO Public Notifications') {
                         document.getElementById('editAuditStatusGroup').style.display = 'block';
                         document.getElementById('editAuditStatus').value = doc.audit_status || '';
@@ -1053,7 +1149,6 @@ if (!isset($_SESSION['admin_user_id'])) {
                     showError('Failed to load document details');
                 }
             } catch (error) {
-                console.error('Error loading document:', error);
                 showError('Failed to load document');
             }
         }
@@ -1064,96 +1159,63 @@ if (!isset($_SESSION['admin_user_id'])) {
             document.getElementById('editAuditStatusGroup').style.display = 'none';
         }
 
+        // Show/hide audit status in Edit form
+        function toggleEditAuditStatus() {
+            const cat = document.getElementById('editCategory').value;
+            document.getElementById('editAuditStatusGroup').style.display =
+                cat === 'MSPO Public Notifications' ? 'block' : 'none';
+        }
+
         async function handleEdit(event) {
             event.preventDefault();
-            
+
             const docId = document.getElementById('editDocId').value;
-            const title = document.getElementById('editTitle').value;
-            const description = document.getElementById('editDescription').value;
             const category = document.getElementById('editCategory').value;
-            const status = document.getElementById('editStatus').value;
-            const year = document.getElementById('editYear').value;
-            const month = document.getElementById('editMonth').value;
             const auditStatus = document.getElementById('editAuditStatus').value;
             const file = document.getElementById('editFile').files[0];
 
-            try {
-                // Use URLSearchParams so PHP can parse PATCH body
-                const params = new URLSearchParams();
-                params.append('id', docId);
-                params.append('title', title);
-                params.append('description', description);
-                params.append('category', category);
-                params.append('status', status);
-                params.append('year', year);
-                params.append('month', month);
-                params.append('audit_status', category === 'MSPO Public Notifications' ? auditStatus : '');
+            const params = new URLSearchParams();
+            params.append('id', docId);
+            params.append('title', document.getElementById('editTitle').value);
+            params.append('description', document.getElementById('editDescription').value);
+            params.append('category', category);
+            params.append('status', document.getElementById('editStatus').value);
+            params.append('year', document.getElementById('editYear').value);
+            params.append('month', document.getElementById('editMonth').value);
+            params.append('audit_status', category === 'MSPO Public Notifications' ? auditStatus : '');
 
+            try {
                 let response = await fetch('<?= BASE_PATH ?>/api/admin-documents.php', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: params.toString()
                 });
-
                 let result = await response.json();
+                if (!result.success) { showError(result.message || 'Update failed'); return; }
 
-                if (!result.success) {
-                    showError(result.message || 'Update failed');
-                    return;
-                }
-
-                // If file selected, replace it
                 if (file) {
-                    const fileFormData = new FormData();
-                    fileFormData.append('id', docId);
-                    fileFormData.append('file', file);
-
-                    response = await fetch('<?= BASE_PATH ?>/api/admin-documents-replace.php', {
-                        method: 'POST',
-                        body: fileFormData
-                    });
-
+                    const fd = new FormData();
+                    fd.append('id', docId);
+                    fd.append('file', file);
+                    response = await fetch('<?= BASE_PATH ?>/api/admin-documents-replace.php', { method: 'POST', body: fd });
                     result = await response.json();
-                    if (!result.success) {
-                        showError(result.message || 'File replacement failed');
-                        return;
-                    }
+                    if (!result.success) { showError(result.message || 'File replacement failed'); return; }
                 }
 
                 showSuccess('Document updated successfully');
                 closeEditModal();
                 loadDocuments();
             } catch (error) {
-                console.error('Error updating document:', error);
                 showError('Update failed: ' + error.message);
             }
         }
 
+        // ── Delete ───────────────────────────────────
         async function deleteDocument() {
             const docId = document.getElementById('editDocId').value;
-            
-            if (!confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`<?= BASE_PATH ?>/api/admin-documents.php?id=${docId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showSuccess('Document deleted successfully');
-                    closeEditModal();
-                    loadDocuments();
-                } else {
-                    showError(result.message || 'Delete failed');
-                }
-            } catch (error) {
-                console.error('Error deleting document:', error);
-                showError('Delete failed: ' + error.message);
-            }
+            if (!confirm('Are you sure you want to delete this document?')) return;
+            await deleteDocumentDirect(docId);
+            closeEditModal();
         }
 
         function confirmDelete(docId) {
@@ -1165,78 +1227,32 @@ if (!isset($_SESSION['admin_user_id'])) {
 
         async function deleteDocumentDirect(docId) {
             try {
-                const response = await fetch(`<?= BASE_PATH ?>/api/admin-documents.php?id=${docId}`, {
-                    method: 'DELETE'
-                });
-
+                const response = await fetch(`<?= BASE_PATH ?>/api/admin-documents.php?id=${docId}`, { method: 'DELETE' });
                 const result = await response.json();
-
-                if (result.success) {
-                    showSuccess('Document deleted successfully');
-                    loadDocuments();
-                } else {
-                    showError(result.message || 'Delete failed');
-                }
-            } catch (error) {
-                console.error('Error deleting document:', error);
-                showError('Delete failed: ' + error.message);
-            }
+                if (result.success) { showSuccess('Document deleted successfully'); loadDocuments(); }
+                else { showError(result.message || 'Delete failed'); }
+            } catch (error) { showError('Delete failed: ' + error.message); }
         }
 
-        // File preview update handler
-        document.getElementById('docFile')?.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('filePreview').innerHTML = 
-                    `<strong>Selected:</strong> ${file.name} (${formatFileSize(file.size)})`;
-            }
-        });
-
-        document.getElementById('editFile')?.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('editFilePreview').innerHTML = 
-                    `<strong>Selected:</strong> ${file.name} (${formatFileSize(file.size)})`;
-            }
-        });
-
-        // Utility functions
+        // ── Utilities ────────────────────────────────
         function showSuccess(message) {
-            const alert = document.getElementById('successAlert');
-            alert.textContent = message;
-            alert.classList.add('show');
-            setTimeout(() => alert.classList.remove('show'), 5000);
+            const a = document.getElementById('successAlert'); a.textContent = message; a.classList.add('show');
+            setTimeout(() => a.classList.remove('show'), 5000);
         }
-
         function showError(message) {
-            const alert = document.getElementById('errorAlert');
-            alert.textContent = message;
-            alert.classList.add('show');
-            setTimeout(() => alert.classList.remove('show'), 5000);
+            const a = document.getElementById('errorAlert'); a.textContent = message; a.classList.add('show');
+            setTimeout(() => a.classList.remove('show'), 5000);
         }
-
         function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-MY', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            return new Date(dateStr).toLocaleDateString('en-MY', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
         }
-
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
+            if (!bytes) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes','KB','MB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
-
-        function truncate(str, length) {
-            return str.length > length ? str.substring(0, length) + '...' : str;
-        }
+        function truncate(str, length) { return str.length > length ? str.substring(0, length) + '...' : str; }
 
         // ═══════════════════════════════════════════════════════════
         // Quotation Forms Management
