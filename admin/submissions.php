@@ -37,27 +37,69 @@ if (!in_array($type, ['quotation', 'contact', 'complaint'])) {
     $type = 'quotation';
 }
 
-// Build API URL
-$api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submissions.php?type=' . urlencode($type) . '&page=' . $page;
-if (!empty($status)) {
-    $api_url .= '&status=' . urlencode($status);
-}
-if (!empty($search)) {
-    $api_url .= '&q=' . urlencode($search);
-}
+// Direct database query instead of HTTP API call
+$tables = [
+    'quotation' => 'quotations',
+    'contact' => 'contacts',
+    'complaint' => 'complaints'
+];
+$table = $tables[$type];
+$per_page = 20;
 
 $response_data = [];
 $error_message = '';
 
-// Fetch from API (Note: In production, use $_SESSION for security instead of localhost)
-$response = @file_get_contents($api_url);
-if ($response) {
-    $json = json_decode($response, true);
-    if ($json && $json['success']) {
-        $response_data = $json['data'];
-    } else {
-        $error_message = 'Failed to fetch submissions';
+try {
+    $where_conditions = [];
+    $params = [];
+
+    if (!empty($status)) {
+        $where_conditions[] = 'status = ?';
+        $params[] = $status;
     }
+
+    if (!empty($search)) {
+        $where_conditions[] = '(name LIKE ? OR email LIKE ? OR phone LIKE ?)';
+        $search_like = '%' . $search . '%';
+        $params[] = $search_like;
+        $params[] = $search_like;
+        $params[] = $search_like;
+    }
+
+    $where = !empty($where_conditions) ? 'WHERE ' . implode(' AND ', $where_conditions) : '';
+
+    // Get total count
+    $count_result = Database::fetchOne("SELECT COUNT(*) as total FROM `$table` $where", $params);
+    $total = $count_result['total'] ?? 0;
+    $total_pages = max(1, ceil($total / $per_page));
+    $offset = ($page - 1) * $per_page;
+
+    // Get paginated results
+    $query_params = array_merge($params, [$per_page, $offset]);
+    $submissions_raw = Database::fetchAll("SELECT * FROM `$table` $where ORDER BY created_at DESC LIMIT ? OFFSET ?", $query_params);
+
+    // Escape output
+    foreach ($submissions_raw as &$row) {
+        foreach ($row as $key => &$value) {
+            if (is_string($value)) {
+                $value = SecurityHelper::escapeHTML($value);
+            }
+        }
+    }
+
+    $response_data = [
+        'submissions' => $submissions_raw,
+        'pagination' => [
+            'current_page' => $page,
+            'per_page' => $per_page,
+            'total' => $total,
+            'total_pages' => $total_pages,
+            'total_records' => $total
+        ]
+    ];
+} catch (Exception $e) {
+    error_log('Submissions query error: ' . $e->getMessage());
+    $error_message = 'Failed to fetch submissions';
 }
 
 $submissions = $response_data['submissions'] ?? [];

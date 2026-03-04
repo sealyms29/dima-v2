@@ -34,47 +34,72 @@ if (!in_array($type, ['quotation', 'contact', 'complaint']) || $id <= 0) {
     exit;
 }
 
+// Map type to table
+$tables = [
+    'quotation' => 'quotations',
+    'contact' => 'contacts',
+    'complaint' => 'complaints'
+];
+$table = $tables[$type];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_status = SecurityHelper::sanitizeString($_POST['status'] ?? '');
     $notes = SecurityHelper::sanitizeString($_POST['notes'] ?? '');
 
-    // Send to API
-    $api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submissions-update.php';
-    $post_data = json_encode([
-        'type' => $type,
-        'id' => $id,
-        'status' => $new_status,
-        'notes' => $notes
-    ]);
+    try {
+        // Get current record for logging
+        $current = Database::fetchOne("SELECT * FROM `$table` WHERE id = ?", [$id]);
 
-    $options = stream_context_create([
-        'http' => [
-            'method' => 'PATCH',
-            'header' => 'Content-Type: application/json',
-            'content' => $post_data,
-            'cookie' => session_name() . '=' . session_id()
-        ]
-    ]);
+        $update_data = [
+            'status' => $new_status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
 
-    $response = @file_get_contents($api_url, false, $options);
-    if ($response) {
-        $json = json_decode($response, true);
-        if ($json['success']) {
-            $_SESSION['message'] = 'Submission updated successfully';
+        // Only add notes and responded_by if table has those columns
+        if ($type !== 'complaint') {
+            $update_data['notes'] = $notes;
+            $update_data['responded_by'] = $_SESSION['admin_user_id'];
+        } else {
+            $update_data['internal_notes'] = $notes;
+            $update_data['assigned_to'] = $_SESSION['admin_user_id'];
         }
+
+        Database::update($table, $update_data, 'id', $id);
+
+        // Log activity
+        try {
+            Database::insert('admin_logs', [
+                'user_id' => $_SESSION['admin_user_id'],
+                'action' => 'update',
+                'table_name' => $table,
+                'record_id' => $id,
+                'old_value' => json_encode(['status' => $current['status'] ?? '']),
+                'new_value' => json_encode(['status' => $new_status, 'notes' => $notes]),
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? ''
+            ]);
+        } catch (Exception $e) {}
+
+        $_SESSION['message'] = 'Submission updated successfully';
+    } catch (Exception $e) {
+        error_log('Submission update error: ' . $e->getMessage());
+        $_SESSION['message'] = 'Failed to update submission';
     }
 }
 
-// Fetch submission detail
-$api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-submission-detail.php?type=' . urlencode($type) . '&id=' . $id;
-$response = @file_get_contents($api_url);
+// Fetch submission detail directly from database
 $submission = null;
-
-if ($response) {
-    $json = json_decode($response, true);
-    if ($json['success']) {
-        $submission = $json['data'];
+try {
+    $row = Database::fetchOne("SELECT * FROM `$table` WHERE id = ?", [$id]);
+    if ($row) {
+        foreach ($row as $key => &$value) {
+            if (is_string($value)) {
+                $value = SecurityHelper::escapeHTML($value);
+            }
+        }
+        $submission = $row;
     }
+} catch (Exception $e) {
+    error_log('Submission detail error: ' . $e->getMessage());
 }
 
 if (!$submission) {

@@ -26,16 +26,19 @@ if (!isset($_SESSION['admin_user_id'])) {
     exit;
 }
 
-// Fetch forms from API
-$api_url = 'http://' . $_SERVER['HTTP_HOST'] . BASE_PATH . '/api/admin-forms.php';
-$response = @file_get_contents($api_url);
+// Fetch forms directly from database
 $forms = [];
-
-if ($response) {
-    $json = json_decode($response, true);
-    if ($json['success']) {
-        $forms = $json['data'];
+try {
+    $forms = Database::fetchAll("SELECT * FROM admin_forms ORDER BY display_order ASC, created_at DESC");
+    foreach ($forms as &$form) {
+        foreach ($form as $key => &$value) {
+            if (is_string($value)) {
+                $value = SecurityHelper::escapeHTML($value);
+            }
+        }
     }
+} catch (Exception $e) {
+    error_log('Forms query error: ' . $e->getMessage());
 }
 
 ?>
