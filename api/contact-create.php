@@ -89,19 +89,3 @@ try {
     error_log('Contact creation error: ' . $e->getMessage());
     APIResponse::send(APIResponse::error('Failed to submit contact form', 500));
 }
-
-function log_activity($action, $table_name, $record_id, $old_value = null, $new_value = null) {
-    try {
-        Database::insert('admin_logs', [
-            'user_id' => $_SESSION['admin_user_id'] ?? null,
-            'action' => $action,
-            'table_name' => $table_name,
-            'record_id' => $record_id,
-            'old_value' => $old_value,
-            'new_value' => $new_value,
-            'ip_address' => SecurityHelper::getClientIP()
-        ]);
-    } catch (Exception $e) {
-        error_log('Failed to log activity: ' . $e->getMessage());
-    }
-}
