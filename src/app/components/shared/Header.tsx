@@ -206,7 +206,7 @@ export function Header() {
             {/* Social Icons — desktop only, monochrome, no background */}
             <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
               <a
-                href="https://www.facebook.com"
+                href="https://www.facebook.com/p/DIMA-Certification-Sdn-Bhd-100088593112131/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DIMA Certification on Facebook"
@@ -215,7 +215,7 @@ export function Header() {
                 <Facebook size={19} strokeWidth={1.75} />
               </a>
               <a
-                href="https://www.youtube.com"
+                href="https://www.youtube.com/@dimadmcsb458"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="DIMA Certification on YouTube"
