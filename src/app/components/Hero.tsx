@@ -112,13 +112,15 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
         <motion.img 
           src={imgHero} 
           alt="Sustainable Solutions" 
-          className="w-full h-full object-cover scale-110 opacity-30"
+          className="w-full h-full object-cover scale-110 opacity-40"
           style={{
             x: offsetX,
             y: offsetY,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-slate-950/90"></div>
+        {/* Dark overlay gradient - top darker to bottom lighter for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-900/85 to-slate-950/80"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-transparent to-slate-950/70"></div>
       </motion.div>
 
       {/* Animated Gradient Orbs */}
@@ -193,48 +195,57 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
           
           {/* CTA Buttons */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-5"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           >
+            {/* Primary Button - Gold with shadow */}
             <motion.button
               onClick={handleGetQuotation}
-              className="group relative px-8 py-5 bg-gradient-to-r from-[#d4af37] via-amber-500 to-[#d4af37] text-slate-900 font-bold rounded-2xl shadow-gold overflow-hidden text-lg bg-[length:200%_100%]"
+              className="group relative h-14 px-8 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl overflow-hidden text-base"
+              style={{
+                boxShadow: '0 4px 20px -4px rgba(212, 175, 55, 0.4), 0 8px 32px -8px rgba(212, 175, 55, 0.3)'
+              }}
               whileHover={{ 
                 scale: 1.02, 
-                backgroundPosition: '100% 0',
-                boxShadow: '0 25px 50px -12px rgba(212, 175, 55, 0.5)' 
+                boxShadow: '0 8px 32px -4px rgba(212, 175, 55, 0.5), 0 16px 48px -8px rgba(212, 175, 55, 0.4)'
               }}
               whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <span className="relative z-10 flex items-center gap-2 justify-center">
                 Get Quotation
-                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
+                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={18} />
               </span>
             </motion.button>
 
+            {/* Secondary Button - Glass/Outline */}
             <motion.button
               onClick={handleViewProgrammes}
-              className="group relative px-8 py-5 glass border border-white/20 text-white font-semibold rounded-2xl shadow-xl overflow-hidden text-lg"
+              className="group relative h-14 px-8 bg-transparent text-white font-semibold rounded-xl overflow-hidden text-base border border-white/80"
+              style={{
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
               whileHover={{ 
-                scale: 1.02, 
-                borderColor: 'rgba(212, 175, 55, 0.6)',
-                backgroundColor: 'rgba(212, 175, 55, 0.1)'
+                scale: 1.02,
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'rgba(255, 255, 255, 1)'
               }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <span className="relative z-10 flex items-center gap-2 justify-center">
                 View Programmes
-                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
+                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={18} />
               </span>
             </motion.button>
           </motion.div>
 
-          {/* Stats */}
+          {/* Stats - Glassmorphism Cards */}
           <motion.div 
-            className="grid grid-cols-2 gap-6 mt-20"
+            className="grid grid-cols-2 gap-5 mt-16 max-w-md"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
@@ -245,14 +256,25 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
             ].map((stat, index) => (
               <motion.div 
                 key={index}
-                className="glass rounded-2xl p-6 text-center border border-white/10 hover:border-[#d4af37]/30 transition-colors duration-300"
-                whileHover={{ scale: 1.03, y: -5 }}
+                className="rounded-2xl py-6 px-6 text-center flex flex-col items-center justify-center"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                }}
+                whileHover={{ 
+                  scale: 1.02, 
+                  y: -3,
+                  boxShadow: '0 12px 40px -8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
+                }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="text-3xl md:text-4xl font-bold text-gradient-gold mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-1">
                   {stat.value}
                 </div>
-                <div className="text-sm text-white/60 font-semibold uppercase tracking-widest">
+                <div className="text-sm text-white/90 font-medium uppercase tracking-wider">
                   {stat.label}
                 </div>
               </motion.div>
