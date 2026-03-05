@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Shield, CheckCircle2, Award } from 'lucide-react';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -157,128 +157,224 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full py-32">
-        <div className="max-w-4xl">
-          {/* Badge */}
-          <motion.div
-            className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 glass border border-[#d4af37]/30 rounded-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.02, borderColor: 'rgba(212, 175, 55, 0.5)' }}
-          >
-            <Sparkles className="text-[#d4af37]" size={16} />
-            <span className="text-sm font-semibold text-white/90 tracking-wide">Accredited Certification Body</span>
-          </motion.div>
-
-          <motion.h1 
-            className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-8 leading-[1.05] tracking-tight"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          >
-            Towards{' '}
-            <span className="text-gradient-gold">
-              Sustainable
-            </span>
-            <br />Solutions
-          </motion.h1>
-
-          <motion.p 
-            className="text-xl md:text-2xl lg:text-3xl text-white/80 mb-12 leading-relaxed font-light max-w-3xl"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          >
-            Malaysia's trusted certification body providing professional ISO certifications and MSPO schemes
-          </motion.p>
-          
-          {/* CTA Buttons */}
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-5"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          >
-            {/* Primary Button - Gold with shadow */}
-            <motion.button
-              onClick={handleGetQuotation}
-              className="group relative h-14 px-8 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl overflow-hidden text-base"
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full py-24 lg:py-32">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-7">
+            {/* Badge */}
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 mb-8"
               style={{
-                boxShadow: '0 4px 20px -4px rgba(212, 175, 55, 0.4), 0 8px 32px -8px rgba(212, 175, 55, 0.3)'
+                background: 'rgba(212, 175, 55, 0.12)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(212, 175, 55, 0.25)',
+                borderRadius: '9999px'
               }}
-              whileHover={{ 
-                scale: 1.02, 
-                boxShadow: '0 8px 32px -4px rgba(212, 175, 55, 0.5), 0 16px 48px -8px rgba(212, 175, 55, 0.4)'
-              }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <span className="relative z-10 flex items-center gap-2 justify-center">
-                Get Quotation
-                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={18} />
-              </span>
-            </motion.button>
+              <Shield className="text-[#d4af37]" size={16} />
+              <span className="text-sm font-semibold text-[#d4af37] tracking-wide">Accredited Certification Body</span>
+            </motion.div>
 
-            {/* Secondary Button - Glass/Outline */}
-            <motion.button
-              onClick={handleViewProgrammes}
-              className="group relative h-14 px-8 bg-transparent text-white font-semibold rounded-xl overflow-hidden text-base border border-white/80"
-              style={{
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)'
-              }}
-              whileHover={{ 
-                scale: 1.02,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                borderColor: 'rgba(255, 255, 255, 1)'
-              }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
             >
-              <span className="relative z-10 flex items-center gap-2 justify-center">
-                View Programmes
-                <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={18} />
+              Towards{' '}
+              <span className="text-gradient-gold">
+                Sustainable
               </span>
-            </motion.button>
-          </motion.div>
+              <br />Solutions
+            </motion.h1>
 
-          {/* Stats - Glassmorphism Cards */}
-          <motion.div 
-            className="grid grid-cols-2 gap-5 mt-16 max-w-md"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-          >
-            {[
-              { label: 'Established', value: '2018' },
-              { label: 'Certifications', value: '100+' }
-            ].map((stat, index) => (
-              <motion.div 
-                key={index}
-                className="rounded-2xl py-6 px-6 text-center flex flex-col items-center justify-center"
+            {/* Divider Line */}
+            <motion.div 
+              className="w-24 h-1 bg-gradient-to-r from-[#d4af37] to-amber-500/50 rounded-full mb-6"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              style={{ transformOrigin: 'left' }}
+            />
+
+            <motion.p 
+              className="text-lg md:text-xl text-white/75 mb-10 leading-relaxed max-w-xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            >
+              Malaysia's trusted certification body providing professional ISO certifications and MSPO schemes
+            </motion.p>
+            
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            >
+              {/* Primary Button - Gold with shadow */}
+              <motion.button
+                onClick={handleGetQuotation}
+                className="group relative h-13 px-7 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl overflow-hidden text-sm"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  backdropFilter: 'blur(14px)',
-                  WebkitBackdropFilter: 'blur(14px)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                  boxShadow: '0 4px 20px -4px rgba(212, 175, 55, 0.4), 0 8px 32px -8px rgba(212, 175, 55, 0.3)'
                 }}
                 whileHover={{ 
                   scale: 1.02, 
-                  y: -3,
-                  boxShadow: '0 12px 40px -8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
+                  boxShadow: '0 8px 32px -4px rgba(212, 175, 55, 0.5), 0 16px 48px -8px rgba(212, 175, 55, 0.4)'
                 }}
-                transition={{ duration: 0.2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
               >
-                <div className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-1">
-                  {stat.value}
+                <span className="relative z-10 flex items-center gap-2 justify-center py-3">
+                  Get Quotation
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} />
+                </span>
+              </motion.button>
+
+              {/* Secondary Button - Glass/Outline */}
+              <motion.button
+                onClick={handleViewProgrammes}
+                className="group relative h-13 px-7 bg-transparent text-white font-semibold rounded-xl overflow-hidden text-sm border border-white/60"
+                style={{
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)'
+                }}
+                whileHover={{ 
+                  scale: 1.02,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)'
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <span className="relative z-10 flex items-center gap-2 justify-center py-3">
+                  View Programmes
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} />
+                </span>
+              </motion.button>
+            </motion.div>
+
+            {/* Stats - Glassmorphism Cards */}
+            <motion.div 
+              className="grid grid-cols-2 gap-4 max-w-sm"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+            >
+              {[
+                { label: 'Established', value: '2018' },
+                { label: 'Certifications', value: '100+' }
+              ].map((stat, index) => (
+                <motion.div 
+                  key={index}
+                  className="rounded-xl py-5 px-5 text-center flex flex-col items-center justify-center"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.2)'
+                  }}
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -2,
+                    borderColor: 'rgba(212, 175, 55, 0.3)'
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="text-2xl md:text-3xl font-bold text-[#d4af37] mb-0.5">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-white/70 font-medium uppercase tracking-wider">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right Column - Floating Certification Card */}
+          <motion.div 
+            className="lg:col-span-5"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <div 
+              className="relative rounded-2xl p-8 lg:p-10"
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+              }}
+            >
+              {/* Card Header */}
+              <div className="flex items-center gap-3 mb-8">
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: 'rgba(212, 175, 55, 0.15)',
+                    border: '1px solid rgba(212, 175, 55, 0.3)'
+                  }}
+                >
+                  <Award className="text-[#d4af37]" size={20} />
                 </div>
-                <div className="text-sm text-white/90 font-medium uppercase tracking-wider">
-                  {stat.label}
+                <div>
+                  <h3 className="text-white font-bold text-lg">Certification Services</h3>
+                  <p className="text-white/50 text-sm">Accredited standards we offer</p>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+
+              {/* Certification List */}
+              <div className="space-y-4">
+                {[
+                  { code: 'ISO 9001', name: 'Quality Management System' },
+                  { code: 'ISO 14001', name: 'Environmental Management' },
+                  { code: 'ISO 45001', name: 'Occupational Health & Safety' },
+                  { code: 'MSPO', name: 'Malaysian Sustainable Palm Oil' }
+                ].map((cert, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-center gap-4 p-4 rounded-xl transition-colors"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)'
+                    }}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                    whileHover={{ 
+                      backgroundColor: 'rgba(212, 175, 55, 0.08)',
+                      borderColor: 'rgba(212, 175, 55, 0.2)'
+                    }}
+                  >
+                    <div className="flex-shrink-0">
+                      <CheckCircle2 className="text-[#d4af37]" size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold text-sm">{cert.code}</div>
+                      <div className="text-white/50 text-xs truncate">{cert.name}</div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Trust Indicator */}
+              <div 
+                className="mt-8 pt-6 flex items-center justify-center gap-2"
+                style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
+              >
+                <Sparkles className="text-[#d4af37]" size={14} />
+                <span className="text-white/60 text-xs font-medium">Internationally Recognized</span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
