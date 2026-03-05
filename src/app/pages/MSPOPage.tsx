@@ -4,10 +4,9 @@ import { useNavigate } from 'react-router';
 import { useQuotation } from '../QuotationContext';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { CheckCircle, Award, FileText, Target, ExternalLink, Download, ChevronRight, AlertCircle, Info, ArrowRight } from 'lucide-react';
+import { CheckCircle, Award, FileText, Target, ExternalLink, Download, ChevronRight, AlertCircle, Info, ArrowRight, ClipboardCheck, ArrowRightLeft, MessageSquareWarning, Scale } from 'lucide-react';
 // Figma assets removed - use actual image files
 const imgMSPOLogo = '/assets/660c856aa747ee61d8736225fb4e8a2223cba616.png';
-const imgCertificationProcess = '/assets/8b0a42e6244300ecb961c6328ff453830a735dd6.png';
 
 export function MSPOPage() {
   const ref = useRef(null);
@@ -86,26 +85,41 @@ export function MSPOPage() {
     {
       title: "MSPO Certification Process",
       description: "Step-by-step guide through the MSPO certification journey",
-      image: imgCertificationProcess,
-      gradient: "from-slate-700 to-slate-900",
+      icon: ClipboardCheck,
+      gradient: "from-emerald-500 to-teal-600",
+      bgGradient: "from-emerald-50 to-teal-50",
+      iconBg: "bg-emerald-500/10",
+      iconColor: "text-emerald-600",
       action: () => navigate('/mspo-certification-process')
     },
     {
-      title: "Procedures on Transfer of MSPO Certification",
+      title: "Transfer of MSPO Certification",
       description: "Guidelines for transferring MSPO certification to DIMA",
-      gradient: "from-blue-600 to-cyan-700",
+      icon: ArrowRightLeft,
+      gradient: "from-blue-500 to-indigo-600",
+      bgGradient: "from-blue-50 to-indigo-50",
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-600",
       action: () => navigate('/mspo-transfer-procedure')
     },
     {
-      title: "Procedures on Complaint (MSPO)",
+      title: "Complaint Procedures",
       description: "How to file and resolve complaints related to MSPO certification",
-      gradient: "from-orange-600 to-red-700",
+      icon: MessageSquareWarning,
+      gradient: "from-amber-500 to-orange-600",
+      bgGradient: "from-amber-50 to-orange-50",
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-600",
       action: () => navigate('/mspo-complaint-procedure')
     },
     {
-      title: "Procedures on Appeal (MSPO)",
+      title: "Appeal Procedures",
       description: "Process for appealing MSPO certification decisions",
-      gradient: "from-green-600 to-teal-700",
+      icon: Scale,
+      gradient: "from-violet-500 to-purple-600",
+      bgGradient: "from-violet-50 to-purple-50",
+      iconBg: "bg-violet-500/10",
+      iconColor: "text-violet-600",
       action: () => navigate('/mspo-appeal-procedure')
     }
   ];
@@ -282,57 +296,57 @@ export function MSPOPage() {
           </motion.div>
 
           {/* Procedure Cards Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {procedureDocuments.map((doc, index) => (
-              <motion.div
-                key={index}
-                className="group relative"
-                initial={{ opacity: 0, y: 50 }}
-                animate={isProceduresInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                {/* Gradient Glow */}
-                <div className={`absolute -inset-1 bg-gradient-to-br ${doc.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity`} />
-
-                {/* Card */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {procedureDocuments.map((doc, index) => {
+              const IconComponent = doc.icon;
+              return (
                 <motion.div
-                  className="relative bg-white border-2 border-slate-200 rounded-2xl overflow-hidden cursor-pointer"
-                  whileHover={{ y: -8 }}
-                  onClick={doc.action}
+                  key={index}
+                  className="group relative"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={isProceduresInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  {/* Image or Gradient Header */}
-                  {doc.image ? (
-                    <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={doc.image} 
-                        alt={doc.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${doc.gradient} opacity-60`} />
-                    </div>
-                  ) : (
-                    <div className={`h-48 bg-gradient-to-br ${doc.gradient}`} />
-                  )}
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">
-                      {doc.title}
-                    </h3>
-                    <p className="text-slate-600 text-sm mb-4 leading-relaxed">
-                      {doc.description}
-                    </p>
+                  {/* Card */}
+                  <motion.div
+                    className={`relative bg-gradient-to-br ${doc.bgGradient} border border-slate-200/80 rounded-2xl overflow-hidden cursor-pointer h-full`}
+                    whileHover={{ y: -8, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' }}
+                    onClick={doc.action}
+                    style={{
+                      boxShadow: '0 4px 20px -4px rgba(0, 0, 0, 0.08)'
+                    }}
+                  >
+                    {/* Gradient accent line */}
+                    <div className={`h-1 bg-gradient-to-r ${doc.gradient}`} />
                     
-                    <motion.div
-                      className="inline-flex items-center gap-2 text-[#d4af37] font-semibold group-hover:gap-3 transition-all"
-                    >
-                      <span>Learn More</span>
-                      <ArrowRight size={18} />
-                    </motion.div>
-                  </div>
+                    {/* Content */}
+                    <div className="p-6">
+                      {/* Icon */}
+                      <div className={`w-14 h-14 ${doc.iconBg} rounded-xl flex items-center justify-center mb-5`}>
+                        <IconComponent className={`${doc.iconColor}`} size={28} />
+                      </div>
+                      
+                      <h3 className="text-lg font-bold text-slate-900 mb-3 leading-tight">
+                        {doc.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm mb-5 leading-relaxed">
+                        {doc.description}
+                      </p>
+                      
+                      <motion.div
+                        className={`inline-flex items-center gap-2 font-semibold text-sm`}
+                        style={{ color: doc.iconColor.replace('text-', '').split('-')[0] === 'emerald' ? '#059669' : 
+                                        doc.iconColor.replace('text-', '').split('-')[0] === 'blue' ? '#2563eb' :
+                                        doc.iconColor.replace('text-', '').split('-')[0] === 'amber' ? '#d97706' : '#7c3aed' }}
+                      >
+                        <span>Learn More</span>
+                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      </motion.div>
+                    </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
