@@ -257,7 +257,7 @@ export function ServicesPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Request Consultation
+              Request Assistance
             </motion.button>
           </motion.div>
         </div>
