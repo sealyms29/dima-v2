@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Link } from 'react-router';
 import { motion, useInView } from 'motion/react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
@@ -364,28 +365,17 @@ export function MSPOAppealProcedurePage() {
                 <div className="flex-1 text-center sm:text-left">
                   <p className="font-bold text-white text-lg mb-1">Submit an Appeal</p>
                   <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Reach us by email or through the DIMA website portal below.
+                    Email us at <span className="text-[#d4af37] font-semibold">dimacertification@gmail.com</span> or use the portal.
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-                  <a
-                    href="mailto:dimacertification@gmail.com"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm"
-                  >
-                    <Mail size={16} />
-                    Email Us
-                  </a>
-                  <a
-                    href="https://www.dima.my/complaint-appeal/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all text-sm"
-                  >
-                    <Globe size={16} />
-                    Online Portal
-                  </a>
-                </div>
+                <Link
+                  to="/complaint-appeal"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm flex-shrink-0"
+                >
+                  <Scale size={16} />
+                  Submit Appeal
+                </Link>
               </div>
             </div>
           </motion.div>

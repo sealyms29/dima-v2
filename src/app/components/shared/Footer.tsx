@@ -178,26 +178,14 @@ export function Footer() {
 
         {/* Copyright */}
         <motion.div 
-          className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4"
+          className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-center items-center"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.9 }}
         >
-          <p className="text-slate-400 text-sm text-center sm:text-left">
+          <p className="text-slate-400 text-sm text-center">
             © {new Date().getFullYear()} DIMA Certification Body. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm">
-            {['Privacy Policy', 'Terms of Service'].map((item) => (
-              <motion.button
-                key={item}
-                onClick={() => {}}
-                className="text-slate-400 hover:text-[#d4af37] transition-colors"
-                whileHover={{ y: -2 }}
-              >
-                {item}
-              </motion.button>
-            ))}
-          </div>
         </motion.div>
       </div>
     </footer>
