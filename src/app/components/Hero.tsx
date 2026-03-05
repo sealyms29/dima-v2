@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowRight, Sparkles, Shield, CheckCircle2, Award } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, Award } from 'lucide-react';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -161,23 +161,6 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-7">
-            {/* Badge */}
-            <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 mb-8"
-              style={{
-                background: 'rgba(212, 175, 55, 0.12)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(212, 175, 55, 0.25)',
-                borderRadius: '9999px'
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Shield className="text-[#d4af37]" size={16} />
-              <span className="text-sm font-semibold text-[#d4af37] tracking-wide">Accredited Certification Body</span>
-            </motion.div>
-
             <motion.h1 
               className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
               initial={{ opacity: 0, y: 30 }}
