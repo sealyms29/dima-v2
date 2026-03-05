@@ -44,7 +44,7 @@ export function Footer() {
               </p>
               <div className="flex flex-col gap-3">
                 <a
-                  href="https://www.facebook.com"
+                  href="https://www.facebook.com/p/DIMA-Certification-Sdn-Bhd-100088593112131/.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="DIMA Certification on Facebook"
@@ -56,7 +56,7 @@ export function Footer() {
                   </span>
                 </a>
                 <a
-                  href="https://www.youtube.com"
+                  href="www.youtube.com/@dimadmcsb458"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="DIMA Certification on YouTube"
