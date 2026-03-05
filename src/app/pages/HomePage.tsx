@@ -1,9 +1,9 @@
 import { PageLayout } from '../components/shared/PageLayout';
 import { Hero } from '../components/Hero';
 import { QuotationCTA } from '../components/QuotationCTA';
-import { motion, useInView } from 'motion/react';
-import { useRef, useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Sparkles, Calendar } from 'lucide-react';
+import { motion, useInView, AnimatePresence } from 'motion/react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { X, ChevronLeft, ChevronRight, Sparkles, Calendar, Play, Pause } from 'lucide-react';
 // Static assets for company overview & accreditation (not admin-managed)
 const imgTeamPhoto = '/assets/96ff7a0755cc20b25bbf7b4dd3c95cef7add2941.png';
 const imgOffice1 = '/assets/c5cb03644bd86d72dab99e848ae8f9b1512ef00d.png';
@@ -34,6 +34,34 @@ export function HomePage() {
   const isGalleryInView = useInView(galleryRef, { once: true, amount: 0.2 });
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(fallbackGallery);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [direction, setDirection] = useState(0);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    if (!isAutoPlaying || galleryImages.length === 0) return;
+    const timer = setInterval(() => {
+      setDirection(1);
+      setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, galleryImages.length]);
+
+  const goToSlide = useCallback((index: number) => {
+    setDirection(index > currentSlide ? 1 : -1);
+    setCurrentSlide(index);
+  }, [currentSlide]);
+
+  const nextSlide = useCallback(() => {
+    setDirection(1);
+    setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+  }, [galleryImages.length]);
+
+  const prevSlide = useCallback(() => {
+    setDirection(-1);
+    setCurrentSlide((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  }, [galleryImages.length]);
 
   // Fetch gallery images from database
   useEffect(() => {
@@ -226,77 +254,223 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-50 to-white overflow-hidden" ref={galleryRef}>
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
-        
-        {/* Gradient Orbs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#d4af37]/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl" />
+      {/* Gallery Slideshow Section */}
+      <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" ref={galleryRef}>
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#d4af37]/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           {/* Section Header */}
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
             <motion.div
-              className="inline-block px-6 py-2 bg-gradient-to-r from-[#d4af37]/10 to-amber-500/10 border border-[#d4af37]/20 rounded-full mb-6"
+              className="inline-flex items-center gap-2 px-5 py-2 mb-6 rounded-full"
+              style={{
+                background: 'rgba(212, 175, 55, 0.1)',
+                border: '1px solid rgba(212, 175, 55, 0.2)'
+              }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isGalleryInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <span className="text-[#d4af37] font-semibold">Gallery</span>
+              <Sparkles className="text-[#d4af37]" size={16} />
+              <span className="text-[#d4af37] font-semibold text-sm">Gallery</span>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
               DIMA Audit Visit For MSPO
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-lg text-white/60 max-w-2xl mx-auto">
               Witness our professional audit team in action during MSPO certification visits
             </p>
           </motion.div>
 
-          {/* Photo Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryImages.map((image, index) => (
-              <motion.div
-                key={index}
-                className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={isGalleryInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05, zIndex: 10 }}
-                onClick={() => setSelectedImage(index)}
-              >
-                {/* Image */}
+          {/* Main Slideshow */}
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Main Image Container */}
+            <div 
+              className="relative aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden"
+              style={{
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+              }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.4 }}
+                  key={currentSlide}
+                  src={galleryImages[currentSlide]?.src}
+                  alt={galleryImages[currentSlide]?.alt}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  initial={{ 
+                    opacity: 0,
+                    x: direction > 0 ? 100 : -100,
+                    scale: 1.1
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    scale: 1
+                  }}
+                  exit={{ 
+                    opacity: 0,
+                    x: direction > 0 ? -100 : 100,
+                    scale: 0.95
+                  }}
+                  transition={{ duration: 0.5, ease: 'easeInOut' }}
                 />
+              </AnimatePresence>
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <p className="text-white font-semibold text-lg">{image.alt}</p>
-                    <div className="mt-2 flex items-center gap-2 text-white/80">
-                      <div className="w-2 h-2 bg-[#d4af37] rounded-full" />
-                      <span className="text-sm">Click to view</span>
-                    </div>
-                  </div>
-                </div>
+              {/* Gradient Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-slate-900/30" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 via-transparent to-slate-900/50" />
 
-                {/* Decorative Corner */}
-                <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-[#d4af37] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-[#d4af37] opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.div>
-            ))}
-          </div>
+              {/* Image Caption */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  className="absolute bottom-0 left-0 right-0 p-6 md:p-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                    {galleryImages[currentSlide]?.alt}
+                  </h3>
+                  <p className="text-white/60 text-sm">
+                    {currentSlide + 1} / {galleryImages.length}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation Arrows */}
+              <motion.button
+                className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
+                }}
+                whileHover={{ scale: 1.1, backgroundColor: 'rgba(212, 175, 55, 0.2)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={prevSlide}
+              >
+                <ChevronLeft className="text-white" size={24} />
+              </motion.button>
+              <motion.button
+                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
+                }}
+                whileHover={{ scale: 1.1, backgroundColor: 'rgba(212, 175, 55, 0.2)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={nextSlide}
+              >
+                <ChevronRight className="text-white" size={24} />
+              </motion.button>
+
+              {/* Play/Pause Button */}
+              <motion.button
+                className="absolute top-4 md:top-6 right-4 md:right-6 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center z-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+              >
+                {isAutoPlaying ? (
+                  <Pause className="text-white" size={18} />
+                ) : (
+                  <Play className="text-white ml-0.5" size={18} />
+                )}
+              </motion.button>
+            </div>
+
+            {/* Thumbnail Strip */}
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+              {galleryImages.map((image, index) => (
+                <motion.button
+                  key={index}
+                  className={`relative w-16 h-12 md:w-20 md:h-14 rounded-lg overflow-hidden transition-all ${
+                    index === currentSlide ? 'ring-2 ring-[#d4af37] ring-offset-2 ring-offset-slate-900' : 'opacity-50 hover:opacity-80'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => goToSlide(index)}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover"
+                  />
+                  {index === currentSlide && (
+                    <motion.div
+                      className="absolute inset-0 bg-[#d4af37]/20"
+                      layoutId="activeThumb"
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Progress Dots */}
+            <div className="mt-6 flex justify-center gap-2">
+              {galleryImages.map((_, index) => (
+                <motion.button
+                  key={index}
+                  className={`h-1.5 rounded-full transition-all ${
+                    index === currentSlide 
+                      ? 'w-8 bg-[#d4af37]' 
+                      : 'w-1.5 bg-white/30 hover:bg-white/50'
+                  }`}
+                  whileHover={{ scale: 1.2 }}
+                  onClick={() => goToSlide(index)}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Expand Button */}
+          <motion.div
+            className="mt-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={isGalleryInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.4 }}
+          >
+            <motion.button
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white"
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.12)'
+              }}
+              whileHover={{ 
+                scale: 1.02,
+                backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                borderColor: 'rgba(212, 175, 55, 0.3)'
+              }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedImage(currentSlide)}
+            >
+              <span>View Full Gallery</span>
+              <ChevronRight size={16} />
+            </motion.button>
+          </motion.div>
         </div>
 
         {/* Lightbox Modal */}
