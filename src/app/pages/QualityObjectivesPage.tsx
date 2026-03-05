@@ -70,7 +70,7 @@ export function QualityObjectivesPage() {
                           Audit Report Review Timeline
                         </h3>
                         <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
-                          To ensure that audit reports are completely reviewed (Peer Reviewer) within two (2) weeks upon audit completion and within one (1) week approval by the Operation Manager before issuance of certificate.
+                          To ensure that audit reports are completely reviewed within two (2) weeks upon audit completion and within one (1) week approval by the Operation Manager before issuance of certificate.
                         </p>
                       </div>
                     </div>

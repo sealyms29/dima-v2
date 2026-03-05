@@ -169,7 +169,7 @@ export function Header() {
                     <div className="p-2">
                       {[
                         { label: 'Malaysian Sustainable Palm Oil (MSPO) Standard', path: '/services/mspo' },
-                        { label: 'International Organization for Standardization (ISO)', path: '/iso-overview' }
+                        { label: 'ISO Management System Certifications', path: '/iso-overview' }
                       ].map((item, index) => (
                         <Link key={item.path} to={item.path}>
                           <motion.div
