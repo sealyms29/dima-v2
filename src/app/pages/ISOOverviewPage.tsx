@@ -5,7 +5,6 @@ import { useQuotation } from '../QuotationContext';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
 import { 
-  Award, 
   ArrowRight, 
   ClipboardCheck,
   AlertTriangle,
@@ -255,24 +254,6 @@ export function ISOOverviewPage() {
             </motion.div>
 
           </div>
-
-          {/* Certification Cycle Banner */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={isResourcesInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl p-8 text-white text-center shadow-xl max-w-5xl mx-auto"
-          >
-            <div className="flex items-center justify-center gap-4 mb-3">
-              <Award size={40} />
-              <h3 className="text-2xl md:text-3xl font-bold">
-                Three (3) Years Certification Cycle
-              </h3>
-            </div>
-            <p className="text-lg text-white/90">
-              Initial Certification Decision/Recertification Decision → Expiry of Certification
-            </p>
-          </motion.div>
 
         </div>
       </section>
