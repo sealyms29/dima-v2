@@ -430,12 +430,12 @@ export function MSPOPage() {
               Contact us today to learn how DIMA can guide your organization through the MSPO certification process
             </p>
             <motion.button
-              onClick={togglePanel}
+              onClick={() => navigate('/contact')}
               className="px-8 py-4 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Request Consultation
+              Request Assistance
             </motion.button>
           </motion.div>
         </div>
