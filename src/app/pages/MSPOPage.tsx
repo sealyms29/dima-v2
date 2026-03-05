@@ -176,17 +176,17 @@ export function MSPOPage() {
           </div>
 
           {/* Accreditation Scope & Public Documents Side by Side */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-20">
-            {/* Accreditation Scope */}
+          <div className="grid lg:grid-cols-5 gap-8 mb-20">
+            {/* Accreditation Scope - Takes 2 columns */}
             <motion.div
               ref={scopeRef}
               initial={{ opacity: 0, y: 30 }}
               animate={isScopeInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="relative group"
+              className="relative group lg:col-span-2"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-white border border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-shadow">
+              <div className="relative bg-white border border-slate-200 rounded-3xl p-8 shadow-lg group-hover:shadow-2xl transition-shadow h-full">
                 <h3 className="text-2xl font-bold text-slate-900 mb-6">Accreditation Scope</h3>
                 <ul className="space-y-3">
                   {accreditationScope.map((scope, index) => (
@@ -205,13 +205,13 @@ export function MSPOPage() {
               </div>
             </motion.div>
 
-            {/* Public Documents */}
+            {/* Public Documents - Takes 3 columns with grid layout */}
             <motion.div
               ref={docsRef}
               initial={{ opacity: 0, y: 30 }}
               animate={isDocsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-4"
+              className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4"
             >
               {publicDocuments.map((doc, index) => (
                 <motion.div
@@ -219,7 +219,7 @@ export function MSPOPage() {
                   className="group relative"
                   initial={{ opacity: 0, x: 20 }}
                   animate={isDocsInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: index * 0.15 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   onMouseEnter={() => setHoveredDoc(index)}
                   onMouseLeave={() => setHoveredDoc(null)}
                 >
@@ -227,30 +227,29 @@ export function MSPOPage() {
                   
                   <motion.button
                     onClick={doc.action}
-                    className={`relative w-full bg-gradient-to-r ${doc.gradient} text-white rounded-2xl p-6 shadow-lg group-hover:shadow-xl transition-all text-left`}
-                    whileHover={{ scale: 1.02, y: -4 }}
+                    className={`relative w-full h-full bg-gradient-to-r ${doc.gradient} text-white rounded-2xl p-5 shadow-lg group-hover:shadow-xl transition-all text-left`}
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                          <doc.icon size={24} />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-lg mb-1">
-                            {doc.title}
-                            {'external' in doc && (
-                              <span className="ml-2 text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full align-middle">External</span>
-                            )}
-                          </h4>
-                          <p className="text-white/80 text-sm">{doc.description}</p>
-                        </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+                        <doc.icon size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-sm mb-1 flex items-center gap-2 flex-wrap">
+                          {doc.title}
+                          {'external' in doc && (
+                            <span className="text-[10px] font-normal bg-white/20 px-2 py-0.5 rounded-full">External</span>
+                          )}
+                        </h4>
+                        <p className="text-white/80 text-xs leading-relaxed line-clamp-2">{doc.description}</p>
                       </div>
                       <motion.div
-                        animate={hoveredDoc === index ? { x: 4 } : { x: 0 }}
+                        className="flex-shrink-0 mt-1"
+                        animate={hoveredDoc === index ? { x: 2 } : { x: 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <ChevronRight size={24} />
+                        <ChevronRight size={18} />
                       </motion.div>
                     </div>
                   </motion.button>
