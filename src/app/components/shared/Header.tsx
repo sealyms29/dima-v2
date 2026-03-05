@@ -12,7 +12,7 @@ export function Header() {
   const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
   const [isAuditDropdownOpen, setIsAuditDropdownOpen] = useState(false);
   const location = useLocation();
-  const { isOpen: isQuotationOpen, togglePanel } = useQuotation();
+  const { isOpen: isQuotationOpen, togglePanel, closePanel } = useQuotation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +24,7 @@ export function Header() {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    closePanel();
   }, [location]);
 
   const isActive = (path: string) => location.pathname === path;
