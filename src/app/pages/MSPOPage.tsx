@@ -71,6 +71,14 @@ export function MSPOPage() {
       gradient: "from-teal-500 to-cyan-600",
       action: () => window.open('https://mspo.org.my/circular/', '_blank'),
       external: true
+    },
+    {
+      title: "e-MSPO Portal",
+      description: "Access the e-MSPO system for certified entities",
+      icon: ExternalLink,
+      gradient: "from-rose-500 to-pink-600",
+      action: () => window.open('https://emspo.org.my/public/entity', '_blank'),
+      external: true
     }
   ];
 
