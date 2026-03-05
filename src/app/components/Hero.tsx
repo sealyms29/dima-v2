@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowRight, Sparkles, CheckCircle2, Award } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -158,9 +158,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full py-24 lg:py-32">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-7">
+        <div className="max-w-3xl">
             <motion.h1 
               className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
               initial={{ opacity: 0, y: 30 }}
@@ -279,86 +277,6 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
                 </motion.div>
               ))}
             </motion.div>
-          </div>
-
-          {/* Right Column - Floating Certification Card */}
-          <motion.div 
-            className="lg:col-span-5"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <div 
-              className="relative rounded-2xl p-8 lg:p-10"
-              style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
-              }}
-            >
-              {/* Card Header */}
-              <div className="flex items-center gap-3 mb-8">
-                <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{
-                    background: 'rgba(212, 175, 55, 0.15)',
-                    border: '1px solid rgba(212, 175, 55, 0.3)'
-                  }}
-                >
-                  <Award className="text-[#d4af37]" size={20} />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg">Certification Services</h3>
-                  <p className="text-white/50 text-sm">Accredited standards we offer</p>
-                </div>
-              </div>
-
-              {/* Certification List */}
-              <div className="space-y-4">
-                {[
-                  { code: 'ISO 9001', name: 'Quality Management System' },
-                  { code: 'ISO 14001', name: 'Environmental Management' },
-                  { code: 'ISO 45001', name: 'Occupational Health & Safety' },
-                  { code: 'MSPO', name: 'Malaysian Sustainable Palm Oil' }
-                ].map((cert, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex items-center gap-4 p-4 rounded-xl transition-colors"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)'
-                    }}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-                    whileHover={{ 
-                      backgroundColor: 'rgba(212, 175, 55, 0.08)',
-                      borderColor: 'rgba(212, 175, 55, 0.2)'
-                    }}
-                  >
-                    <div className="flex-shrink-0">
-                      <CheckCircle2 className="text-[#d4af37]" size={18} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-white font-semibold text-sm">{cert.code}</div>
-                      <div className="text-white/50 text-xs truncate">{cert.name}</div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Trust Indicator */}
-              <div 
-                className="mt-8 pt-6 flex items-center justify-center gap-2"
-                style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
-              >
-                <Sparkles className="text-[#d4af37]" size={14} />
-                <span className="text-white/60 text-xs font-medium">Internationally Recognized</span>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
 
