@@ -10,6 +10,9 @@ export function Footer() {
 
   return (
     <footer className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white py-16 md:py-24 overflow-hidden" ref={ref}>
+      {/* Mesh Gradient */}
+      <div className="mesh-gradient absolute inset-0 opacity-30" />
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
       
@@ -116,14 +119,14 @@ export function Footer() {
               {['MSPO Standard', 'ISO 9001 (QMS)', 'ISO 14001 (EMS)', 'ISO 45001 (OHSMS)'].map((item, index) => (
                 <motion.div 
                   key={item}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-slate-300 text-sm hover:bg-white/10 hover:border-[#d4af37]/30 transition-all cursor-pointer"
+                  className="glass-dark inline-flex items-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl text-slate-300 text-sm hover:border-[#d4af37]/40 transition-all cursor-pointer"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={isInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.03, borderColor: 'rgba(212, 175, 55, 0.5)' }}
                 >
-                  <div className="w-2 h-2 bg-[#d4af37] rounded-full" />
-                  {item}
+                  <div className="w-2 h-2 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-full" />
+                  <span className="font-medium">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -138,7 +141,7 @@ export function Footer() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <h3 className="text-2xl font-bold mb-8 text-white">Contact Us</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: MapPin, title: 'Address', content: 'Kuching, Sarawak\nMalaysia' },
               { icon: Phone, title: 'Phone', content: '+60 12-345 6789' },
@@ -147,19 +150,19 @@ export function Footer() {
             ].map((item, index) => (
               <motion.div 
                 key={item.title}
-                className="group"
+                className="group glass-dark rounded-2xl p-5 border border-white/10 hover:border-[#d4af37]/30 transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -5, borderColor: 'rgba(212, 175, 55, 0.4)' }}
               >
                 <div className="flex items-start gap-4">
                   <motion.div
-                    className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-2xl flex items-center justify-center"
+                    className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-xl flex items-center justify-center shadow-gold"
                     whileHover={{ rotate: 360, scale: 1.1 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <item.icon className="text-white" size={20} />
+                    <item.icon className="text-slate-900" size={20} />
                   </motion.div>
                   <div>
                     <p className="font-semibold text-white mb-1">{item.title}</p>

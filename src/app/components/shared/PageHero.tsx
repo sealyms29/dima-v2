@@ -14,8 +14,28 @@ interface PageHeroProps {
 export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logoCaption }: PageHeroProps) {
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700">
+      {/* Mesh Gradient */}
+      <div className="mesh-gradient absolute inset-0 opacity-40" />
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.04)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      
+      {/* Floating geometric shapes */}
+      <motion.div
+        className="absolute top-20 right-16 w-24 h-24 border border-[#d4af37]/20 rounded-2xl"
+        animate={{ 
+          rotate: [0, 90, 180, 270, 360],
+          y: [0, -15, 0]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div
+        className="absolute bottom-16 left-16 w-16 h-16 border border-white/10 rounded-xl"
+        animate={{ 
+          rotate: [360, 270, 180, 90, 0]
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+      />
       
       {/* Gradient Orbs */}
       <motion.div
@@ -72,7 +92,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
             </motion.div>
           )}
           
-          {/* Title */}
+          {/* Title with gradient highlight */}
           <motion.h1 
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
@@ -85,7 +105,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
           {/* Subtitle */}
           {subtitle && (
             <motion.p 
-              className="text-lg md:text-xl text-white/75 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: logo ? 0.3 : 0.2 }}

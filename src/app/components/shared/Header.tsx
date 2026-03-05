@@ -101,11 +101,11 @@ export function Header() {
               <AnimatePresence>
                 {isAboutDropdownOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute left-0 top-full mt-2 w-72 bg-white border-2 border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50"
+                    className="absolute left-0 top-full mt-2 w-72 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-elevated overflow-hidden z-50"
                   >
                     <div className="p-2">
                       {[
@@ -116,7 +116,7 @@ export function Header() {
                       ].map((item, index) => (
                         <Link key={item.path} to={item.path}>
                           <motion.div
-                            className="w-full text-left px-5 py-3 text-slate-900 hover:bg-amber-50 hover:text-[#d4af37] rounded-xl transition-colors font-medium text-sm"
+                            className="w-full text-left px-5 py-3 text-slate-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-transparent hover:text-[#d4af37] rounded-xl transition-all font-medium text-sm"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -161,11 +161,11 @@ export function Header() {
               <AnimatePresence>
                 {isAuditDropdownOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute left-0 top-full mt-2 w-96 bg-white border-2 border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50"
+                    className="absolute left-0 top-full mt-2 w-96 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-elevated overflow-hidden z-50"
                   >
                     <div className="p-2">
                       {[
@@ -174,7 +174,7 @@ export function Header() {
                       ].map((item, index) => (
                         <Link key={item.path} to={item.path}>
                           <motion.div
-                            className="w-full text-left px-5 py-3 text-[#d4af37] hover:bg-amber-50 rounded-xl transition-colors font-medium text-sm leading-relaxed"
+                            className="w-full text-left px-5 py-3 text-[#d4af37] hover:bg-gradient-to-r hover:from-amber-50 hover:to-transparent rounded-xl transition-all font-semibold text-sm leading-relaxed"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.05 }}
