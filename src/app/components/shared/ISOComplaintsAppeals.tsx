@@ -54,8 +54,7 @@ const caseTypes = [
     accent: 'bg-purple-500',
     bullets: [
       { heading: 'Referral:', text: 'Any complaint against the Top Management is referred to the Advisory Board Committee.' },
-      { heading: 'Governing Document:', text: 'Refer to DIMA CERTIFICATION M012 for these specific proceedings.' },
-    ],
+      ],
   },
   {
     id: 'case-d',
@@ -67,7 +66,7 @@ const caseTypes = [
     bg: 'from-amber-50 to-white',
     accent: 'bg-[#d4af37]',
     bullets: [
-      { heading: 'Committee Formation:', text: 'The Appeals Committee is convened to handle the matter impartially. Appeals Committee Findings & Decision (DMC/ISO/ACF)' },
+      { heading: 'Committee Formation:', text: 'The Appeals Committee is convened to handle the matter impartially.' },
       { heading: 'Hearing:', text: 'For extremely confidential issues, the appellant may present their case directly to the Committee.' },
       { heading: 'Final Decision:', text: "The Committee's decision is final. The client is informed of the findings and the outcome." },
     ],
