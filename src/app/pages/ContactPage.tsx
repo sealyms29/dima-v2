@@ -5,7 +5,7 @@ import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
 import {
   MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle,
-  Building2, User, MessageSquare, Scale, ChevronRight, FileText,
+  Building2, User, MessageSquare, Scale, ChevronRight, FileText, HelpCircle,
 } from 'lucide-react';
 
 interface ContactSettings {
@@ -33,6 +33,17 @@ export function ContactPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState('');
   const [settings, setSettings] = useState<ContactSettings>({});
+
+  // Feedback form state
+  const [feedbackData, setFeedbackData] = useState({
+    feedback_type: '', name: '', email: '', phone: '', service_type: '', comment: ''
+  });
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
+  const [feedbackErrors, setFeedbackErrors] = useState<Record<string, string>>({});
+  const [feedbackGeneralError, setFeedbackGeneralError] = useState('');
+  const feedbackRef = useRef(null);
+  const isFeedbackInView = useInView(feedbackRef, { once: true, amount: 0.2 });
 
   useEffect(() => {
     const apiBase = import.meta.env.BASE_URL;
@@ -83,6 +94,44 @@ export function ContactPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleFeedbackChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setFeedbackData({ ...feedbackData, [e.target.name]: e.target.value });
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsFeedbackLoading(true);
+    setFeedbackErrors({});
+    setFeedbackGeneralError('');
+
+    try {
+      const apiBase = import.meta.env.BASE_URL;
+      const response = await fetch(`${apiBase}api/feedback-create.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(feedbackData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsFeedbackSubmitted(true);
+        setFeedbackData({ feedback_type: '', name: '', email: '', phone: '', service_type: '', comment: '' });
+        setTimeout(() => {
+          setIsFeedbackSubmitted(false);
+        }, 3000);
+      } else if (data.errors) {
+        setFeedbackErrors(data.errors);
+      } else {
+        setFeedbackGeneralError(data.message || 'Failed to submit feedback');
+      }
+    } catch (error) {
+      setFeedbackGeneralError('Network error. Please try again.');
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
 
   const officeDetails = settings.office_name
     ? [settings.office_name, ...(settings.office_address?.split('\n') || [])]
@@ -395,6 +444,208 @@ export function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Feedback & Support Section ─────────────────────────────── */}
+      <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" ref={feedbackRef}>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        
+        <div className="relative max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
+          {/* Section Header */}
+          <motion.div
+            className="mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isFeedbackInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-3">
+              Feedback & Support
+            </h2>
+            <p className="text-white/70">
+              Feel free to contact us, we don't spam your email.
+            </p>
+          </motion.div>
+
+          {/* Feedback Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isFeedbackInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {isFeedbackSubmitted ? (
+              <motion.div
+                className="text-center py-16 bg-white/5 rounded-3xl border border-white/10"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div
+                  className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+                >
+                  <CheckCircle2 className="text-white" size={40} />
+                </motion.div>
+                <h3 className="text-2xl font-bold text-white mb-3">Thank You!</h3>
+                <p className="text-lg text-white/70">Your feedback has been submitted successfully.</p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+                {feedbackGeneralError && (
+                  <motion.div
+                    className="flex items-center gap-3 p-4 bg-red-500/20 border border-red-500/30 rounded-2xl"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
+                    <p className="text-red-300 font-medium">{feedbackGeneralError}</p>
+                  </motion.div>
+                )}
+
+                {/* Type of Feedback Dropdown */}
+                <div>
+                  <select
+                    id="feedback_type"
+                    name="feedback_type"
+                    required
+                    value={feedbackData.feedback_type}
+                    onChange={handleFeedbackChange}
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-700 ${
+                      feedbackErrors.feedback_type ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  >
+                    <option value="">Type of Feedback</option>
+                    <option value="General Feedback">General Feedback</option>
+                    <option value="Suggestion">Suggestion</option>
+                    <option value="Complaint">Complaint</option>
+                    <option value="Service Inquiry">Service Inquiry</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {feedbackErrors.feedback_type && <p className="text-red-400 text-sm mt-1">{feedbackErrors.feedback_type}</p>}
+                </div>
+
+                {/* Name */}
+                <div>
+                  <input
+                    type="text"
+                    id="feedback_name"
+                    name="name"
+                    required
+                    value={feedbackData.name}
+                    onChange={handleFeedbackChange}
+                    placeholder="Your Name *"
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      feedbackErrors.name ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  />
+                  {feedbackErrors.name && <p className="text-red-400 text-sm mt-1">{feedbackErrors.name}</p>}
+                </div>
+
+                {/* Email */}
+                <div>
+                  <input
+                    type="email"
+                    id="feedback_email"
+                    name="email"
+                    required
+                    value={feedbackData.email}
+                    onChange={handleFeedbackChange}
+                    placeholder="Your Email *"
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      feedbackErrors.email ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  />
+                  {feedbackErrors.email && <p className="text-red-400 text-sm mt-1">{feedbackErrors.email}</p>}
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <input
+                    type="tel"
+                    id="feedback_phone"
+                    name="phone"
+                    required
+                    value={feedbackData.phone}
+                    onChange={handleFeedbackChange}
+                    placeholder="Your Phone No. *"
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      feedbackErrors.phone ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  />
+                  {feedbackErrors.phone && <p className="text-red-400 text-sm mt-1">{feedbackErrors.phone}</p>}
+                </div>
+
+                {/* Service Type */}
+                <div>
+                  <input
+                    type="text"
+                    id="feedback_service_type"
+                    name="service_type"
+                    required
+                    value={feedbackData.service_type}
+                    onChange={handleFeedbackChange}
+                    placeholder="Service Type *"
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      feedbackErrors.service_type ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  />
+                  {feedbackErrors.service_type && <p className="text-red-400 text-sm mt-1">{feedbackErrors.service_type}</p>}
+                </div>
+
+                {/* Comment */}
+                <div>
+                  <textarea
+                    id="feedback_comment"
+                    name="comment"
+                    rows={5}
+                    required
+                    value={feedbackData.comment}
+                    onChange={handleFeedbackChange}
+                    placeholder="Your Comment *"
+                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                      feedbackErrors.comment ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
+                    }`}
+                  />
+                  {feedbackErrors.comment && <p className="text-red-400 text-sm mt-1">{feedbackErrors.comment}</p>}
+                </div>
+
+                {/* Submit Button */}
+                <motion.button
+                  type="submit"
+                  disabled={isFeedbackLoading}
+                  className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                  whileHover={!isFeedbackLoading ? { scale: 1.02 } : {}}
+                  whileTap={!isFeedbackLoading ? { scale: 0.98 } : {}}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-500"
+                    initial={{ x: '-100%' }}
+                    whileHover={!isFeedbackLoading ? { x: 0 } : {}}
+                    transition={{ duration: 0.3 }}
+                  />
+                  {isFeedbackLoading ? (
+                    <>
+                      <motion.div
+                        className="relative z-10 w-5 h-5 border-2 border-black border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      <span className="relative z-10">Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={22} className="relative z-10" />
+                      <span className="relative z-10">Submit Feedback</span>
+                    </>
+                  )}
+                </motion.button>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
     </PageLayout>
   );
 }
