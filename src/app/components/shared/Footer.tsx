@@ -15,10 +15,10 @@ export function Footer() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const [contactInfo, setContactInfo] = useState<ContactSettings>({
-    address: 'Kuching, Sarawak\nMalaysia',
-    phone: '+60 12-345 6789',
-    email: 'info@dima.com.my',
-    hours: 'Mon - Fri: 9:00 AM - 5:00 PM'
+    address: 'DIMA Certification Sdn. Bhd.\n1st Floor, Sublot 51, Block 46, KCLD, Sentosa Parade, Jalan Kuching - Serian',
+    phone: '+6082-612112\n+6019-8568009',
+    email: 'adimacertification@gmail.com',
+    hours: 'Mon – Fri: 9:00 AM – 5:00 PM'
   });
 
   // Fetch contact settings from database
@@ -27,12 +27,12 @@ export function Footer() {
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data) {
-          setContactInfo({
-            address: data.data.address || contactInfo.address,
-            phone: data.data.phone || contactInfo.phone,
-            email: data.data.email || contactInfo.email,
-            hours: data.data.hours || contactInfo.hours
-          });
+          setContactInfo(prev => ({
+            address: data.data.address || prev.address,
+            phone: data.data.phone || prev.phone,
+            email: data.data.email || prev.email,
+            hours: data.data.hours || prev.hours
+          }));
         }
       })
       .catch(() => { /* keep defaults */ });
