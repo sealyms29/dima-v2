@@ -537,7 +537,7 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
             const status = '<?php echo urlencode($status); ?>';
             const search = '<?php echo urlencode($search); ?>';
             
-            let url = '/api/admin-export.php?type=' + type;
+            let url = '<?= BASE_PATH ?>/api/admin-export.php?type=' + type;
             if (status) url += '&status=' + status;
             if (search) url += '&q=' + search;
             

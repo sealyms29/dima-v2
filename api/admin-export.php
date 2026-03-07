@@ -32,7 +32,7 @@ $date_from = $_GET['from'] ?? '';
 $date_to = $_GET['to'] ?? '';
 
 // Validate type
-if (!in_array($type, ['quotation', 'contact', 'complaint'])) {
+if (!in_array($type, ['quotation', 'contact', 'complaint', 'feedback'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid submission type']);
     exit;
@@ -41,7 +41,8 @@ if (!in_array($type, ['quotation', 'contact', 'complaint'])) {
 $tables = [
     'quotation' => 'quotations',
     'contact' => 'contacts',
-    'complaint' => 'complaints'
+    'complaint' => 'complaints',
+    'feedback' => 'feedback_messages'
 ];
 $table = $tables[$type];
 
@@ -92,6 +93,8 @@ try {
     if ($type === 'complaint') {
         $headers = ['ID', 'Type', 'Programme', 'ISO Standard', 'Name', 'Email', 'Phone', 'Organization', 
                    'Description', 'Evidence', 'Status', 'Priority', 'Created', 'Updated', 'Notes'];
+    } elseif ($type === 'feedback') {
+        $headers = ['ID', 'Feedback Type', 'Name', 'Email', 'Phone', 'Service Type', 'Comment', 'Status', 'Created', 'Updated', 'Notes'];
     } else {
         $headers = ['ID', 'Name', 'Email', 'Phone', 'Company', 'Message', 'Status', 'Created', 'Updated', 'Notes'];
     }
@@ -117,6 +120,20 @@ try {
                 $row['created_at'],
                 $row['updated_at'] ?? '',
                 $row['internal_notes'] ?? ''
+            ];
+        } elseif ($type === 'feedback') {
+            $csv_row = [
+                $row['id'],
+                $row['feedback_type'] ?? '',
+                $row['name'],
+                $row['email'],
+                $row['phone'],
+                $row['service_type'] ?? '',
+                $row['comment'] ?? '',
+                $row['status'],
+                $row['created_at'],
+                $row['updated_at'] ?? '',
+                $row['notes'] ?? ''
             ];
         } else {
             $csv_row = [
