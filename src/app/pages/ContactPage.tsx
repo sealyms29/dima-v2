@@ -518,7 +518,6 @@ export function ContactPage() {
                     <option value="">Type of Feedback</option>
                     <option value="General Feedback">General Feedback</option>
                     <option value="Suggestion">Suggestion</option>
-                    <option value="Complaint">Complaint</option>
                     <option value="Service Inquiry">Service Inquiry</option>
                     <option value="Other">Other</option>
                   </select>

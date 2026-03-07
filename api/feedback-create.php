@@ -20,7 +20,7 @@ $errors = [];
 $feedback_type = SecurityHelper::sanitizeString($input['feedback_type'] ?? '');
 if (empty($feedback_type)) {
     $errors['feedback_type'] = 'Type of feedback is required';
-} elseif (!in_array($feedback_type, ['General Feedback', 'Suggestion', 'Complaint', 'Service Inquiry', 'Other'])) {
+} elseif (!in_array($feedback_type, ['General Feedback', 'Suggestion', 'Service Inquiry', 'Other'])) {
     $errors['feedback_type'] = 'Invalid feedback type';
 }
 
