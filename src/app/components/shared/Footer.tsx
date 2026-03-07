@@ -1,12 +1,42 @@
 import { motion, useInView } from 'motion/react';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { MapPin, Phone, Mail, Clock, Facebook, Youtube } from 'lucide-react';
 const imgDimaLogoWhite = '/assets/921f344b23c883dea1da9542d93d3fc5b508f755.png';
 
+interface ContactSettings {
+  address?: string;
+  phone?: string;
+  email?: string;
+  hours?: string;
+}
+
 export function Footer() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const [contactInfo, setContactInfo] = useState<ContactSettings>({
+    address: 'Kuching, Sarawak\nMalaysia',
+    phone: '+60 12-345 6789',
+    email: 'info@dima.com.my',
+    hours: 'Mon - Fri: 9:00 AM - 5:00 PM'
+  });
+
+  // Fetch contact settings from database
+  useEffect(() => {
+    fetch('/api/public-contact-settings.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setContactInfo({
+            address: data.data.address || contactInfo.address,
+            phone: data.data.phone || contactInfo.phone,
+            email: data.data.email || contactInfo.email,
+            hours: data.data.hours || contactInfo.hours
+          });
+        }
+      })
+      .catch(() => { /* keep defaults */ });
+  }, []);
 
   return (
     <footer className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white py-16 md:py-24 overflow-hidden" ref={ref}>
@@ -143,10 +173,10 @@ export function Footer() {
           <h3 className="text-2xl font-bold mb-8 text-white">Contact Us</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: MapPin, title: 'Address', content: 'Kuching, Sarawak\nMalaysia' },
-              { icon: Phone, title: 'Phone', content: '+60 12-345 6789' },
-              { icon: Mail, title: 'Email', content: 'info@dima.com.my' },
-              { icon: Clock, title: 'Hours', content: 'Mon - Fri: 9:00 AM - 5:00 PM' }
+              { icon: MapPin, title: 'Address', content: contactInfo.address || '' },
+              { icon: Phone, title: 'Phone', content: contactInfo.phone || '' },
+              { icon: Mail, title: 'Email', content: contactInfo.email || '' },
+              { icon: Clock, title: 'Hours', content: contactInfo.hours || '' }
             ].map((item, index) => (
               <motion.div 
                 key={item.title}
