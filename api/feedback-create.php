@@ -8,6 +8,29 @@
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/NotificationHelper.php';
 
+// Auto-create feedback_messages table if it doesn't exist
+try {
+    Database::query("CREATE TABLE IF NOT EXISTS feedback_messages (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        feedback_type VARCHAR(100) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        service_type VARCHAR(255) DEFAULT NULL,
+        comment TEXT NOT NULL,
+        status ENUM('new', 'read', 'responded', 'archived') DEFAULT 'new',
+        notes TEXT DEFAULT NULL,
+        responded_by INT UNSIGNED DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_status (status),
+        INDEX idx_created_at (created_at),
+        INDEX idx_feedback_type (feedback_type)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+} catch (Exception $e) {
+    // Table likely already exists, continue
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
 }

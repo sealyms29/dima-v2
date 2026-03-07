@@ -29,7 +29,7 @@ if (!isset($_SESSION['admin_user_id'])) {
 $type = $_GET['type'] ?? '';
 $id = intval($_GET['id'] ?? 0);
 
-if (!in_array($type, ['quotation', 'contact', 'complaint']) || $id <= 0) {
+if (!in_array($type, ['quotation', 'contact', 'complaint', 'feedback']) || $id <= 0) {
     header('Location: ' . BASE_PATH . '/admin/submissions.php');
     exit;
 }
@@ -38,7 +38,8 @@ if (!in_array($type, ['quotation', 'contact', 'complaint']) || $id <= 0) {
 $tables = [
     'quotation' => 'quotations',
     'contact' => 'contacts',
-    'complaint' => 'complaints'
+    'complaint' => 'complaints',
+    'feedback' => 'feedback_messages'
 ];
 $table = $tables[$type];
 
@@ -56,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
         // Only add notes and responded_by if table has those columns
-        if ($type !== 'complaint') {
-            $update_data['notes'] = $notes;
-            $update_data['responded_by'] = $_SESSION['admin_user_id'];
-        } else {
+        if ($type === 'complaint') {
             $update_data['internal_notes'] = $notes;
             $update_data['assigned_to'] = $_SESSION['admin_user_id'];
+        } else {
+            $update_data['notes'] = $notes;
+            $update_data['responded_by'] = $_SESSION['admin_user_id'];
         }
 
         Database::update($table, $update_data, 'id', $id);
@@ -255,6 +256,16 @@ if (!$submission) {
             color: #155724;
         }
 
+        .badge-read {
+            background: #e7e8ea;
+            color: #495057;
+        }
+
+        .badge-archived {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
         .form-group {
             margin-bottom: 15px;
         }
@@ -371,7 +382,22 @@ if (!$submission) {
                 <span class="field-value"><a href="tel:<?php echo htmlspecialchars($submission['phone']); ?>"><?php echo htmlspecialchars($submission['phone']); ?></a></span>
             </div>
 
-            <?php if ($type !== 'complaint'): ?>
+            <?php if ($type === 'feedback'): ?>
+                <div class="field-group">
+                    <span class="field-label">Feedback Type:</span>
+                    <span class="field-value"><?php echo htmlspecialchars($submission['feedback_type'] ?? ''); ?></span>
+                </div>
+
+                <div class="field-group">
+                    <span class="field-label">Service Type:</span>
+                    <span class="field-value"><?php echo htmlspecialchars($submission['service_type'] ?? ''); ?></span>
+                </div>
+
+                <div class="field-group">
+                    <span class="field-label">Comment:</span>
+                    <span class="field-value"><?php echo nl2br(htmlspecialchars($submission['comment'] ?? '')); ?></span>
+                </div>
+            <?php elseif ($type !== 'complaint'): ?>
                 <div class="field-group">
                     <span class="field-label">Company:</span>
                     <span class="field-value"><?php echo htmlspecialchars($submission['company'] ?? ''); ?></span>
@@ -477,6 +503,11 @@ if (!$submission) {
                             <option value="responded" <?php echo $submission['status'] === 'responded' ? 'selected' : ''; ?>>Responded</option>
                             <option value="resolved" <?php echo $submission['status'] === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
                             <option value="closed" <?php echo $submission['status'] === 'closed' ? 'selected' : ''; ?>>Closed</option>
+                        <?php elseif ($type === 'feedback'): ?>
+                            <option value="new" <?php echo $submission['status'] === 'new' ? 'selected' : ''; ?>>New</option>
+                            <option value="read" <?php echo $submission['status'] === 'read' ? 'selected' : ''; ?>>Read</option>
+                            <option value="responded" <?php echo $submission['status'] === 'responded' ? 'selected' : ''; ?>>Responded</option>
+                            <option value="archived" <?php echo $submission['status'] === 'archived' ? 'selected' : ''; ?>>Archived</option>
                         <?php else: ?>
                             <option value="new" <?php echo $submission['status'] === 'new' ? 'selected' : ''; ?>>New</option>
                             <option value="viewed" <?php echo $submission['status'] === 'viewed' ? 'selected' : ''; ?>>Viewed</option>

@@ -33,14 +33,15 @@ $page = intval($_GET['page'] ?? 1);
 if ($page < 1) $page = 1;
 
 // Validate type
-if (!in_array($type, ['contact', 'complaint'])) {
+if (!in_array($type, ['contact', 'complaint', 'feedback'])) {
     $type = 'contact';
 }
 
 // Direct database query instead of HTTP API call
 $tables = [
     'contact' => 'contacts',
-    'complaint' => 'complaints'
+    'complaint' => 'complaints',
+    'feedback' => 'feedback_messages'
 ];
 $table = $tables[$type];
 $per_page = 20;
@@ -291,6 +292,16 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
             color: #383d41;
         }
 
+        .badge-read {
+            background: #e7e8ea;
+            color: #495057;
+        }
+
+        .badge-archived {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
         .action-link {
             color: #007bff;
             text-decoration: none;
@@ -398,6 +409,8 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
                     onclick="window.location.href='?type=contact'">Contact Requests</button>
             <button class="tab-btn <?php echo $type === 'complaint' ? 'active' : ''; ?>" 
                     onclick="window.location.href='?type=complaint'">Complaints & Appeals</button>
+            <button class="tab-btn <?php echo $type === 'feedback' ? 'active' : ''; ?>" 
+                    onclick="window.location.href='?type=feedback'">Feedback</button>
         </div>
 
         <div class="filters">
@@ -415,6 +428,11 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
                                 <option value="responded" <?php echo $status === 'responded' ? 'selected' : ''; ?>>Responded</option>
                                 <option value="resolved" <?php echo $status === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
                                 <option value="closed" <?php echo $status === 'closed' ? 'selected' : ''; ?>>Closed</option>
+                            <?php elseif ($type === 'feedback'): ?>
+                                <option value="new" <?php echo $status === 'new' ? 'selected' : ''; ?>>New</option>
+                                <option value="read" <?php echo $status === 'read' ? 'selected' : ''; ?>>Read</option>
+                                <option value="responded" <?php echo $status === 'responded' ? 'selected' : ''; ?>>Responded</option>
+                                <option value="archived" <?php echo $status === 'archived' ? 'selected' : ''; ?>>Archived</option>
                             <?php else: ?>
                                 <option value="new" <?php echo $status === 'new' ? 'selected' : ''; ?>>New</option>
                                 <option value="viewed" <?php echo $status === 'viewed' ? 'selected' : ''; ?>>Viewed</option>
@@ -449,6 +467,8 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
                             <th>Phone</th>
                             <?php if ($type === 'complaint'): ?>
                                 <th>Programme</th>
+                            <?php elseif ($type === 'feedback'): ?>
+                                <th>Feedback Type</th>
                             <?php else: ?>
                                 <th>Company</th>
                             <?php endif; ?>
@@ -467,6 +487,8 @@ $pagination = $response_data['pagination'] ?? ['total_pages' => 1, 'current_page
                                 <td><?php 
                                     if ($type === 'complaint') {
                                         echo strtoupper(htmlspecialchars($row['programme'] ?? ''));
+                                    } elseif ($type === 'feedback') {
+                                        echo htmlspecialchars($row['feedback_type'] ?? '');
                                     } else {
                                         echo htmlspecialchars($row['company'] ?? '');
                                     }
