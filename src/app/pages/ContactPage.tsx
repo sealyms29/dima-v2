@@ -107,8 +107,9 @@ export function ContactPage() {
     setFeedbackGeneralError('');
 
     try {
-      const apiBase = import.meta.env.BASE_URL;
-      const response = await fetch(`${apiBase}api/feedback-create.php`, {
+      // Use window.location to get correct base path for both local and production
+      const basePath = window.location.pathname.includes('/DIMA') ? '/DIMA' : '';
+      const response = await fetch(`${basePath}/api/feedback-create.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(feedbackData)
