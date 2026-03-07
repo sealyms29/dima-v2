@@ -6,6 +6,7 @@ import { PageHero } from '../components/shared/PageHero';
 import {
   MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle,
   Building2, User, MessageSquare, Scale, ChevronRight, FileText, HelpCircle,
+  Sparkles, Heart, Star, MessageCircleHeart, Briefcase,
 } from 'lucide-react';
 
 interface ContactSettings {
@@ -446,202 +447,338 @@ export function ContactPage() {
       </section>
 
       {/* ── Feedback & Support Section ─────────────────────────────── */}
-      <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" ref={feedbackRef}>
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <section className="relative py-20 md:py-28 overflow-hidden" ref={feedbackRef}>
+        {/* Warm Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50" />
         
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
-          {/* Section Header */}
-          <motion.div
-            className="mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isFeedbackInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-[#d4af37] mb-3">
-              Feedback & Support
-            </h2>
-            <p className="text-white/70">
-              Feel free to contact us, we don't spam your email.
-            </p>
-          </motion.div>
-
-          {/* Feedback Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isFeedbackInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {isFeedbackSubmitted ? (
+        {/* Floating Decorative Elements */}
+        <motion.div
+          className="absolute top-20 left-[10%] w-20 h-20 bg-gradient-to-br from-[#d4af37]/20 to-amber-300/20 rounded-full blur-xl"
+          animate={{ y: [0, -20, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-40 right-[15%] w-32 h-32 bg-gradient-to-br from-orange-200/30 to-yellow-200/30 rounded-full blur-2xl"
+          animate={{ y: [0, 30, 0], x: [0, -10, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-32 left-[20%] w-24 h-24 bg-gradient-to-br from-amber-200/25 to-orange-200/25 rounded-full blur-xl"
+          animate={{ y: [0, 15, 0], rotate: [0, 180, 360] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
+        {/* Floating Icons */}
+        <motion.div
+          className="absolute top-32 right-[8%] text-amber-300/40"
+          animate={{ y: [0, -15, 0], rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Star size={32} fill="currentColor" />
+        </motion.div>
+        <motion.div
+          className="absolute bottom-40 right-[25%] text-orange-300/40"
+          animate={{ y: [0, 20, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          <Heart size={28} fill="currentColor" />
+        </motion.div>
+        <motion.div
+          className="absolute top-1/2 left-[5%] text-yellow-400/30"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        >
+          <Sparkles size={40} />
+        </motion.div>
+        
+        <div className="relative max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Side - Illustration & Message */}
+            <motion.div
+              className="text-center lg:text-left"
+              initial={{ opacity: 0, x: -50 }}
+              animate={isFeedbackInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.7 }}
+            >
+              {/* Decorative Icon */}
               <motion.div
-                className="text-center py-16 bg-white/5 rounded-3xl border border-white/10"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-3xl shadow-2xl shadow-amber-500/30 mb-8"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={isFeedbackInView ? { scale: 1, rotate: 0 } : {}}
+                transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 }}
               >
-                <motion.div
-                  className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl"
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-                >
-                  <CheckCircle2 className="text-white" size={40} />
-                </motion.div>
-                <h3 className="text-2xl font-bold text-white mb-3">Thank You!</h3>
-                <p className="text-lg text-white/70">Your feedback has been submitted successfully.</p>
+                <MessageCircleHeart className="text-white" size={48} />
               </motion.div>
-            ) : (
-              <form onSubmit={handleFeedbackSubmit} className="space-y-6">
-                {feedbackGeneralError && (
-                  <motion.div
-                    className="flex items-center gap-3 p-4 bg-red-500/20 border border-red-500/30 rounded-2xl"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
-                    <p className="text-red-300 font-medium">{feedbackGeneralError}</p>
-                  </motion.div>
-                )}
-
-                {/* Type of Feedback Dropdown */}
-                <div>
-                  <select
-                    id="feedback_type"
-                    name="feedback_type"
-                    required
-                    value={feedbackData.feedback_type}
-                    onChange={handleFeedbackChange}
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-700 ${
-                      feedbackErrors.feedback_type ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  >
-                    <option value="">Type of Feedback</option>
-                    <option value="General Feedback">General Feedback</option>
-                    <option value="Suggestion">Suggestion</option>
-                    <option value="Service Inquiry">Service Inquiry</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {feedbackErrors.feedback_type && <p className="text-red-400 text-sm mt-1">{feedbackErrors.feedback_type}</p>}
-                </div>
-
-                {/* Name */}
-                <div>
-                  <input
-                    type="text"
-                    id="feedback_name"
-                    name="name"
-                    required
-                    value={feedbackData.name}
-                    onChange={handleFeedbackChange}
-                    placeholder="Your Name *"
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                      feedbackErrors.name ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  />
-                  {feedbackErrors.name && <p className="text-red-400 text-sm mt-1">{feedbackErrors.name}</p>}
-                </div>
-
-                {/* Email */}
-                <div>
-                  <input
-                    type="email"
-                    id="feedback_email"
-                    name="email"
-                    required
-                    value={feedbackData.email}
-                    onChange={handleFeedbackChange}
-                    placeholder="Your Email *"
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                      feedbackErrors.email ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  />
-                  {feedbackErrors.email && <p className="text-red-400 text-sm mt-1">{feedbackErrors.email}</p>}
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <input
-                    type="tel"
-                    id="feedback_phone"
-                    name="phone"
-                    required
-                    value={feedbackData.phone}
-                    onChange={handleFeedbackChange}
-                    placeholder="Your Phone No. *"
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                      feedbackErrors.phone ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  />
-                  {feedbackErrors.phone && <p className="text-red-400 text-sm mt-1">{feedbackErrors.phone}</p>}
-                </div>
-
-                {/* Service Type */}
-                <div>
-                  <input
-                    type="text"
-                    id="feedback_service_type"
-                    name="service_type"
-                    required
-                    value={feedbackData.service_type}
-                    onChange={handleFeedbackChange}
-                    placeholder="Service Type *"
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
-                      feedbackErrors.service_type ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  />
-                  {feedbackErrors.service_type && <p className="text-red-400 text-sm mt-1">{feedbackErrors.service_type}</p>}
-                </div>
-
-                {/* Comment */}
-                <div>
-                  <textarea
-                    id="feedback_comment"
-                    name="comment"
-                    rows={5}
-                    required
-                    value={feedbackData.comment}
-                    onChange={handleFeedbackChange}
-                    placeholder="Your Comment *"
-                    className={`w-full px-5 py-4 bg-white border-2 rounded-2xl focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
-                      feedbackErrors.comment ? 'border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                    }`}
-                  />
-                  {feedbackErrors.comment && <p className="text-red-400 text-sm mt-1">{feedbackErrors.comment}</p>}
-                </div>
-
-                {/* Submit Button */}
-                <motion.button
-                  type="submit"
-                  disabled={isFeedbackLoading}
-                  className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                  whileHover={!isFeedbackLoading ? { scale: 1.02 } : {}}
-                  whileTap={!isFeedbackLoading ? { scale: 0.98 } : {}}
+              
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+                We'd Love to{' '}
+                <span className="bg-gradient-to-r from-[#d4af37] to-amber-500 bg-clip-text text-transparent">
+                  Hear From You!
+                </span>
+              </h2>
+              
+              <p className="text-lg text-slate-600 mb-8 max-w-md mx-auto lg:mx-0">
+                Your thoughts matter to us. Share your feedback, suggestions, or just say hello - we're all ears and excited to connect with you!
+              </p>
+              
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <motion.div
+                  className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-amber-100"
+                  whileHover={{ scale: 1.05, y: -2 }}
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-500"
-                    initial={{ x: '-100%' }}
-                    whileHover={!isFeedbackLoading ? { x: 0 } : {}}
-                    transition={{ duration: 0.3 }}
-                  />
-                  {isFeedbackLoading ? (
-                    <>
+                  <CheckCircle2 className="text-green-500" size={18} />
+                  <span className="text-sm font-medium text-slate-700">Quick Response</span>
+                </motion.div>
+                <motion.div
+                  className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-amber-100"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <Heart className="text-red-400" size={18} fill="currentColor" />
+                  <span className="text-sm font-medium text-slate-700">We Care</span>
+                </motion.div>
+                <motion.div
+                  className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-amber-100"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <Sparkles className="text-amber-500" size={18} />
+                  <span className="text-sm font-medium text-slate-700">No Spam</span>
+                </motion.div>
+              </div>
+            </motion.div>
+            
+            {/* Right Side - Form Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={isFeedbackInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
+              <div className="relative">
+                {/* Glow Effect Behind Card */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-[#d4af37]/20 via-amber-400/20 to-orange-400/20 rounded-[2.5rem] blur-2xl" />
+                
+                {/* Form Card */}
+                <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-8 md:p-10">
+                  {isFeedbackSubmitted ? (
+                    <motion.div
+                      className="text-center py-12"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {/* Celebration Animation */}
+                      <div className="relative">
+                        <motion.div
+                          className="absolute inset-0 flex items-center justify-center"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: [0, 1.5, 0] }}
+                          transition={{ duration: 0.8, delay: 0.3 }}
+                        >
+                          <Sparkles className="text-amber-400" size={80} />
+                        </motion.div>
+                        <motion.div
+                          className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl relative z-10"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+                        >
+                          <CheckCircle2 className="text-white" size={48} />
+                        </motion.div>
+                      </div>
+                      
                       <motion.div
-                        className="relative z-10 w-5 h-5 border-2 border-black border-t-transparent rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      />
-                      <span className="relative z-10">Submitting...</span>
-                    </>
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <h3 className="text-2xl font-bold text-slate-800 mb-3">Thank You!</h3>
+                        <p className="text-slate-600">Your feedback has been submitted successfully.</p>
+                        <p className="text-sm text-slate-500 mt-2">We'll get back to you soon!</p>
+                      </motion.div>
+                    </motion.div>
                   ) : (
-                    <>
-                      <Send size={22} className="relative z-10" />
-                      <span className="relative z-10">Submit Feedback</span>
-                    </>
+                    <form onSubmit={handleFeedbackSubmit} className="space-y-5">
+                      {feedbackGeneralError && (
+                        <motion.div
+                          className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <AlertCircle className="text-red-500 flex-shrink-0" size={20} />
+                          <p className="text-red-600 font-medium">{feedbackGeneralError}</p>
+                        </motion.div>
+                      )}
+
+                      {/* Type of Feedback Dropdown */}
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <HelpCircle size={20} />
+                        </div>
+                        <select
+                          id="feedback_type"
+                          name="feedback_type"
+                          required
+                          value={feedbackData.feedback_type}
+                          onChange={handleFeedbackChange}
+                          className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-700 ${
+                            feedbackErrors.feedback_type ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                          }`}
+                        >
+                          <option value="">Type of Feedback</option>
+                          <option value="General Feedback">General Feedback</option>
+                          <option value="Suggestion">Suggestion</option>
+                          <option value="Service Inquiry">Service Inquiry</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {feedbackErrors.feedback_type && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.feedback_type}</p>}
+                      </div>
+
+                      {/* Name & Email Row */}
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="relative group">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                            <User size={20} />
+                          </div>
+                          <input
+                            type="text"
+                            id="feedback_name"
+                            name="name"
+                            required
+                            value={feedbackData.name}
+                            onChange={handleFeedbackChange}
+                            placeholder="Your Name *"
+                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                              feedbackErrors.name ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
+                          />
+                          {feedbackErrors.name && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.name}</p>}
+                        </div>
+
+                        <div className="relative group">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                            <Mail size={20} />
+                          </div>
+                          <input
+                            type="email"
+                            id="feedback_email"
+                            name="email"
+                            required
+                            value={feedbackData.email}
+                            onChange={handleFeedbackChange}
+                            placeholder="Your Email *"
+                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                              feedbackErrors.email ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
+                          />
+                          {feedbackErrors.email && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.email}</p>}
+                        </div>
+                      </div>
+
+                      {/* Phone & Service Type Row */}
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="relative group">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                            <Phone size={20} />
+                          </div>
+                          <input
+                            type="tel"
+                            id="feedback_phone"
+                            name="phone"
+                            required
+                            value={feedbackData.phone}
+                            onChange={handleFeedbackChange}
+                            placeholder="Your Phone No. *"
+                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                              feedbackErrors.phone ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
+                          />
+                          {feedbackErrors.phone && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.phone}</p>}
+                        </div>
+
+                        <div className="relative group">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                            <Briefcase size={20} />
+                          </div>
+                          <input
+                            type="text"
+                            id="feedback_service_type"
+                            name="service_type"
+                            required
+                            value={feedbackData.service_type}
+                            onChange={handleFeedbackChange}
+                            placeholder="Service Type *"
+                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                              feedbackErrors.service_type ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                            }`}
+                          />
+                          {feedbackErrors.service_type && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.service_type}</p>}
+                        </div>
+                      </div>
+
+                      {/* Comment */}
+                      <div className="relative group">
+                        <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <MessageSquare size={20} />
+                        </div>
+                        <textarea
+                          id="feedback_comment"
+                          name="comment"
+                          rows={4}
+                          required
+                          value={feedbackData.comment}
+                          onChange={handleFeedbackChange}
+                          placeholder="Share your thoughts with us... *"
+                          className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                            feedbackErrors.comment ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
+                          }`}
+                        />
+                        {feedbackErrors.comment && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.comment}</p>}
+                      </div>
+
+                      {/* Submit Button */}
+                      <motion.button
+                        type="submit"
+                        disabled={isFeedbackLoading}
+                        className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] via-amber-500 to-orange-500 text-white font-bold rounded-2xl shadow-xl shadow-amber-500/30 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={!isFeedbackLoading ? { scale: 1.02, boxShadow: '0 25px 50px -12px rgba(212,175,55,0.4)' } : {}}
+                        whileTap={!isFeedbackLoading ? { scale: 0.98 } : {}}
+                      >
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-500"
+                          initial={{ x: '-100%' }}
+                          whileHover={!isFeedbackLoading ? { x: 0 } : {}}
+                          transition={{ duration: 0.4 }}
+                        />
+                        {isFeedbackLoading ? (
+                          <>
+                            <motion.div
+                              className="relative z-10 w-6 h-6 border-3 border-white border-t-transparent rounded-full"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            />
+                            <span className="relative z-10">Sending...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send size={22} className="relative z-10" />
+                            <span className="relative z-10">Send Feedback</span>
+                            <motion.div
+                              className="relative z-10"
+                              animate={{ x: [0, 5, 0] }}
+                              transition={{ duration: 1.5, repeat: Infinity }}
+                            >
+                              <Sparkles size={18} />
+                            </motion.div>
+                          </>
+                        )}
+                      </motion.button>
+                    </form>
                   )}
-                </motion.button>
-              </form>
-            )}
-          </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
