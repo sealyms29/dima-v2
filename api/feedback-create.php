@@ -112,12 +112,7 @@ try {
     ]));
 
     // Create notification for admin
-    NotificationHelper::create(
-        'feedback',
-        'New Feedback Received',
-        "New " . strtolower($feedback_type) . " from {$name}",
-        ['id' => $feedback_id, 'email' => $email]
-    );
+    create_notification('feedback', $feedback_id, $name, $email);
 
     DBTransaction::commit();
 

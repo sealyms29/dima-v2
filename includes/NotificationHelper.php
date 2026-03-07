@@ -13,6 +13,7 @@ function create_notification(string $type, int $submission_id, ?string $name = n
             'contact'   => 'New Contact Request',
             'complaint' => 'New Complaint',
             'appeal'    => 'New Appeal',
+            'feedback'  => 'New Feedback',
         ];
         $label = $typeLabels[$type] ?? 'New Submission';
         $msg = $label;
