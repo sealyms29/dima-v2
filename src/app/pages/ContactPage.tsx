@@ -340,61 +340,78 @@ export function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
                           <label htmlFor="name" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <User size={18} className="text-[#d4af37]" /> Full Name *
+                            <User size={18} className="text-[#d4af37]" aria-hidden="true" /> Full Name <span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(required)</span>
                           </label>
                           <input type="text" id="name" name="name" required value={formData.name} onChange={handleChange}
-                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                            aria-required="true"
+                            aria-invalid={errors.name ? 'true' : 'false'}
+                            aria-describedby={errors.name ? 'name-error' : undefined}
+                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                             placeholder="John Doe" />
-                          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+                          {errors.name && <p id="name-error" className="text-red-600 text-sm mt-1" role="alert">{errors.name}</p>}
                         </div>
                         <div>
                           <label htmlFor="email" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Mail size={18} className="text-[#d4af37]" /> Email Address *
+                            <Mail size={18} className="text-[#d4af37]" aria-hidden="true" /> Email Address <span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(required)</span>
                           </label>
                           <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange}
-                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                            aria-required="true"
+                            aria-invalid={errors.email ? 'true' : 'false'}
+                            aria-describedby={errors.email ? 'email-error' : undefined}
+                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                             placeholder="john@company.com" />
-                          {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
+                          {errors.email && <p id="email-error" className="text-red-600 text-sm mt-1" role="alert">{errors.email}</p>}
                         </div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
                           <label htmlFor="phone" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Phone size={18} className="text-[#d4af37]" /> Phone Number *
+                            <Phone size={18} className="text-[#d4af37]" aria-hidden="true" /> Phone Number <span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(required)</span>
                           </label>
                           <input type="tel" id="phone" name="phone" required value={formData.phone} onChange={handleChange}
-                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                            aria-required="true"
+                            aria-invalid={errors.phone ? 'true' : 'false'}
+                            aria-describedby={errors.phone ? 'phone-error' : undefined}
+                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               errors.phone ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                             placeholder="+60 12-345 6789" />
-                          {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+                          {errors.phone && <p id="phone-error" className="text-red-600 text-sm mt-1" role="alert">{errors.phone}</p>}
                         </div>
                         <div>
                           <label htmlFor="company" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Building2 size={18} className="text-[#d4af37]" /> Company Name *
+                            <Building2 size={18} className="text-[#d4af37]" aria-hidden="true" /> Company Name <span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(required)</span>
                           </label>
                           <input type="text" id="company" name="company" required value={formData.company} onChange={handleChange}
-                            className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                            aria-required="true"
+                            aria-invalid={errors.company ? 'true' : 'false'}
+                            aria-describedby={errors.company ? 'company-error' : undefined}
+                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               errors.company ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                             placeholder="Your Company Sdn Bhd" />
-                          {errors.company && <p className="text-red-600 text-sm mt-1">{errors.company}</p>}
+                          {errors.company && <p id="company-error" className="text-red-600 text-sm mt-1" role="alert">{errors.company}</p>}
                         </div>
                       </div>
                       <div>
                         <label htmlFor="message" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                          <MessageSquare size={18} className="text-[#d4af37]" /> Message
+                          <MessageSquare size={18} className="text-[#d4af37]" aria-hidden="true" /> Message
                         </label>
                         <textarea id="message" name="message" rows={5} value={formData.message} onChange={handleChange}
-                          className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                          aria-describedby={errors.message ? 'message-error' : undefined}
+                          className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
                             errors.message ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                           }`}
                           placeholder="Tell us about your certification requirements..." />
-                        {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
+                        {errors.message && <p id="message-error" className="text-red-600 text-sm mt-1" role="alert">{errors.message}</p>}
                       </div>
                       <motion.button type="submit" disabled={isLoading}
                         className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
@@ -613,16 +630,20 @@ export function ContactPage() {
 
                       {/* Type of Feedback Dropdown */}
                       <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                           <HelpCircle size={20} />
                         </div>
+                        <label htmlFor="feedback_type" className="sr-only">Type of Feedback (required)</label>
                         <select
                           id="feedback_type"
                           name="feedback_type"
                           required
+                          aria-required="true"
+                          aria-invalid={feedbackErrors.feedback_type ? 'true' : 'false'}
+                          aria-describedby={feedbackErrors.feedback_type ? 'feedback_type-error' : undefined}
                           value={feedbackData.feedback_type}
                           onChange={handleFeedbackChange}
-                          className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-700 ${
+                          className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-700 ${
                             feedbackErrors.feedback_type ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                           }`}
                         >
@@ -632,109 +653,129 @@ export function ContactPage() {
                           <option value="Service Inquiry">Service Inquiry</option>
                           <option value="Other">Other</option>
                         </select>
-                        {feedbackErrors.feedback_type && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.feedback_type}</p>}
+                        {feedbackErrors.feedback_type && <p id="feedback_type-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.feedback_type}</p>}
                       </div>
 
                       {/* Name & Email Row */}
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="relative group">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                             <User size={20} />
                           </div>
+                          <label htmlFor="feedback_name" className="sr-only">Your Name (required)</label>
                           <input
                             type="text"
                             id="feedback_name"
                             name="name"
                             required
+                            aria-required="true"
+                            aria-invalid={feedbackErrors.name ? 'true' : 'false'}
+                            aria-describedby={feedbackErrors.name ? 'feedback_name-error' : undefined}
                             value={feedbackData.name}
                             onChange={handleFeedbackChange}
                             placeholder="Your Name *"
-                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                            className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               feedbackErrors.name ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                           />
-                          {feedbackErrors.name && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.name}</p>}
+                          {feedbackErrors.name && <p id="feedback_name-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.name}</p>}
                         </div>
 
                         <div className="relative group">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                             <Mail size={20} />
                           </div>
+                          <label htmlFor="feedback_email" className="sr-only">Your Email (required)</label>
                           <input
                             type="email"
                             id="feedback_email"
                             name="email"
                             required
+                            aria-required="true"
+                            aria-invalid={feedbackErrors.email ? 'true' : 'false'}
+                            aria-describedby={feedbackErrors.email ? 'feedback_email-error' : undefined}
                             value={feedbackData.email}
                             onChange={handleFeedbackChange}
                             placeholder="Your Email *"
-                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                            className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               feedbackErrors.email ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                           />
-                          {feedbackErrors.email && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.email}</p>}
+                          {feedbackErrors.email && <p id="feedback_email-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.email}</p>}
                         </div>
                       </div>
 
                       {/* Phone & Service Type Row */}
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="relative group">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                             <Phone size={20} />
                           </div>
+                          <label htmlFor="feedback_phone" className="sr-only">Your Phone Number (required)</label>
                           <input
                             type="tel"
                             id="feedback_phone"
                             name="phone"
                             required
+                            aria-required="true"
+                            aria-invalid={feedbackErrors.phone ? 'true' : 'false'}
+                            aria-describedby={feedbackErrors.phone ? 'feedback_phone-error' : undefined}
                             value={feedbackData.phone}
                             onChange={handleFeedbackChange}
                             placeholder="Your Phone No. *"
-                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                            className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               feedbackErrors.phone ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                           />
-                          {feedbackErrors.phone && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.phone}</p>}
+                          {feedbackErrors.phone && <p id="feedback_phone-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.phone}</p>}
                         </div>
 
                         <div className="relative group">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                             <Briefcase size={20} />
                           </div>
+                          <label htmlFor="feedback_service_type" className="sr-only">Service Type (required)</label>
                           <input
                             type="text"
                             id="feedback_service_type"
                             name="service_type"
                             required
+                            aria-required="true"
+                            aria-invalid={feedbackErrors.service_type ? 'true' : 'false'}
+                            aria-describedby={feedbackErrors.service_type ? 'feedback_service_type-error' : undefined}
                             value={feedbackData.service_type}
                             onChange={handleFeedbackChange}
                             placeholder="Service Type *"
-                            className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 ${
+                            className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                               feedbackErrors.service_type ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                             }`}
                           />
-                          {feedbackErrors.service_type && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.service_type}</p>}
+                          {feedbackErrors.service_type && <p id="feedback_service_type-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.service_type}</p>}
                         </div>
                       </div>
 
                       {/* Comment */}
                       <div className="relative group">
-                        <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-[#d4af37] transition-colors">
+                        <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-[#d4af37] transition-colors" aria-hidden="true">
                           <MessageSquare size={20} />
                         </div>
+                        <label htmlFor="feedback_comment" className="sr-only">Your Feedback (required)</label>
                         <textarea
                           id="feedback_comment"
                           name="comment"
                           rows={4}
                           required
+                          aria-required="true"
+                          aria-invalid={feedbackErrors.comment ? 'true' : 'false'}
+                          aria-describedby={feedbackErrors.comment ? 'feedback_comment-error' : undefined}
                           value={feedbackData.comment}
                           onChange={handleFeedbackChange}
                           placeholder="Share your thoughts with us... *"
-                          className={`w-full pl-12 pr-5 py-4 bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                          className={`w-full pl-12 pr-5 py-4 text-base bg-slate-50/80 border-2 rounded-2xl focus:outline-none focus:bg-white focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
                             feedbackErrors.comment ? 'border-red-400 bg-red-50/50' : 'border-slate-200 focus:border-[#d4af37]'
                           }`}
                         />
-                        {feedbackErrors.comment && <p className="text-red-500 text-sm mt-1 ml-1">{feedbackErrors.comment}</p>}
+                        {feedbackErrors.comment && <p id="feedback_comment-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.comment}</p>}
                       </div>
 
                       {/* Submit Button */}

@@ -50,7 +50,7 @@ export function Footer() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#d4af37]/10 to-transparent rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl" />
 
-      <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 mb-16">
           {/* Company Info */}
           <motion.div 
@@ -75,15 +75,15 @@ export function Footer() {
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">
                 Connect With Us
               </p>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <a
                   href="https://www.facebook.com/p/DIMA-Certification-Sdn-Bhd-100088593112131/"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="DIMA Certification on Facebook"
-                  className="inline-flex items-center gap-3 text-slate-400 hover:text-[#d4af37] transition-colors duration-200 group w-fit"
+                  className="inline-flex items-center gap-3 text-slate-400 hover:text-[#d4af37] transition-colors duration-200 group w-fit py-2 px-1 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] rounded-lg"
                 >
-                  <Facebook size={22} strokeWidth={1.6} className="flex-shrink-0" />
+                  <Facebook size={22} strokeWidth={1.6} className="flex-shrink-0" aria-hidden="true" />
                   <span className="text-sm font-medium text-slate-400 group-hover:text-[#d4af37] transition-colors duration-200">
                     Facebook
                   </span>
@@ -93,9 +93,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="DIMA Certification on YouTube"
-                  className="inline-flex items-center gap-3 text-slate-400 hover:text-[#d4af37] transition-colors duration-200 group w-fit"
+                  className="inline-flex items-center gap-3 text-slate-400 hover:text-[#d4af37] transition-colors duration-200 group w-fit py-2 px-1 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] rounded-lg"
                 >
-                  <Youtube size={24} strokeWidth={1.6} className="flex-shrink-0" />
+                  <Youtube size={24} strokeWidth={1.6} className="flex-shrink-0" aria-hidden="true" />
                   <span className="text-sm font-medium text-slate-400 group-hover:text-[#d4af37] transition-colors duration-200">
                     YouTube
                   </span>
@@ -124,9 +124,9 @@ export function Footer() {
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.2 + index * 0.05 }}
                 >
-                  <Link to={item.path}>
+                  <Link to={item.path} className="focus-visible:outline-none">
                     <motion.div
-                      className="group inline-flex items-center gap-2 text-slate-300 hover:text-[#d4af37] transition-colors text-left"
+                      className="group inline-flex items-center gap-2 text-slate-300 hover:text-[#d4af37] transition-colors text-left py-2 px-1 min-h-[44px] focus-visible:ring-2 focus-visible:ring-[#d4af37] rounded-lg"
                       whileHover={{ x: 5 }}
                     >
                       <span>{item.label}</span>

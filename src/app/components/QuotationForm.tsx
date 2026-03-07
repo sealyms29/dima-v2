@@ -165,23 +165,27 @@ export function QuotationForm() {
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
                     <label htmlFor="name" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                      <User size={18} className="text-[#d4af37]" />
-                      Full Name *
+                      <User size={18} className="text-[#d4af37]" aria-hidden="true" />
+                      Full Name <span className="text-red-500" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </label>
                     <motion.input
                       type="text"
                       id="name"
                       name="name"
                       required
+                      aria-required="true"
+                      aria-invalid={errors.name ? 'true' : 'false'}
+                      aria-describedby={errors.name ? 'qf-name-error' : undefined}
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                         errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                       }`}
                       placeholder="John Doe"
                       whileFocus={{ scale: 1.01 }}
                     />
-                    {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+                    {errors.name && <p id="qf-name-error" className="text-red-600 text-sm mt-1" role="alert">{errors.name}</p>}
                   </motion.div>
 
                   <motion.div
@@ -190,23 +194,27 @@ export function QuotationForm() {
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
                     <label htmlFor="email" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                      <Mail size={18} className="text-[#d4af37]" />
-                      Email Address *
+                      <Mail size={18} className="text-[#d4af37]" aria-hidden="true" />
+                      Email Address <span className="text-red-500" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </label>
                     <motion.input
                       type="email"
                       id="email"
                       name="email"
                       required
+                      aria-required="true"
+                      aria-invalid={errors.email ? 'true' : 'false'}
+                      aria-describedby={errors.email ? 'qf-email-error' : undefined}
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                         errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                       }`}
                       placeholder="john@company.com"
                       whileFocus={{ scale: 1.01 }}
                     />
-                    {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
+                    {errors.email && <p id="qf-email-error" className="text-red-600 text-sm mt-1" role="alert">{errors.email}</p>}
                   </motion.div>
                 </div>
 
@@ -218,23 +226,27 @@ export function QuotationForm() {
                     transition={{ duration: 0.5, delay: 0.6 }}
                   >
                     <label htmlFor="phone" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                      <Phone size={18} className="text-[#d4af37]" />
-                      Phone Number *
+                      <Phone size={18} className="text-[#d4af37]" aria-hidden="true" />
+                      Phone Number <span className="text-red-500" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </label>
                     <motion.input
                       type="tel"
                       id="phone"
                       name="phone"
                       required
+                      aria-required="true"
+                      aria-invalid={errors.phone ? 'true' : 'false'}
+                      aria-describedby={errors.phone ? 'qf-phone-error' : undefined}
                       value={formData.phone}
                       onChange={handleChange}
-                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                         errors.phone ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                       }`}
                       placeholder="+60 12-345 6789"
                       whileFocus={{ scale: 1.01 }}
                     />
-                    {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+                    {errors.phone && <p id="qf-phone-error" className="text-red-600 text-sm mt-1" role="alert">{errors.phone}</p>}
                   </motion.div>
 
                   <motion.div
@@ -243,23 +255,27 @@ export function QuotationForm() {
                     transition={{ duration: 0.5, delay: 0.7 }}
                   >
                     <label htmlFor="company" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                      <Building2 size={18} className="text-[#d4af37]" />
-                      Company Name *
+                      <Building2 size={18} className="text-[#d4af37]" aria-hidden="true" />
+                      Company Name <span className="text-red-500" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </label>
                     <motion.input
                       type="text"
                       id="company"
                       name="company"
                       required
+                      aria-required="true"
+                      aria-invalid={errors.company ? 'true' : 'false'}
+                      aria-describedby={errors.company ? 'qf-company-error' : undefined}
                       value={formData.company}
                       onChange={handleChange}
-                      className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all text-slate-900 placeholder:text-slate-400 ${
+                      className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
                         errors.company ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                       }`}
                       placeholder="Your Company Sdn Bhd"
                       whileFocus={{ scale: 1.01 }}
                     />
-                    {errors.company && <p className="text-red-600 text-sm mt-1">{errors.company}</p>}
+                    {errors.company && <p id="qf-company-error" className="text-red-600 text-sm mt-1" role="alert">{errors.company}</p>}
                   </motion.div>
                 </div>
 
@@ -270,23 +286,27 @@ export function QuotationForm() {
                   transition={{ duration: 0.5, delay: 0.8 }}
                 >
                   <label htmlFor="message" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                    <MessageSquare size={18} className="text-[#d4af37]" />
-                    Message *
+                    <MessageSquare size={18} className="text-[#d4af37]" aria-hidden="true" />
+                    Message <span className="text-red-500" aria-hidden="true">*</span>
+                    <span className="sr-only">(required)</span>
                   </label>
                   <motion.textarea
                     id="message"
                     name="message"
                     rows={5}
                     required
+                    aria-required="true"
+                    aria-invalid={errors.message ? 'true' : 'false'}
+                    aria-describedby={errors.message ? 'qf-message-error' : undefined}
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
+                    className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
                       errors.message ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
                     }`}
                     placeholder="Tell us how we can help you..."
                     whileFocus={{ scale: 1.01 }}
                   />
-                  {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message}</p>}
+                  {errors.message && <p id="qf-message-error" className="text-red-600 text-sm mt-1" role="alert">{errors.message}</p>}
                 </motion.div>
 
                 {/* Submit Button */}

@@ -157,10 +157,10 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full py-24 lg:py-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full py-24 lg:py-32">
         <div className="max-w-3xl">
             <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
@@ -182,7 +182,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
             />
 
             <motion.p 
-              className="text-lg md:text-xl text-white/75 mb-10 leading-relaxed max-w-xl"
+              className="text-base sm:text-lg md:text-xl text-white/75 mb-10 leading-relaxed max-w-xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
@@ -200,7 +200,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
               {/* Primary Button - Gold with shadow */}
               <motion.button
                 onClick={handleGetQuotation}
-                className="group relative h-13 px-7 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl overflow-hidden text-sm"
+                className="group relative h-13 min-h-[48px] px-7 bg-gradient-to-r from-[#d4af37] to-amber-500 text-slate-900 font-bold rounded-xl overflow-hidden text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 style={{
                   boxShadow: '0 4px 20px -4px rgba(212, 175, 55, 0.4), 0 8px 32px -8px rgba(212, 175, 55, 0.3)'
                 }}
@@ -213,14 +213,14 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
               >
                 <span className="relative z-10 flex items-center gap-2 justify-center py-3">
                   Get Quotation
-                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} />
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} aria-hidden="true" />
                 </span>
               </motion.button>
 
               {/* Secondary Button - Glass/Outline */}
               <motion.button
                 onClick={handleViewProgrammes}
-                className="group relative h-13 px-7 bg-transparent text-white font-semibold rounded-xl overflow-hidden text-sm border border-white/60"
+                className="group relative h-13 min-h-[48px] px-7 bg-transparent text-white font-semibold rounded-xl overflow-hidden text-sm border border-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 style={{
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)'
@@ -235,7 +235,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
               >
                 <span className="relative z-10 flex items-center gap-2 justify-center py-3">
                   View Programmes
-                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} />
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={16} aria-hidden="true" />
                 </span>
               </motion.button>
             </motion.div>

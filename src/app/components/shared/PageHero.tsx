@@ -54,7 +54,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
         <div className="w-full h-full bg-gradient-to-br from-[#d4af37]/15 via-amber-500/8 to-transparent rounded-full blur-3xl" />
       </motion.div>
       
-      <div className="relative max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="text-center">
           {/* Badge */}
           {badge && (
@@ -94,7 +94,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
           
           {/* Title with gradient highlight */}
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight max-w-4xl mx-auto"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: logo ? 0.2 : 0.1 }}
@@ -105,7 +105,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
           {/* Subtitle */}
           {subtitle && (
             <motion.p 
-              className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light"
+              className="text-base sm:text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: logo ? 0.3 : 0.2 }}

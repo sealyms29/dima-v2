@@ -382,9 +382,44 @@ export function QuotationPanel() {
                   </p>
                 </motion.div>
 
-                {/* Cards Grid */}
+                {/* Cards Grid - Mobile: Stack with inline expanded content */}
                 <motion.div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-8"
+                  className="sm:hidden flex flex-col gap-5 mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.18 }}
+                >
+                  {certifications.map((cert) => (
+                    <div key={cert.id}>
+                      <CertificationCard
+                        cert={cert}
+                        isSelected={selectedId === cert.id}
+                        onClick={() => handleCardClick(cert.id)}
+                      />
+                      {/* Expanded content directly below clicked card on mobile */}
+                      <AnimatePresence mode="wait">
+                        {selectedId === cert.id && selectedCert && (
+                          <motion.div
+                            key={`mobile-${cert.id}`}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.35, ease: 'easeInOut' }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            <div className="pt-4">
+                              <ExpandedContent cert={selectedCert} docs={quotationDocs} />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
+                </motion.div>
+
+                {/* Cards Grid - Tablet/Desktop: Grid with expanded content below */}
+                <motion.div
+                  className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.18 }}
@@ -399,23 +434,25 @@ export function QuotationPanel() {
                   ))}
                 </motion.div>
 
-                {/* Expanded Accordion Content */}
-                <AnimatePresence mode="wait">
-                  {selectedCert && (
-                    <motion.div
-                      key={selectedCert.id}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: 'easeInOut' }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <div className="pb-2">
-                        <ExpandedContent cert={selectedCert} docs={quotationDocs} />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Expanded Accordion Content - Only for tablet/desktop */}
+                <div className="hidden sm:block">
+                  <AnimatePresence mode="wait">
+                    {selectedCert && (
+                      <motion.div
+                        key={selectedCert.id}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.35, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <div className="pb-2">
+                          <ExpandedContent cert={selectedCert} docs={quotationDocs} />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 {/* Bottom helper text */}
                 {!selectedCert && (

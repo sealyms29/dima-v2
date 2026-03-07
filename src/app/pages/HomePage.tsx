@@ -38,6 +38,19 @@ export function HomePage() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
 
+  // Respect prefers-reduced-motion
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaQuery.matches) {
+      setIsAutoPlaying(false);
+    }
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setIsAutoPlaying(false);
+    };
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
   // Auto-advance slideshow
   useEffect(() => {
     if (!isAutoPlaying || galleryImages.length === 0) return;
@@ -354,7 +367,8 @@ export function HomePage() {
 
               {/* Navigation Arrows */}
               <motion.button
-                className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
+                aria-label="Previous slide"
+                className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2"
                 style={{
                   background: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(8px)',
@@ -364,10 +378,11 @@ export function HomePage() {
                 whileTap={{ scale: 0.95 }}
                 onClick={prevSlide}
               >
-                <ChevronLeft className="text-white" size={24} />
+                <ChevronLeft className="text-white" size={24} aria-hidden="true" />
               </motion.button>
               <motion.button
-                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
+                aria-label="Next slide"
+                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2"
                 style={{
                   background: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(8px)',
@@ -377,12 +392,13 @@ export function HomePage() {
                 whileTap={{ scale: 0.95 }}
                 onClick={nextSlide}
               >
-                <ChevronRight className="text-white" size={24} />
+                <ChevronRight className="text-white" size={24} aria-hidden="true" />
               </motion.button>
 
               {/* Play/Pause Button */}
               <motion.button
-                className="absolute top-4 md:top-6 right-4 md:right-6 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center z-10"
+                aria-label={isAutoPlaying ? 'Pause slideshow' : 'Play slideshow'}
+                className="absolute top-4 md:top-6 right-4 md:right-6 w-11 h-11 md:w-12 md:h-12 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2"
                 style={{
                   background: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(8px)',
@@ -393,19 +409,22 @@ export function HomePage() {
                 onClick={() => setIsAutoPlaying(!isAutoPlaying)}
               >
                 {isAutoPlaying ? (
-                  <Pause className="text-white" size={18} />
+                  <Pause className="text-white" size={18} aria-hidden="true" />
                 ) : (
-                  <Play className="text-white ml-0.5" size={18} />
+                  <Play className="text-white ml-0.5" size={18} aria-hidden="true" />
                 )}
               </motion.button>
             </div>
 
             {/* Thumbnail Strip */}
-            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+            <div className="mt-6 flex justify-center gap-3 flex-wrap" role="tablist" aria-label="Gallery slide navigation">
               {galleryImages.map((image, index) => (
                 <motion.button
                   key={index}
-                  className={`relative w-16 h-12 md:w-20 md:h-14 rounded-lg overflow-hidden transition-all ${
+                  role="tab"
+                  aria-selected={index === currentSlide}
+                  aria-label={`Go to slide ${index + 1}: ${image.alt}`}
+                  className={`relative w-16 h-12 md:w-20 md:h-14 min-h-[44px] rounded-lg overflow-hidden transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 ${
                     index === currentSlide ? 'ring-2 ring-[#d4af37] ring-offset-2 ring-offset-slate-900' : 'opacity-50 hover:opacity-80'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -414,7 +433,8 @@ export function HomePage() {
                 >
                   <img
                     src={image.src}
-                    alt={image.alt}
+                    alt=""
+                    aria-hidden="true"
                     className="w-full h-full object-cover"
                   />
                   {index === currentSlide && (

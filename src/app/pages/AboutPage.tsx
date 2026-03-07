@@ -10,7 +10,7 @@ const imgOffice2 = '/assets/f803cd79b767f951e7f7ac21c263a4aa722e6bee.png';
 
 export function AboutPage() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.05 });
 
   return (
     <PageLayout>
