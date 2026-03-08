@@ -518,8 +518,6 @@ export default function LiquidEther({
     }
 
     const container = mountRef.current;
-    container.style.position = container.style.position || 'relative';
-    container.style.overflow = container.style.overflow || 'hidden';
 
     const webgl = new WebGLManager({
       $wrapper: container, autoDemo, autoSpeed, autoIntensity,

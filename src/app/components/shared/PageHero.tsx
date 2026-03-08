@@ -28,7 +28,7 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
         autoDemo={true}
         autoSpeed={0.3}
         autoIntensity={1.8}
-        className="opacity-25"
+        className="opacity-35 z-[5]"
         style={{ pointerEvents: 'auto' }}
       />
       

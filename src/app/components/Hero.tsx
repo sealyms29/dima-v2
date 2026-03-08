@@ -79,7 +79,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
         autoDemo={true}
         autoSpeed={0.3}
         autoIntensity={1.8}
-        className="opacity-30"
+        className="opacity-40 z-[5]"
         style={{ pointerEvents: 'auto' }}
       />
       
