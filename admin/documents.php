@@ -601,7 +601,7 @@ if (!isset($_SESSION['admin_user_id'])) {
             <button class="section-tab active" onclick="switchTab('reports')" id="tabReports">📊 Public Summary Reports</button>
             <button class="section-tab" onclick="switchTab('notifications')" id="tabNotifications">🔔 Public Notifications</button>
             <button class="section-tab" onclick="switchTab('quotation')" id="tabQuotation">📋 Quotation Forms</button>
-            <button class="section-tab" onclick="switchTab('agreement')" id="tabAgreement">📄 Certification Agreement</button>
+            <button class="section-tab" onclick="switchTab('agreement')" id="tabAgreement">📄 Certification Terms and Conditions</button>
         </div>
 
         <!-- Tab 1: MSPO Public Summary Reports -->
@@ -705,11 +705,11 @@ if (!isset($_SESSION['admin_user_id'])) {
             <p style="text-align: center; color: #999; padding: 20px;">Loading quotation forms...</p>
         </div>
         </div><!-- /panelQuotation -->
-        <!-- Tab 4: Certification Agreement -->
+        <!-- Tab 4: Certification Terms and Conditions -->
         <div class="tab-panel" id="panelAgreement">
             <div style="margin-bottom: 10px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
-                <h2 style="font-size: 22px; color: #1a1a1a;">📄 Certification Agreement PDF</h2>
-                <p style="font-size: 13px; color: #666; margin-top: 4px;">Upload or download the Certification Agreement PDF for MSPO. Only one file is allowed at a time.</p>
+                <h2 style="font-size: 22px; color: #1a1a1a;">📄 Certification Terms and Conditions PDF</h2>
+                <p style="font-size: 13px; color: #666; margin-top: 4px;">Upload or download the Certification Terms and Conditions PDF for MSPO. Only one file is allowed at a time.</p>
             </div>
             <div id="agreementPanelContent">
                 <div id="agreementStatus" style="margin-bottom: 20px; color: #666;">Loading...</div>
@@ -977,20 +977,20 @@ if (!isset($_SESSION['admin_user_id'])) {
             uploadForm.style.display = 'none';
             actionsDiv.style.display = 'none';
             try {
-                const resp = await fetch('<?= BASE_PATH ?>/api/admin-documents.php?category=Certification Agreement');
+                const resp = await fetch('<?= BASE_PATH ?>/api/admin-documents.php?category=Certification%20Terms%20and%20Conditions');
                 const result = await resp.json();
                 if (result.success && result.data && result.data.length > 0) {
                     const doc = result.data[0];
-                    statusDiv.textContent = 'PDF uploaded: ' + (doc.title || 'Certification Agreement') + ' (' + (doc.year || '') + ')';
+                    statusDiv.textContent = 'PDF uploaded: ' + (doc.title || 'Certification Terms and Conditions') + ' (' + (doc.year || '') + ')';
                     downloadBtn.href = doc.file_path;
                     actionsDiv.style.display = 'block';
                     deleteBtn.onclick = async function() {
-                        if (!confirm('Delete Certification Agreement PDF?')) return;
+                        if (!confirm('Delete Certification Terms and Conditions PDF?')) return;
                         await fetch('<?= BASE_PATH ?>/api/admin-documents.php?id=' + doc.id, { method: 'DELETE' });
                         loadAgreementPanel();
                     };
                 } else {
-                    statusDiv.textContent = 'No Certification Agreement PDF uploaded.';
+                    statusDiv.textContent = 'No Certification Terms and Conditions PDF uploaded.';
                     uploadForm.style.display = 'block';
                 }
             } catch (e) {
@@ -1004,15 +1004,15 @@ if (!isset($_SESSION['admin_user_id'])) {
             if (!file) return;
             document.getElementById('agreementSpinner').classList.add('show');
             const formData = new FormData();
-            formData.append('title', 'Certification Agreement');
-            formData.append('category', 'Certification Agreement');
+            formData.append('title', 'Certification Terms and Conditions');
+            formData.append('category', 'Certification Terms and Conditions');
             formData.append('year', new Date().getFullYear());
             formData.append('file', file);
             try {
                 const resp = await fetch('<?= BASE_PATH ?>/api/admin-documents-upload.php', { method: 'POST', body: formData });
                 const result = await resp.json();
                 if (result.success) {
-                    showSuccess('Certification Agreement PDF uploaded successfully');
+                    showSuccess('Certification Terms and Conditions PDF uploaded successfully');
                 } else {
                     showError(result.message || 'Upload failed');
                 }

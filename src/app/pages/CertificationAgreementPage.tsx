@@ -72,7 +72,7 @@ export function CertificationAgreementPage() {
     if (agreementData?.file_path) {
       const link = document.createElement('a');
       link.href = agreementData.file_path;
-      link.download = agreementData.file_name || 'certification_agreement.pdf';
+      link.download = agreementData.file_name || 'certification_terms_and_conditions.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -93,7 +93,7 @@ export function CertificationAgreementPage() {
       <PageHero
         badge="Legal Document"
         title="Certification Terms & Conditions"
-        subtitle={agreementData?.title || "DMC/ISO/QCA Quotation Certification Agreement"}
+        subtitle={agreementData?.title || "DMC/ISO/QCA Quotation Certification Terms and Conditions"}
       />
 
       <section className="relative py-12 md:py-20 bg-gradient-to-b from-slate-50 to-white" ref={ref}>
@@ -112,7 +112,7 @@ export function CertificationAgreementPage() {
               </div>
               <div>
                 <h2 className="text-lg md:text-xl font-bold text-slate-900">
-                  {agreementData?.title || 'Certification Agreement'}
+                  {agreementData?.title || 'Certification Terms and Conditions'}
                 </h2>
                 {agreementData?.version && (
                   <p className="text-sm text-slate-500">

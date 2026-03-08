@@ -12,7 +12,7 @@ class DocumentsManager {
     const UPLOAD_DIR = __DIR__ . '/../uploads/documents';
     const ALLOWED_TYPES = ['application/pdf'];
     const MAX_FILE_SIZE = 10485760; // 10MB
-    const CATEGORIES = ['MSPO Public Report Summary', 'MSPO Public Notifications', 'Certification Agreement'];
+    const CATEGORIES = ['MSPO Public Report Summary', 'MSPO Public Notifications', 'Certification Agreement', 'Certification Terms and Conditions'];
     const TYPES = ['PDF'];
     const STATUSES = ['Active', 'Archived'];
     const AUDIT_STATUSES = ['Upcoming Audit', 'Past Audit'];

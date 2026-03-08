@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 try {
     // Try documents table first (new unified system)
-    $doc = Database::fetchOne("SELECT id, title, description, file_path, status, created_at, updated_at FROM documents WHERE category = 'Certification Agreement' ORDER BY updated_at DESC LIMIT 1");
+    $doc = Database::fetchOne("SELECT id, title, description, file_path, status, created_at, updated_at FROM documents WHERE (category = 'Certification Agreement' OR category = 'Certification Terms and Conditions') ORDER BY updated_at DESC LIMIT 1");
     
     if ($doc) {
         $result = [
