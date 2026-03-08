@@ -18,7 +18,7 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 
 // Auth check
 if (!isset($_SESSION['admin_user_id'])) {
-    APIResponse::error('Unauthorized', 401);
+    APIResponse::send(APIResponse::error('Unauthorized', 401));
 }
 
 $userId = $_SESSION['admin_user_id'];
@@ -32,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         );
 
         if (!$user) {
-            APIResponse::error('User not found', 404);
+            APIResponse::send(APIResponse::error('User not found', 404));
         }
 
-        APIResponse::success($user);
+        APIResponse::send(APIResponse::success($user));
     } catch (Exception $e) {
-        APIResponse::error('Failed to fetch profile: ' . $e->getMessage());
+        APIResponse::send(APIResponse::error('Failed to fetch profile: ' . $e->getMessage()));
     }
 }
 
@@ -53,21 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
         $confirmPassword = $input['confirm_password'] ?? '';
 
         if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
-            APIResponse::error('All password fields are required.');
+            APIResponse::send(APIResponse::error('All password fields are required.'));
         }
 
         if (strlen($newPassword) < 6) {
-            APIResponse::error('New password must be at least 6 characters.');
+            APIResponse::send(APIResponse::error('New password must be at least 6 characters.'));
         }
 
         if ($newPassword !== $confirmPassword) {
-            APIResponse::error('New passwords do not match.');
+            APIResponse::send(APIResponse::error('New passwords do not match.'));
         }
 
         // Verify current password
         $user = Database::fetchOne("SELECT password_hash FROM admin_users WHERE id = ?", [$userId]);
         if (!$user || !password_verify($currentPassword, $user['password_hash'])) {
-            APIResponse::error('Current password is incorrect.');
+            APIResponse::send(APIResponse::error('Current password is incorrect.'));
         }
 
         try {
@@ -85,9 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
                 ]);
             } catch (Exception $e) {}
 
-            APIResponse::success(null, 'Password changed successfully.');
+            APIResponse::send(APIResponse::success(null, 'Password changed successfully.'));
         } catch (Exception $e) {
-            APIResponse::error('Failed to change password: ' . $e->getMessage());
+            APIResponse::send(APIResponse::error('Failed to change password: ' . $e->getMessage()));
         }
 
     } elseif ($action === 'update_email') {
@@ -95,11 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
         $email = trim($input['email'] ?? '');
 
         if (empty($email)) {
-            APIResponse::error('Email address is required.');
+            APIResponse::send(APIResponse::error('Email address is required.'));
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            APIResponse::error('Please enter a valid email address.');
+            APIResponse::send(APIResponse::error('Please enter a valid email address.'));
         }
 
         try {
@@ -108,9 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
                 [$email, $userId]
             );
 
-            APIResponse::success(['email' => $email], 'Email updated successfully.');
+            APIResponse::send(APIResponse::success(['email' => $email], 'Email updated successfully.'));
         } catch (Exception $e) {
-            APIResponse::error('Failed to update email: ' . $e->getMessage());
+            APIResponse::send(APIResponse::error('Failed to update email: ' . $e->getMessage()));
         }
 
     } else {
@@ -120,11 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
         $phone = trim($input['phone'] ?? '');
 
         if (empty($email)) {
-            APIResponse::error('Email address is required.');
+            APIResponse::send(APIResponse::error('Email address is required.'));
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            APIResponse::error('Please enter a valid email address.');
+            APIResponse::send(APIResponse::error('Please enter a valid email address.'));
         }
 
         try {
@@ -150,11 +150,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST
                 [$userId]
             );
 
-            APIResponse::success($user, 'Profile updated successfully.');
+            APIResponse::send(APIResponse::success($user, 'Profile updated successfully.'));
         } catch (Exception $e) {
-            APIResponse::error('Failed to update profile: ' . $e->getMessage());
+            APIResponse::send(APIResponse::error('Failed to update profile: ' . $e->getMessage()));
         }
     }
 }
 
-APIResponse::error('Method not allowed', 405);
+APIResponse::send(APIResponse::error('Method not allowed', 405));
