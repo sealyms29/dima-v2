@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import LiquidEther from './LiquidEther';
+import CountUp from './CountUp';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -236,42 +237,62 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
               </motion.button>
             </motion.div>
 
-            {/* Stats - Glassmorphism Cards */}
+            {/* Stats - Glassmorphism Cards with CountUp */}
             <motion.div 
               className="grid grid-cols-2 gap-4 max-w-sm"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.7 }}
             >
-              {[
-                { label: 'Established', value: '2018' },
-                { label: 'Certifications', value: '100+' }
-              ].map((stat, index) => (
-                <motion.div 
-                  key={index}
-                  className="rounded-xl py-5 px-5 text-center flex flex-col items-center justify-center"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.2)'
-                  }}
-                  whileHover={{ 
-                    scale: 1.02, 
-                    y: -2,
-                    borderColor: 'rgba(212, 175, 55, 0.3)'
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="text-2xl md:text-3xl font-bold text-[#d4af37] mb-0.5">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-white/70 font-medium uppercase tracking-wider">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
+              {/* Established Card */}
+              <motion.div 
+                className="rounded-xl py-5 px-5 text-center flex flex-col items-center justify-center"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.2)'
+                }}
+                whileHover={{ 
+                  scale: 1.02, 
+                  y: -2,
+                  borderColor: 'rgba(212, 175, 55, 0.3)'
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="text-2xl md:text-3xl font-bold mb-0.5 bg-gradient-to-r from-[#d4af37] via-amber-400 to-[#d4af37] bg-clip-text text-transparent">
+                  <CountUp to={2018} from={2000} duration={2} delay={0.8} />
+                </div>
+                <div className="text-xs text-white/70 font-medium uppercase tracking-wider">
+                  Established
+                </div>
+              </motion.div>
+
+              {/* MSPO Clients Card */}
+              <motion.div 
+                className="rounded-xl py-5 px-5 text-center flex flex-col items-center justify-center"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.2)'
+                }}
+                whileHover={{ 
+                  scale: 1.02, 
+                  y: -2,
+                  borderColor: 'rgba(212, 175, 55, 0.3)'
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="text-2xl md:text-3xl font-bold mb-0.5 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <CountUp to={100} from={0} duration={2.5} delay={1} /><span>+</span>
+                </div>
+                <div className="text-xs text-white/70 font-medium uppercase tracking-wider">
+                  MSPO Clients
+                </div>
+              </motion.div>
             </motion.div>
         </div>
       </div>
