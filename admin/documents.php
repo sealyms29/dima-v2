@@ -705,6 +705,29 @@ if (!isset($_SESSION['admin_user_id'])) {
             <p style="text-align: center; color: #999; padding: 20px;">Loading quotation forms...</p>
         </div>
         </div><!-- /panelQuotation -->
+        <!-- Tab 4: Certification Agreement -->
+        <div class="tab-panel" id="panelAgreement">
+            <div style="margin-bottom: 10px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
+                <h2 style="font-size: 22px; color: #1a1a1a;">📄 Certification Agreement PDF</h2>
+                <p style="font-size: 13px; color: #666; margin-top: 4px;">Upload or download the Certification Agreement PDF for MSPO. Only one file is allowed at a time.</p>
+            </div>
+            <div id="agreementPanelContent">
+                <div id="agreementStatus" style="margin-bottom: 20px; color: #666;">Loading...</div>
+                <form id="agreementUploadForm" enctype="multipart/form-data" style="display:none; margin-bottom: 20px;" onsubmit="handleAgreementUpload(event)">
+                    <div class="form-group">
+                        <label>Upload PDF *</label>
+                        <input type="file" id="agreementFile" accept=".pdf" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">Upload PDF <span class="spinner" id="agreementSpinner"></span></button>
+                    </div>
+                </form>
+                <div id="agreementActions" style="display:none;">
+                    <a id="agreementDownloadBtn" class="btn" href="#" target="_blank">Download PDF</a>
+                    <button class="btn btn-danger" id="agreementDeleteBtn">Delete PDF</button>
+                </div>
+            </div>
+        </div><!-- /panelAgreement -->
 
         <!-- Quotation Form Upload Modal -->
         <div class="modal" id="qfUploadModal">
@@ -914,14 +937,18 @@ if (!isset($_SESSION['admin_user_id'])) {
 
         function switchTab(tab) {
             activeTab = tab;
-            document.getElementById('panelReports').classList.toggle('active', tab === 'reports');
-            document.getElementById('panelNotifications').classList.toggle('active', tab === 'notifications');
-            document.getElementById('panelQuotation').classList.toggle('active', tab === 'quotation');
-            document.getElementById('panelAgreement').classList.toggle('active', tab === 'agreement');
-            document.getElementById('tabReports').classList.toggle('active', tab === 'reports');
-            document.getElementById('tabNotifications').classList.toggle('active', tab === 'notifications');
-            document.getElementById('tabQuotation').classList.toggle('active', tab === 'quotation');
-            document.getElementById('tabAgreement').classList.toggle('active', tab === 'agreement');
+            // Remove all active classes first
+            document.querySelectorAll('.section-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            // Add active class to selected tab and panel
+            document.getElementById('tabReports').classList.add(tab === 'reports' ? 'active' : '');
+            document.getElementById('tabNotifications').classList.add(tab === 'notifications' ? 'active' : '');
+            document.getElementById('tabQuotation').classList.add(tab === 'quotation' ? 'active' : '');
+            document.getElementById('tabAgreement').classList.add(tab === 'agreement' ? 'active' : '');
+            document.getElementById('panelReports').classList.add(tab === 'reports' ? 'active' : '');
+            document.getElementById('panelNotifications').classList.add(tab === 'notifications' ? 'active' : '');
+            document.getElementById('panelQuotation').classList.add(tab === 'quotation' ? 'active' : '');
+            document.getElementById('panelAgreement').classList.add(tab === 'agreement' ? 'active' : '');
 
             // Update header upload button label
             const btn = document.getElementById('uploadBtnHeader');
@@ -929,6 +956,60 @@ if (!isset($_SESSION['admin_user_id'])) {
             else if (tab === 'notifications') btn.textContent = '+ Upload Notification';
             else btn.textContent = '+ Upload New Document';
             btn.style.display = (tab === 'quotation') ? 'none' : 'inline-block';
+
+            // Load Certification Agreement panel if selected
+            if (tab === 'agreement') loadAgreementPanel();
+        }
+
+        // Certification Agreement Panel Logic
+        async function loadAgreementPanel() {
+            const statusDiv = document.getElementById('agreementStatus');
+            const uploadForm = document.getElementById('agreementUploadForm');
+            const actionsDiv = document.getElementById('agreementActions');
+            const downloadBtn = document.getElementById('agreementDownloadBtn');
+            const deleteBtn = document.getElementById('agreementDeleteBtn');
+            statusDiv.textContent = 'Loading...';
+            uploadForm.style.display = 'none';
+            actionsDiv.style.display = 'none';
+            try {
+                const resp = await fetch('<?= BASE_PATH ?>/api/admin-documents.php?category=Certification Agreement');
+                const result = await resp.json();
+                if (result.success && result.data && result.data.length > 0) {
+                    const doc = result.data[0];
+                    statusDiv.textContent = 'PDF uploaded: ' + (doc.title || 'Certification Agreement') + ' (' + (doc.year || '') + ')';
+                    downloadBtn.href = doc.file_path;
+                    actionsDiv.style.display = 'block';
+                    deleteBtn.onclick = async function() {
+                        if (!confirm('Delete Certification Agreement PDF?')) return;
+                        await fetch('<?= BASE_PATH ?>/api/admin-documents.php?id=' + doc.id, { method: 'DELETE' });
+                        loadAgreementPanel();
+                    };
+                } else {
+                    statusDiv.textContent = 'No Certification Agreement PDF uploaded.';
+                    uploadForm.style.display = 'block';
+                }
+            } catch (e) {
+                statusDiv.textContent = 'Error loading agreement.';
+            }
+        }
+
+        async function handleAgreementUpload(event) {
+            event.preventDefault();
+            const file = document.getElementById('agreementFile').files[0];
+            if (!file) return;
+            document.getElementById('agreementSpinner').classList.add('show');
+            const formData = new FormData();
+            formData.append('title', 'Certification Agreement');
+            formData.append('category', 'Certification Agreement');
+            formData.append('file', file);
+            try {
+                await fetch('<?= BASE_PATH ?>/api/admin-documents-upload.php', { method: 'POST', body: formData });
+                loadAgreementPanel();
+            } catch (e) {
+                alert('Upload failed');
+            } finally {
+                document.getElementById('agreementSpinner').classList.remove('show');
+            }
         }
 
         function openUploadForActiveTab() {
