@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/NotificationHelper.php';
+require_once __DIR__ . '/../includes/MailHelper.php';
 
 // Auto-create feedback_messages table if it doesn't exist
 try {
@@ -43,7 +44,7 @@ $errors = [];
 $feedback_type = SecurityHelper::sanitizeString($input['feedback_type'] ?? '');
 if (empty($feedback_type)) {
     $errors['feedback_type'] = 'Type of feedback is required';
-} elseif (!in_array($feedback_type, ['General Feedback', 'Suggestion', 'Service Inquiry', 'Other'])) {
+} elseif (!in_array($feedback_type, ['General Feedback', 'Suggestion', 'General Inquiry', 'Other'])) {
     $errors['feedback_type'] = 'Invalid feedback type';
 }
 
@@ -113,6 +114,20 @@ try {
 
     // Create notification for admin
     create_notification('feedback', $feedback_id, $name, $email);
+
+    // Send email notification to admin
+    try {
+        MailHelper::sendSubmissionNotification('feedback', [
+            'Type' => $feedback_type,
+            'Name' => $name,
+            'Email' => $email,
+            'Phone' => $phone,
+            'Service' => $service_type,
+            'Comment' => $comment
+        ]);
+    } catch (Exception $mailError) {
+        error_log('Failed to send feedback notification email: ' . $mailError->getMessage());
+    }
 
     DBTransaction::commit();
 

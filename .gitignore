@@ -7,6 +7,7 @@ vendor/
 .env.local
 .env.*.local
 .env.production
+includes/mail-config.php
 
 # Build outputs (React dist is built on server or uploaded separately)
 # dist/

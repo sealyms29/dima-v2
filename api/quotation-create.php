@@ -22,6 +22,7 @@
  */
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/MailHelper.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -119,11 +120,19 @@ try {
     DBTransaction::commit();
 
     // ========================================================================
-    // OPTIONAL: Send Email Notification
+    // Send Email Notification to Admin
     // ========================================================================
     
-    if (SEND_EMAIL_NOTIFICATIONS) {
-        send_quotation_notification($name, $email, $company, $message);
+    try {
+        MailHelper::sendSubmissionNotification('quotation', [
+            'Name' => $name,
+            'Email' => $email,
+            'Phone' => $phone,
+            'Company' => $company,
+            'Message' => $message
+        ]);
+    } catch (Exception $mailError) {
+        error_log('Failed to send quotation notification email: ' . $mailError->getMessage());
     }
 
     // Return success response

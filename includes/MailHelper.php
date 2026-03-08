@@ -120,4 +120,129 @@ class MailHelper {
 </html>
 HTML;
     }
+
+    /**
+     * Send notification email to admin for new submissions
+     */
+    public static function sendSubmissionNotification(string $type, array $data): bool {
+        // Get admin email from settings
+        // Ensure helper functions are available
+        if (!function_exists('get_admin_email')) {
+            require_once __DIR__ . '/Database.php';
+            require_once __DIR__ . '/config.php';
+            
+            // Inline get_admin_email if bootstrap not loaded
+            try {
+                $result = Database::fetchOne(
+                    "SELECT setting_value FROM site_settings WHERE setting_key = 'email_1' AND setting_group = 'contact'"
+                );
+                $adminEmail = $result['setting_value'] ?? null;
+            } catch (Exception $e) {
+                error_log('Failed to get admin email: ' . $e->getMessage());
+                return false;
+            }
+        } else {
+            $adminEmail = get_admin_email();
+        }
+        
+        if (empty($adminEmail)) {
+            error_log('Admin email not configured in site settings');
+            return false;
+        }
+
+        $typeLabels = [
+            'quotation' => 'Quotation Request',
+            'feedback' => 'Feedback',
+            'complaint' => 'Complaint',
+            'contact' => 'Contact Message'
+        ];
+
+        $typeLabel = $typeLabels[$type] ?? 'Submission';
+        $subject = "New {$typeLabel} - DIMA Website";
+        
+        $body = self::getSubmissionEmailHtml($typeLabel, $data);
+        $altBody = self::getSubmissionEmailText($typeLabel, $data);
+
+        return self::send($adminEmail, $subject, $body, $altBody);
+    }
+
+    /**
+     * Generate HTML email for submission notifications
+     */
+    private static function getSubmissionEmailHtml(string $typeLabel, array $data): string {
+        $rows = '';
+        foreach ($data as $key => $value) {
+            $label = ucwords(str_replace('_', ' ', $key));
+            $value = htmlspecialchars($value ?? '');
+            $rows .= "<tr><td style=\"padding:10px 16px;border-bottom:1px solid #eee;font-weight:600;color:#555;width:140px;\">{$label}</td><td style=\"padding:10px 16px;border-bottom:1px solid #eee;color:#333;\">{$value}</td></tr>";
+        }
+
+        $adminUrl = defined('APP_URL') ? APP_URL . '/admin/submissions.php' : '#';
+
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <div style="max-width:600px;margin:40px auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#d4af37,#b8962e);padding:30px 32px;text-align:center;">
+            <h1 style="color:white;margin:0;font-size:22px;font-weight:700;">DIMA Certification</h1>
+            <p style="color:rgba(255,255,255,0.9);margin:6px 0 0;font-size:14px;">New {$typeLabel}</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:32px;">
+            <p style="color:#333;font-size:15px;margin:0 0 24px;">
+                You have received a new <strong>{$typeLabel}</strong> from the DIMA website.
+            </p>
+
+            <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border-radius:8px;overflow:hidden;">
+                {$rows}
+            </table>
+
+            <div style="text-align:center;margin:28px 0;">
+                <a href="{$adminUrl}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#d4af37,#b8962e);color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
+                    View in Admin Panel
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background:#f9f9f9;padding:16px 32px;text-align:center;border-top:1px solid #eee;">
+            <p style="color:#999;font-size:12px;margin:0;">© DIMA Certification Sdn Bhd</p>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
+    }
+
+    /**
+     * Generate plain text email for submission notifications
+     */
+    private static function getSubmissionEmailText(string $typeLabel, array $data): string {
+        $adminUrl = defined('APP_URL') ? APP_URL . '/admin/submissions.php' : '';
+        
+        $text = "New {$typeLabel} - DIMA Website\n\n";
+        $text .= "You have received a new {$typeLabel} from the DIMA website.\n\n";
+        $text .= "Details:\n";
+        $text .= str_repeat('-', 40) . "\n";
+        
+        foreach ($data as $key => $value) {
+            $label = ucwords(str_replace('_', ' ', $key));
+            $text .= "{$label}: {$value}\n";
+        }
+        
+        $text .= str_repeat('-', 40) . "\n\n";
+        if ($adminUrl) {
+            $text .= "View in Admin Panel: {$adminUrl}\n\n";
+        }
+        $text .= "- DIMA Certification";
+        
+        return $text;
+    }
 }

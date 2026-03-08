@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/NotificationHelper.php';
+require_once __DIR__ . '/../includes/MailHelper.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     APIResponse::send(APIResponse::error('Method not allowed', 405));
@@ -81,6 +82,19 @@ try {
 
     // Create admin notification
     create_notification('contact', $contact_id, $name, $email);
+
+    // Send email notification to admin
+    try {
+        MailHelper::sendSubmissionNotification('contact', [
+            'Name' => $name,
+            'Email' => $email,
+            'Phone' => $phone,
+            'Company' => $company,
+            'Message' => $message
+        ]);
+    } catch (Exception $mailError) {
+        error_log('Failed to send contact notification email: ' . $mailError->getMessage());
+    }
 
     APIResponse::send(APIResponse::success(
         ['id' => $contact_id],

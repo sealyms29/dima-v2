@@ -125,3 +125,40 @@ function log_activity($action, $table_name, $record_id, $old_value = null, $new_
         error_log('Failed to log activity: ' . $e->getMessage());
     }
 }
+
+/**
+ * Get Admin Email from Site Settings
+ * Returns the primary admin email (email_1) for receiving notifications
+ */
+function get_admin_email(): ?string {
+    try {
+        $result = Database::fetchOne(
+            "SELECT setting_value FROM site_settings WHERE setting_key = 'email_1' AND setting_group = 'contact'"
+        );
+        return $result['setting_value'] ?? null;
+    } catch (Exception $e) {
+        error_log('Failed to get admin email: ' . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Get All Admin Emails from Site Settings
+ * Returns array of admin emails (email_1 and email_2 if set)
+ */
+function get_admin_emails(): array {
+    $emails = [];
+    try {
+        $results = Database::fetchAll(
+            "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('email_1', 'email_2') AND setting_group = 'contact'"
+        );
+        foreach ($results as $row) {
+            if (!empty($row['setting_value'])) {
+                $emails[] = $row['setting_value'];
+            }
+        }
+    } catch (Exception $e) {
+        error_log('Failed to get admin emails: ' . $e->getMessage());
+    }
+    return $emails;
+}
