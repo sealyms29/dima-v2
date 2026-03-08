@@ -91,15 +91,24 @@ class MailHelper {
         try {
             $mail->isMail(); // Use PHP mail() function
 
-            $fromEmail = defined('MAIL_FROM') && MAIL_FROM ? MAIL_FROM : (defined('MAIL_USERNAME') ? MAIL_USERNAME : 'noreply@dima.my');
-            $fromName = defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : 'DIMA Certification';
-            $mail->setFrom($fromEmail, $fromName);
+            // Use server domain email as From (prevents spam filtering)
+            $mail->setFrom('noreply@dima.my', 'DIMA Certification');
+            
+            // Set Reply-To as the admin's actual email
+            $fromEmail = defined('MAIL_FROM') && MAIL_FROM ? MAIL_FROM : (defined('MAIL_USERNAME') ? MAIL_USERNAME : '');
+            if (!empty($fromEmail)) {
+                $mail->addReplyTo($fromEmail, defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : 'DIMA Certification');
+            }
+            
             $mail->addAddress($to);
 
             $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $htmlBody;
             $mail->AltBody = $altBody;
+            
+            // Add headers to improve deliverability
+            $mail->XMailer = 'DIMA Certification Mailer';
 
             $mail->send();
             error_log("[MailHelper] Mail sent via PHP mail() to {$to} (subject: {$subject})");
