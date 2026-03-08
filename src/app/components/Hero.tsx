@@ -2,7 +2,6 @@ import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import BlurText from './BlurText';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -160,13 +159,19 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full py-24 lg:py-32">
         <div className="max-w-3xl">
-            <BlurText
-              text="Towards Sustainable Solutions"
-              delay={150}
-              animateBy="words"
-              direction="top"
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight"
-            />
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+              {['Towards', 'Sustainable', 'Solutions'].map((word, i) => (
+                <motion.span
+                  key={word}
+                  className={`inline-block mr-[0.3em] will-change-[transform,filter,opacity] ${word === 'Sustainable' ? 'text-gradient-gold' : ''}`}
+                  initial={{ filter: 'blur(10px)', opacity: 0, y: -50 }}
+                  animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: i * 0.15 }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </h1>
 
             {/* Divider Line */}
             <motion.div 
