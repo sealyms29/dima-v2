@@ -2,6 +2,7 @@ import { motion, useMotionValue, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight } from 'lucide-react';
+import LiquidEther from './LiquidEther';
 // Fallback hero image
 const defaultHero = '/assets/db0b98702172835847b9489f50e24d27018ab779.png';
 import { useQuotation } from '../QuotationContext';
@@ -68,6 +69,19 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
     >
       {/* Mesh Gradient Overlay */}
       <div className="mesh-gradient absolute inset-0 opacity-40" />
+
+      {/* Liquid Ether Background */}
+      <LiquidEther
+        colors={['#d4af37', '#1e293b', '#f59e0b']}
+        resolution={0.4}
+        mouseForce={15}
+        cursorSize={80}
+        autoDemo={true}
+        autoSpeed={0.3}
+        autoIntensity={1.8}
+        className="opacity-30"
+        style={{ pointerEvents: 'auto' }}
+      />
       
       {/* Noise texture for depth */}
       <div className="noise-overlay" />

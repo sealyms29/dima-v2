@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { ReactNode } from 'react';
 import BlurText from '../BlurText';
+import LiquidEther from '../LiquidEther';
 
 interface PageHeroProps {
   badge?: string;
@@ -17,6 +18,19 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700">
       {/* Mesh Gradient */}
       <div className="mesh-gradient absolute inset-0 opacity-40" />
+
+      {/* Liquid Ether Background */}
+      <LiquidEther
+        colors={['#d4af37', '#334155', '#f59e0b']}
+        resolution={0.4}
+        mouseForce={15}
+        cursorSize={80}
+        autoDemo={true}
+        autoSpeed={0.3}
+        autoIntensity={1.8}
+        className="opacity-25"
+        style={{ pointerEvents: 'auto' }}
+      />
       
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.04)_1px,transparent_1px)] bg-[size:64px_64px]" />
