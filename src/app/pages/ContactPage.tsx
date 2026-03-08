@@ -295,172 +295,25 @@ export function ContactPage() {
             ))}
           </div>
 
-          {/* Form + Map */}
-          <div className="grid lg:grid-cols-2 gap-12">
-
-            {/* General Enquiry Form */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#d4af37]/20 via-amber-500/10 to-transparent rounded-[2rem] blur-2xl" />
-                <div className="relative backdrop-blur-sm bg-white border border-slate-200 rounded-[2rem] p-8 md:p-10 shadow-2xl">
-                  {isSubmitted ? (
-                    <motion.div
-                      className="text-center py-16"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <motion.div
-                        className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl"
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-                      >
-                        <CheckCircle2 className="text-white" size={40} />
-                      </motion.div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Thank You!</h3>
-                      <p className="text-lg text-slate-600">We'll get back to you shortly</p>
-                    </motion.div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {generalError && (
-                        <motion.div
-                          className="flex items-gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-2xl"
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                        >
-                          <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
-                          <p className="text-red-700 font-medium">{generalError}</p>
-                        </motion.div>
-                      )}
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label htmlFor="name" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <User size={18} className="text-[#d4af37]" aria-hidden="true" /> Full Name <span className="text-red-500" aria-hidden="true">*</span>
-                            <span className="sr-only">(required)</span>
-                          </label>
-                          <input type="text" id="name" name="name" required value={formData.name} onChange={handleChange}
-                            aria-required="true"
-                            aria-invalid={errors.name ? 'true' : 'false'}
-                            aria-describedby={errors.name ? 'name-error' : undefined}
-                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
-                              errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                            }`}
-                            placeholder="John Doe" />
-                          {errors.name && <p id="name-error" className="text-red-600 text-sm mt-1" role="alert">{errors.name}</p>}
-                        </div>
-                        <div>
-                          <label htmlFor="email" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Mail size={18} className="text-[#d4af37]" aria-hidden="true" /> Email Address <span className="text-red-500" aria-hidden="true">*</span>
-                            <span className="sr-only">(required)</span>
-                          </label>
-                          <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange}
-                            aria-required="true"
-                            aria-invalid={errors.email ? 'true' : 'false'}
-                            aria-describedby={errors.email ? 'email-error' : undefined}
-                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
-                              errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                            }`}
-                            placeholder="john@company.com" />
-                          {errors.email && <p id="email-error" className="text-red-600 text-sm mt-1" role="alert">{errors.email}</p>}
-                        </div>
-                      </div>
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label htmlFor="phone" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Phone size={18} className="text-[#d4af37]" aria-hidden="true" /> Phone Number <span className="text-red-500" aria-hidden="true">*</span>
-                            <span className="sr-only">(required)</span>
-                          </label>
-                          <input type="tel" id="phone" name="phone" required value={formData.phone} onChange={handleChange}
-                            aria-required="true"
-                            aria-invalid={errors.phone ? 'true' : 'false'}
-                            aria-describedby={errors.phone ? 'phone-error' : undefined}
-                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
-                              errors.phone ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                            }`}
-                            placeholder="+60 12-345 6789" />
-                          {errors.phone && <p id="phone-error" className="text-red-600 text-sm mt-1" role="alert">{errors.phone}</p>}
-                        </div>
-                        <div>
-                          <label htmlFor="company" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                            <Building2 size={18} className="text-[#d4af37]" aria-hidden="true" /> Company Name <span className="text-red-500" aria-hidden="true">*</span>
-                            <span className="sr-only">(required)</span>
-                          </label>
-                          <input type="text" id="company" name="company" required value={formData.company} onChange={handleChange}
-                            aria-required="true"
-                            aria-invalid={errors.company ? 'true' : 'false'}
-                            aria-describedby={errors.company ? 'company-error' : undefined}
-                            className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all text-slate-900 placeholder:text-slate-400 ${
-                              errors.company ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                            }`}
-                            placeholder="Your Company Sdn Bhd" />
-                          {errors.company && <p id="company-error" className="text-red-600 text-sm mt-1" role="alert">{errors.company}</p>}
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="message" className="flex items-center gap-2 text-slate-900 font-semibold mb-3">
-                          <MessageSquare size={18} className="text-[#d4af37]" aria-hidden="true" /> Message
-                        </label>
-                        <textarea id="message" name="message" rows={5} value={formData.message} onChange={handleChange}
-                          aria-describedby={errors.message ? 'message-error' : undefined}
-                          className={`w-full px-5 py-4 text-base bg-slate-50 border-2 rounded-2xl focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 transition-all resize-none text-slate-900 placeholder:text-slate-400 ${
-                            errors.message ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-[#d4af37]'
-                          }`}
-                          placeholder="Tell us about your certification requirements..." />
-                        {errors.message && <p id="message-error" className="text-red-600 text-sm mt-1" role="alert">{errors.message}</p>}
-                      </div>
-                      <motion.button type="submit" disabled={isLoading}
-                        className="group relative w-full px-8 py-5 bg-gradient-to-r from-[#d4af37] to-amber-500 text-black font-bold rounded-2xl shadow-2xl shadow-[#d4af37]/20 flex items-center justify-center gap-3 text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                        whileHover={!isLoading ? { scale: 1.02 } : {}} whileTap={!isLoading ? { scale: 0.98 } : {}}
-                      >
-                        <motion.div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-500"
-                          initial={{ x: '-100%' }} whileHover={!isLoading ? { x: 0 } : {}} transition={{ duration: 0.3 }} />
-                        {isLoading ? (
-                          <>
-                            <motion.div
-                              className="relative z-10 w-5 h-5 border-2 border-black border-t-transparent rounded-full"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity }}
-                            />
-                            <span className="relative z-10">Submitting...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Send size={22} className="relative z-10" />
-                            <span className="relative z-10">Submit Request</span>
-                          </>
-                        )}
-                      </motion.button>
-                    </form>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Map */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="relative bg-slate-100 rounded-3xl overflow-hidden h-full shadow-lg min-h-[400px]">
-                <iframe
-                  src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, position: 'absolute', inset: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
-                ></iframe>
-              </div>
-            </motion.div>
-          </div>
+          {/* Map Section - Full Width */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative bg-slate-100 rounded-3xl overflow-hidden shadow-lg h-[450px] md:h-[500px]">
+              <iframe
+                src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0, position: 'absolute', inset: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
+              ></iframe>
+            </div>
+          </motion.div>
         </div>
       </section>
 
