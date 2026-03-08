@@ -29,16 +29,28 @@ class MailHelper {
      * Send an email
      */
     public static function send(string $to, string $subject, string $htmlBody, string $altBody = ''): bool {
+        // Try SMTP first, fall back to PHP mail() if SMTP fails
+        $smtpResult = self::sendViaSMTP($to, $subject, $htmlBody, $altBody);
+        if ($smtpResult) {
+            return true;
+        }
+
+        error_log('[MailHelper] SMTP failed, falling back to PHP mail()');
+        return self::sendViaPHPMail($to, $subject, $htmlBody, $altBody);
+    }
+
+    /**
+     * Send via SMTP (Gmail, etc.)
+     */
+    private static function sendViaSMTP(string $to, string $subject, string $htmlBody, string $altBody): bool {
         $mail = new PHPMailer(true);
 
         try {
-            // Check if SMTP is configured
             if (empty(MAIL_USERNAME) || empty(MAIL_PASSWORD)) {
-                error_log('[MailHelper] Mail not configured: MAIL_USERNAME or MAIL_PASSWORD is empty in mail-config.php');
+                error_log('[MailHelper] Mail not configured: MAIL_USERNAME or MAIL_PASSWORD is empty');
                 return false;
             }
 
-            // SMTP settings
             $mail->isSMTP();
             $mail->Host       = MAIL_HOST;
             $mail->SMTPAuth   = true;
@@ -46,29 +58,55 @@ class MailHelper {
             $mail->Password   = MAIL_PASSWORD;
             $mail->Port       = MAIL_PORT;
 
-            // Use SSL for port 465, TLS for port 587
             if (MAIL_PORT == 465) {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             } else {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             }
 
-            // Sender & recipient
             $mail->setFrom(MAIL_FROM ?: MAIL_USERNAME, MAIL_FROM_NAME);
             $mail->addAddress($to);
 
-            // Content
             $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $htmlBody;
             $mail->AltBody = $altBody;
 
             $mail->send();
-            error_log("[MailHelper] Mail sent successfully to {$to} (subject: {$subject})");
+            error_log("[MailHelper] Mail sent via SMTP to {$to} (subject: {$subject})");
             return true;
 
         } catch (Exception $e) {
-            error_log('[MailHelper] Mail send error: ' . $mail->ErrorInfo . ' Exception: ' . $e->getMessage());
+            error_log('[MailHelper] SMTP error: ' . $mail->ErrorInfo);
+            return false;
+        }
+    }
+
+    /**
+     * Send via PHP's built-in mail() function (works on cPanel/shared hosting)
+     */
+    private static function sendViaPHPMail(string $to, string $subject, string $htmlBody, string $altBody): bool {
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isMail(); // Use PHP mail() function
+
+            $fromEmail = defined('MAIL_FROM') && MAIL_FROM ? MAIL_FROM : (defined('MAIL_USERNAME') ? MAIL_USERNAME : 'noreply@dima.my');
+            $fromName = defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : 'DIMA Certification';
+            $mail->setFrom($fromEmail, $fromName);
+            $mail->addAddress($to);
+
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $htmlBody;
+            $mail->AltBody = $altBody;
+
+            $mail->send();
+            error_log("[MailHelper] Mail sent via PHP mail() to {$to} (subject: {$subject})");
+            return true;
+
+        } catch (Exception $e) {
+            error_log('[MailHelper] PHP mail() error: ' . $mail->ErrorInfo . ' Exception: ' . $e->getMessage());
             return false;
         }
     }
