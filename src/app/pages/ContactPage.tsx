@@ -314,6 +314,83 @@ export function ContactPage() {
               ></iframe>
             </div>
           </motion.div>
+
+          {/* Email Reach Out Section */}
+          <motion.div
+            className="mt-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 via-amber-500/5 to-[#d4af37]/10 rounded-3xl blur-xl" />
+              <div className="relative bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-xl overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#d4af37]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-amber-100/30 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
+                
+                <div className="relative flex flex-col md:flex-row items-center gap-8">
+                  {/* Icon */}
+                  <motion.div 
+                    className="flex-shrink-0"
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-[#d4af37] to-amber-600 rounded-2xl flex items-center justify-center shadow-xl shadow-[#d4af37]/30">
+                      <Mail className="text-white w-10 h-10 md:w-12 md:h-12" />
+                    </div>
+                  </motion.div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+                      Prefer Email?
+                    </h3>
+                    <p className="text-slate-600 mb-6 max-w-lg">
+                      Reach out to us directly via email for certification inquiries, quotations, or any questions. We typically respond within 24-48 hours.
+                    </p>
+                    
+                    {/* Email Cards */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <a 
+                        href={`mailto:${settings.email_1 || 'info@dima.my'}`}
+                        className="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
+                      >
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all">
+                          <Mail className="text-white w-5 h-5" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-xs text-slate-500 font-medium">General Inquiries</p>
+                          <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors">
+                            {settings.email_1 || 'info@dima.my'}
+                          </p>
+                        </div>
+                        <ChevronRight className="ml-auto text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all" size={20} />
+                      </a>
+                      
+                      {settings.email_2 && (
+                        <a 
+                          href={`mailto:${settings.email_2}`}
+                          className="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
+                        >
+                          <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center group-hover:from-[#d4af37] group-hover:to-amber-500 group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all">
+                            <Mail className="text-white w-5 h-5" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-xs text-slate-500 font-medium">Alternative Email</p>
+                            <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors">
+                              {settings.email_2}
+                            </p>
+                          </div>
+                          <ChevronRight className="ml-auto text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all" size={20} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
