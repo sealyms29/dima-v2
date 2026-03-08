@@ -102,8 +102,8 @@ export function CertificationAgreementPage() {
           {/* Header Bar with Download */}
           <motion.div
             className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 md:p-6 bg-white rounded-xl border border-slate-200 shadow-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-4">
@@ -143,9 +143,9 @@ export function CertificationAgreementPage() {
             
             {/* Left Sidebar - Table of Contents */}
             <motion.aside
-              className="lg:w-72 flex-shrink-0"
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              className="hidden lg:block lg:w-72 flex-shrink-0"
+              initial={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
               <div className="lg:sticky lg:top-24 bg-white rounded-xl border border-slate-200 shadow-sm p-5 max-h-[calc(100vh-120px)] overflow-y-auto">
@@ -175,8 +175,8 @@ export function CertificationAgreementPage() {
             {/* Main Content */}
             <motion.main
               className="flex-1 min-w-0"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
