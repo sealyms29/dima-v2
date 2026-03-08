@@ -601,7 +601,7 @@ if (!isset($_SESSION['admin_user_id'])) {
             <button class="section-tab active" onclick="switchTab('reports')" id="tabReports">📊 Public Summary Reports</button>
             <button class="section-tab" onclick="switchTab('notifications')" id="tabNotifications">🔔 Public Notifications</button>
             <button class="section-tab" onclick="switchTab('quotation')" id="tabQuotation">📋 Quotation Forms</button>
-            <a href="<?= BASE_PATH ?>/admin/certification_agreement.php" class="section-tab" style="text-decoration: none;">📄 Certification Agreement</a>
+            <button class="section-tab" onclick="switchTab('agreement')" id="tabAgreement">📄 Certification Agreement</button>
         </div>
 
         <!-- Tab 1: MSPO Public Summary Reports -->
@@ -917,9 +917,11 @@ if (!isset($_SESSION['admin_user_id'])) {
             document.getElementById('panelReports').classList.toggle('active', tab === 'reports');
             document.getElementById('panelNotifications').classList.toggle('active', tab === 'notifications');
             document.getElementById('panelQuotation').classList.toggle('active', tab === 'quotation');
+            document.getElementById('panelAgreement').classList.toggle('active', tab === 'agreement');
             document.getElementById('tabReports').classList.toggle('active', tab === 'reports');
             document.getElementById('tabNotifications').classList.toggle('active', tab === 'notifications');
             document.getElementById('tabQuotation').classList.toggle('active', tab === 'quotation');
+            document.getElementById('tabAgreement').classList.toggle('active', tab === 'agreement');
 
             // Update header upload button label
             const btn = document.getElementById('uploadBtnHeader');
