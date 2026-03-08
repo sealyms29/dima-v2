@@ -19,8 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
+    // Debug mode - add ?debug=1 to URL to see raw query results
+    $debug = isset($_GET['debug']) && $_GET['debug'] === '1';
+    
     // Try documents table first (new unified system)
-    $doc = Database::fetchOne("SELECT id, title, description, file_path, status, created_at, updated_at FROM documents WHERE (category = 'Certification Agreement' OR category = 'Certification Terms and Conditions') ORDER BY updated_at DESC LIMIT 1");
+    $doc = Database::fetchOne("SELECT id, title, description, file_path, category, status, created_at, updated_at FROM documents WHERE (category = 'Certification Agreement' OR category = 'Certification Terms and Conditions') ORDER BY updated_at DESC LIMIT 1");
+    
+    if ($debug) {
+        // Also get total count of all documents for debugging
+        $allDocs = Database::fetchAll("SELECT id, title, category, file_path FROM documents ORDER BY id DESC LIMIT 10");
+        echo json_encode(['debug' => true, 'found_doc' => $doc, 'recent_docs' => $allDocs]);
+        exit;
+    }
     
     if ($doc) {
         $result = [
