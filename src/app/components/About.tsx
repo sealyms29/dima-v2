@@ -176,7 +176,7 @@ export function About() {
                   delay={150}
                   animateBy="words"
                   direction="top"
-                  className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 mb-6 md:mb-8 italic"
+                  className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 mb-6 md:mb-8 italic justify-center"
                 />
               </div>
 
