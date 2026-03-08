@@ -941,14 +941,19 @@ if (!isset($_SESSION['admin_user_id'])) {
             document.querySelectorAll('.section-tab').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
             // Add active class to selected tab and panel
-            document.getElementById('tabReports').classList.add(tab === 'reports' ? 'active' : '');
-            document.getElementById('tabNotifications').classList.add(tab === 'notifications' ? 'active' : '');
-            document.getElementById('tabQuotation').classList.add(tab === 'quotation' ? 'active' : '');
-            document.getElementById('tabAgreement').classList.add(tab === 'agreement' ? 'active' : '');
-            document.getElementById('panelReports').classList.add(tab === 'reports' ? 'active' : '');
-            document.getElementById('panelNotifications').classList.add(tab === 'notifications' ? 'active' : '');
-            document.getElementById('panelQuotation').classList.add(tab === 'quotation' ? 'active' : '');
-            document.getElementById('panelAgreement').classList.add(tab === 'agreement' ? 'active' : '');
+            if (tab === 'reports') {
+                document.getElementById('tabReports').classList.add('active');
+                document.getElementById('panelReports').classList.add('active');
+            } else if (tab === 'notifications') {
+                document.getElementById('tabNotifications').classList.add('active');
+                document.getElementById('panelNotifications').classList.add('active');
+            } else if (tab === 'quotation') {
+                document.getElementById('tabQuotation').classList.add('active');
+                document.getElementById('panelQuotation').classList.add('active');
+            } else if (tab === 'agreement') {
+                document.getElementById('tabAgreement').classList.add('active');
+                document.getElementById('panelAgreement').classList.add('active');
+            }
 
             // Update header upload button label
             const btn = document.getElementById('uploadBtnHeader');
@@ -1001,12 +1006,19 @@ if (!isset($_SESSION['admin_user_id'])) {
             const formData = new FormData();
             formData.append('title', 'Certification Agreement');
             formData.append('category', 'Certification Agreement');
+            formData.append('year', new Date().getFullYear());
             formData.append('file', file);
             try {
-                await fetch('<?= BASE_PATH ?>/api/admin-documents-upload.php', { method: 'POST', body: formData });
+                const resp = await fetch('<?= BASE_PATH ?>/api/admin-documents-upload.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+                if (result.success) {
+                    showSuccess('Certification Agreement PDF uploaded successfully');
+                } else {
+                    showError(result.message || 'Upload failed');
+                }
                 loadAgreementPanel();
             } catch (e) {
-                alert('Upload failed');
+                showError('Upload failed: ' + e.message);
             } finally {
                 document.getElementById('agreementSpinner').classList.remove('show');
             }

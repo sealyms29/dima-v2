@@ -19,6 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
+    // Try documents table first (new unified system)
+    $doc = Database::fetchOne("SELECT id, title, description, file_path, created_at, updated_at FROM documents WHERE category = 'Certification Agreement' AND status = 'Active' ORDER BY updated_at DESC LIMIT 1");
+    
+    if ($doc) {
+        $result = [
+            'title' => $doc['title'],
+            'description' => $doc['description'] ?? 'DMC/ISO/QCA Quotation Certification Agreement',
+            'file_path' => $doc['file_path'],
+            'file_name' => basename($doc['file_path']),
+            'file_size' => null,
+            'version' => '1.0',
+            'issue_date' => $doc['created_at'],
+            'has_pdf' => !empty($doc['file_path']),
+            'updated_at' => $doc['updated_at']
+        ];
+        echo json_encode(['success' => true, 'data' => $result]);
+        exit;
+    }
+    
+    // Fallback to legacy certification_agreement table
     $agreement = Database::fetchOne("SELECT title, description, file_path, file_name, file_size, version, issue_date, updated_at FROM certification_agreement WHERE id = 1");
     
     if (!$agreement) {
