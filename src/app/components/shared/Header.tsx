@@ -119,7 +119,7 @@ export function Header() {
                 aria-expanded={isAboutDropdownOpen}
                 aria-haspopup="true"
                 className={`relative px-4 xl:px-5 py-3 min-h-[44px] font-semibold text-base rounded-xl transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-offset-2 ${
-                  isActive('/about') || isActive('/certification-mark') || isActive('/quality-policy') || isActive('/quality-objectives') 
+                  isActive('/about') || isActive('/certification-mark') || isActive('/quality-policy') || isActive('/quality-objectives') || isActive('/certification-agreement') 
                     ? 'text-[#d4af37]' 
                     : 'text-slate-900 hover:text-[#d4af37]'
                 }`}
@@ -151,7 +151,8 @@ export function Header() {
                         { label: 'Name, Mark or Logo Usage Right', path: '/certification-mark' },
                         { label: 'Quality Policy', path: '/quality-policy' },
                         { label: 'Policy on Impartiality', path: '/impartiality-policy' },
-                        { label: 'Quality Objectives', path: '/quality-objectives' }
+                        { label: 'Quality Objectives', path: '/quality-objectives' },
+                        { label: 'Certification Terms', path: '/certification-agreement' }
                       ].map((item, index) => (
                         <Link key={item.path} to={item.path}>
                           <motion.div
@@ -365,7 +366,7 @@ export function Header() {
                   <button
                     onClick={() => setMobileAboutOpen(!mobileAboutOpen)}
                     className={`w-full text-left px-4 py-3 min-h-[44px] rounded-xl font-semibold transition-colors flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37] focus-visible:ring-inset ${
-                      isActive('/about') || isActive('/certification-mark') || isActive('/quality-policy') || isActive('/quality-objectives') ? 'bg-amber-50 text-[#d4af37]' : 'text-slate-900 hover:bg-amber-50 hover:text-[#d4af37]'
+                      isActive('/about') || isActive('/certification-mark') || isActive('/quality-policy') || isActive('/quality-objectives') || isActive('/certification-agreement') ? 'bg-amber-50 text-[#d4af37]' : 'text-slate-900 hover:bg-amber-50 hover:text-[#d4af37]'
                     }`}
                     aria-expanded={mobileAboutOpen}
                   >
@@ -388,7 +389,8 @@ export function Header() {
                           { label: 'Name, Mark or Logo Usage Right', path: '/certification-mark' },
                           { label: 'Quality Policy', path: '/quality-policy' },
                           { label: 'Policy on Impartiality', path: '/impartiality-policy' },
-                          { label: 'Quality Objectives', path: '/quality-objectives' }
+                          { label: 'Quality Objectives', path: '/quality-objectives' },
+                          { label: 'Certification Terms', path: '/certification-agreement' }
                         ].map((item) => (
                           <Link key={item.path} to={item.path} className="focus-visible:outline-none">
                             <motion.div

@@ -1,9 +1,8 @@
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
-import { Link } from 'react-router';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { Award, Users, TrendingUp, Sparkles, Target, Eye, FileText, ExternalLink } from 'lucide-react';
+import { Award, Users, TrendingUp, Sparkles, Target, Eye } from 'lucide-react';
 // Figma assets removed - use actual image files
 const imgTeamPhoto = '/assets/96ff7a0755cc20b25bbf7b4dd3c95cef7add2941.png';
 const imgOffice1 = '/assets/c5cb03644bd86d72dab99e848ae8f9b1512ef00d.png';
@@ -207,58 +206,6 @@ export function AboutPage() {
               </motion.div>
             ))}
           </div>
-
-          {/* Certification Terms & Conditions */}
-          <motion.div
-            className="mt-20"
-            initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 1.2 }}
-          >
-            <div className="text-center mb-8">
-              <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Certification Terms & Conditions</h3>
-              <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-                Our certification agreement outlines the general conditions, payment terms, rights and duties of client organizations, 
-                confidentiality requirements, and the responsibilities of DIMA Certification throughout the certification process.
-              </p>
-            </div>
-
-            <div className="relative bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-8 md:p-10 shadow-lg">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] to-amber-600 rounded-2xl flex items-center justify-center">
-                    <FileText className="text-white" size={36} />
-                  </div>
-                </div>
-                
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-bold text-slate-900 mb-2">DMC/ISO/QCA Quotation Certification Agreement</h4>
-                  <p className="text-slate-600 mb-4">
-                    This document covers all aspects of the certification process including audit procedures, payment terms, 
-                    post-certification conditions, logo usage, and dispute resolution.
-                  </p>
-                  <p className="text-sm text-slate-500">Issue 1, 17 October 2024</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-                  <Link
-                    to="/certification-agreement"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
-                  >
-                    <ExternalLink size={18} />
-                    <span>View Agreement</span>
-                  </Link>
-                  <Link
-                    to="/certification-agreement"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-300 hover:border-[#d4af37] hover:text-[#d4af37] text-slate-700 rounded-xl transition-colors min-h-[48px]"
-                  >
-                    <FileText size={18} />
-                    <span>Download PDF</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
     </PageLayout>

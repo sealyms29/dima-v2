@@ -1,9 +1,20 @@
 import { motion, useInView } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { ChevronDown, ChevronUp, FileText, Download, ArrowLeft } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, Download, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router';
+
+interface AgreementData {
+  title: string;
+  description: string;
+  file_path: string | null;
+  file_name: string | null;
+  file_size: number | null;
+  version: string;
+  issue_date: string;
+  has_pdf: boolean;
+}
 
 interface SectionProps {
   number: string;
@@ -54,9 +65,39 @@ function AccordionSection({ number, title, children, defaultOpen = false }: Sect
 export function CertificationAgreementPage() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.05 });
+  const [agreementData, setAgreementData] = useState<AgreementData | null>(null);
+
+  useEffect(() => {
+    fetch('/api/public-certification-agreement.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setAgreementData(data.data);
+        }
+      })
+      .catch(err => console.error('Error fetching agreement:', err));
+  }, []);
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownload = () => {
+    if (agreementData?.file_path) {
+      const link = document.createElement('a');
+      link.href = agreementData.file_path;
+      link.download = agreementData.file_name || 'certification_agreement.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -64,7 +105,7 @@ export function CertificationAgreementPage() {
       <PageHero
         badge="Certification Agreement"
         title="Terms & Conditions"
-        subtitle="DMC/ISO/QCA Quotation Certification Agreement"
+        subtitle={agreementData?.title || "DMC/ISO/QCA Quotation Certification Agreement"}
       />
 
       <section className="relative py-16 md:py-24 bg-white" ref={ref}>
@@ -84,14 +125,58 @@ export function CertificationAgreementPage() {
               <span>Back to About Us</span>
             </Link>
             
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors min-h-[44px]"
-            >
-              <Download size={18} />
-              <span>Print / Save PDF</span>
-            </button>
+            <div className="flex gap-3">
+              {agreementData?.has_pdf && (
+                <button
+                  onClick={handleDownload}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-lg transition-all shadow-lg hover:shadow-xl min-h-[44px]"
+                >
+                  <Download size={18} />
+                  <span>Download PDF</span>
+                </button>
+              )}
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors min-h-[44px]"
+              >
+                <ExternalLink size={18} />
+                <span>Print Page</span>
+              </button>
+            </div>
           </motion.div>
+
+          {/* PDF Download Card (if available) */}
+          {agreementData?.has_pdf && (
+            <motion.div
+              className="mb-10 p-6 bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.05 }}
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FileText className="text-white" size={28} />
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="font-semibold text-slate-900 mb-1">
+                    {agreementData.file_name || 'Certification Agreement PDF'}
+                  </h3>
+                  <p className="text-sm text-slate-600">
+                    {agreementData.version && <span>{agreementData.version}</span>}
+                    {agreementData.issue_date && <span> • {new Date(agreementData.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
+                    {agreementData.file_size && <span> • {formatFileSize(agreementData.file_size)}</span>}
+                  </p>
+                </div>
+                <button
+                  onClick={handleDownload}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+                >
+                  <Download size={18} />
+                  <span>Download</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
 
           {/* Document Header */}
           <motion.div
@@ -340,12 +425,21 @@ export function CertificationAgreementPage() {
               <ArrowLeft size={18} />
               <span>Back to About Us</span>
             </Link>
+            {agreementData?.has_pdf && (
+              <button
+                onClick={handleDownload}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+              >
+                <Download size={18} />
+                <span>Download PDF</span>
+              </button>
+            )}
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-slate-300 hover:border-slate-400 text-slate-700 rounded-xl transition-colors min-h-[48px]"
             >
-              <Download size={18} />
-              <span>Print / Save as PDF</span>
+              <ExternalLink size={18} />
+              <span>Print Page</span>
             </button>
           </motion.div>
         </div>
