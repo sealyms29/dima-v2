@@ -44,8 +44,14 @@ class MailHelper {
             $mail->SMTPAuth   = true;
             $mail->Username   = MAIL_USERNAME;
             $mail->Password   = MAIL_PASSWORD;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = MAIL_PORT;
+
+            // Use SSL for port 465, TLS for port 587
+            if (MAIL_PORT == 465) {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            }
 
             // Sender & recipient
             $mail->setFrom(MAIL_FROM ?: MAIL_USERNAME, MAIL_FROM_NAME);
