@@ -601,6 +601,7 @@ if (!isset($_SESSION['admin_user_id'])) {
             <button class="section-tab active" onclick="switchTab('reports')" id="tabReports">📊 Public Summary Reports</button>
             <button class="section-tab" onclick="switchTab('notifications')" id="tabNotifications">🔔 Public Notifications</button>
             <button class="section-tab" onclick="switchTab('quotation')" id="tabQuotation">📋 Quotation Forms</button>
+            <a href="<?= BASE_PATH ?>/admin/certification_agreement.php" class="section-tab" style="text-decoration: none;">📄 Certification Agreement</a>
         </div>
 
         <!-- Tab 1: MSPO Public Summary Reports -->
