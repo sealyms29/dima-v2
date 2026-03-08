@@ -295,102 +295,106 @@ export function ContactPage() {
             ))}
           </div>
 
-          {/* Map Section - Full Width */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="relative bg-slate-100 rounded-3xl overflow-hidden shadow-lg h-[450px] md:h-[500px]">
-              <iframe
-                src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
-                width="100%"
-                height="100%"
-                style={{ border: 0, position: 'absolute', inset: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
-              ></iframe>
-            </div>
-          </motion.div>
+          {/* Map + Email Side by Side */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Map Section */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="relative bg-slate-100 rounded-3xl overflow-hidden shadow-lg h-[350px] lg:h-full lg:min-h-[400px]">
+                <iframe
+                  src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, position: 'absolute', inset: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
+                ></iframe>
+              </div>
+            </motion.div>
 
-          {/* Email Reach Out Section */}
-          <motion.div
-            className="mt-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 via-amber-500/5 to-[#d4af37]/10 rounded-3xl blur-xl" />
-              <div className="relative bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-xl overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#d4af37]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-amber-100/30 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
-                
-                <div className="relative flex flex-col md:flex-row items-center gap-8">
-                  {/* Icon */}
-                  <motion.div 
-                    className="flex-shrink-0"
-                    whileHover={{ scale: 1.05, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-[#d4af37] to-amber-600 rounded-2xl flex items-center justify-center shadow-xl shadow-[#d4af37]/30">
-                      <Mail className="text-white w-10 h-10 md:w-12 md:h-12" />
-                    </div>
-                  </motion.div>
+            {/* Email Reach Out Section */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/10 via-amber-500/5 to-[#d4af37]/10 rounded-3xl blur-xl" />
+                <div className="relative bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-xl overflow-hidden h-full flex flex-col justify-center">
+                  {/* Background Pattern */}
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#d4af37]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-amber-100/30 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
                   
-                  {/* Content */}
-                  <div className="flex-1 text-center md:text-left">
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-                      Prefer Email?
-                    </h3>
-                    <p className="text-slate-600 mb-6 max-w-lg">
-                      Reach out to us directly via email for certification inquiries, quotations, or any questions. We typically respond within 24-48 hours.
+                  <div className="relative">
+                    {/* Header */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <motion.div 
+                        className="flex-shrink-0"
+                        whileHover={{ scale: 1.05, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-[#d4af37] to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-[#d4af37]/30">
+                          <Mail className="text-white w-7 h-7 lg:w-8 lg:h-8" />
+                        </div>
+                      </motion.div>
+                      <div>
+                        <h3 className="text-xl lg:text-2xl font-bold text-slate-900">
+                          Prefer Email?
+                        </h3>
+                        <p className="text-slate-500 text-sm">We respond within 24-48 hours</p>
+                      </div>
+                    </div>
+                    
+                    <p className="text-slate-600 mb-6 text-sm lg:text-base">
+                      Reach out to us directly via email for certification inquiries, quotations, or any questions.
                     </p>
                     
-                    {/* Email Cards */}
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Email Cards - Stacked */}
+                    <div className="space-y-3">
                       <a 
                         href={`mailto:${settings.email_1 || 'info@dima.my'}`}
-                        className="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
+                        className="group flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
                       >
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] to-amber-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all flex-shrink-0">
                           <Mail className="text-white w-5 h-5" />
                         </div>
-                        <div className="text-left">
+                        <div className="text-left min-w-0 flex-1">
                           <p className="text-xs text-slate-500 font-medium">General Inquiries</p>
-                          <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors">
+                          <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors truncate">
                             {settings.email_1 || 'info@dima.my'}
                           </p>
                         </div>
-                        <ChevronRight className="ml-auto text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all" size={20} />
+                        <ChevronRight className="text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all flex-shrink-0" size={20} />
                       </a>
                       
                       {settings.email_2 && (
                         <a 
                           href={`mailto:${settings.email_2}`}
-                          className="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
+                          className="group flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-[#d4af37]/10 hover:to-amber-50 border border-slate-200 hover:border-[#d4af37]/30 rounded-2xl transition-all duration-300"
                         >
-                          <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center group-hover:from-[#d4af37] group-hover:to-amber-500 group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all">
+                          <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center group-hover:from-[#d4af37] group-hover:to-amber-500 group-hover:shadow-lg group-hover:shadow-[#d4af37]/20 transition-all flex-shrink-0">
                             <Mail className="text-white w-5 h-5" />
                           </div>
-                          <div className="text-left">
+                          <div className="text-left min-w-0 flex-1">
                             <p className="text-xs text-slate-500 font-medium">Alternative Email</p>
-                            <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors">
+                            <p className="text-slate-900 font-semibold group-hover:text-[#d4af37] transition-colors truncate">
                               {settings.email_2}
                             </p>
                           </div>
-                          <ChevronRight className="ml-auto text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all" size={20} />
+                          <ChevronRight className="text-slate-400 group-hover:text-[#d4af37] group-hover:translate-x-1 transition-all flex-shrink-0" size={20} />
                         </a>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
