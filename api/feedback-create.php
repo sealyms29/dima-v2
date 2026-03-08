@@ -116,6 +116,8 @@ try {
     create_notification('feedback', $feedback_id, $name, $email);
 
     // Send email notification to admin
+    error_log('[feedback-create] API called');
+    error_log('[feedback-create] TOP OF FILE');
     try {
         MailHelper::sendSubmissionNotification('feedback', [
             'Type' => $feedback_type,
@@ -128,7 +130,8 @@ try {
     } catch (Exception $mailError) {
         error_log('Failed to send feedback notification email: ' . $mailError->getMessage());
     }
-
+    error_log('[feedback-create] BEFORE MailHelper::sendSubmissionNotification');
+    error_log('[feedback-create] AFTER MailHelper::sendSubmissionNotification');
     DBTransaction::commit();
 
     APIResponse::send(APIResponse::success([

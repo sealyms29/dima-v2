@@ -504,8 +504,9 @@ $user = Database::fetchOne(
 
             try {
                 const res = await fetch('<?= BASE_PATH ?>/api/admin-profile.php', {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         action: 'update_profile',
                         full_name: document.getElementById('fullName').value,
@@ -536,13 +537,12 @@ $user = Database::fetchOne(
 
             try {
                 const res = await fetch('<?= BASE_PATH ?>/api/admin-profile.php', {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
-                        action: 'update_profile',
-                        full_name: document.getElementById('fullName').value,
-                        email: document.getElementById('email').value,
-                        phone: document.getElementById('phone').value
+                        action: 'update_email',
+                        email: document.getElementById('email').value
                     })
                 });
                 const data = await res.json();
@@ -552,7 +552,8 @@ $user = Database::fetchOne(
                     showToast(data.error || 'Failed to update.', 'error');
                 }
             } catch (err) {
-                showToast('Network error.', 'error');
+                console.error('Email update error:', err);
+                showToast('Network error: ' + err.message, 'error');
             }
 
             btn.disabled = false;
@@ -581,8 +582,9 @@ $user = Database::fetchOne(
 
             try {
                 const res = await fetch('<?= BASE_PATH ?>/api/admin-profile.php', {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         action: 'change_password',
                         current_password: document.getElementById('currentPassword').value,

@@ -177,6 +177,7 @@ try {
     create_notification($complaint_type, $complaint_id, $name, $email);
 
     // Send email notification to admin
+    error_log('[complaint-create] API called');
     try {
         $programmeLabel = $programme === 'iso' ? "ISO {$iso_standard}" : 'MSPO';
         MailHelper::sendSubmissionNotification('complaint', [
@@ -191,6 +192,7 @@ try {
     } catch (Exception $mailError) {
         error_log('Failed to send complaint notification email: ' . $mailError->getMessage());
     }
+    error_log('[complaint-create] MailHelper::sendSubmissionNotification called');
 
     APIResponse::send(APIResponse::success(
         ['id' => $complaint_id],

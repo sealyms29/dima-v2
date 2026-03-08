@@ -4,6 +4,17 @@
  * Handles profile info update and password change
  */
 
+// Handle CORS and preflight
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 require_once __DIR__ . '/../includes/bootstrap.php';
 
 // Auth check
@@ -31,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 }
 
-// PUT — update profile
-if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+// PUT or POST — update profile
+if ($_SERVER['REQUEST_METHOD'] === 'PUT' || $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $action = $input['action'] ?? 'update_profile';
 
@@ -78,6 +89,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             APIResponse::success(null, 'Password changed successfully.');
         } catch (Exception $e) {
             APIResponse::error('Failed to change password: ' . $e->getMessage());
+        }
+
+    } elseif ($action === 'update_email') {
+        // --- Email Only Update ---
+        $email = trim($input['email'] ?? '');
+
+        if (empty($email)) {
+            APIResponse::error('Email address is required.');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            APIResponse::error('Please enter a valid email address.');
+        }
+
+        try {
+            Database::query(
+                "UPDATE admin_users SET email = ? WHERE id = ?",
+                [$email, $userId]
+            );
+
+            APIResponse::success(['email' => $email], 'Email updated successfully.');
+        } catch (Exception $e) {
+            APIResponse::error('Failed to update email: ' . $e->getMessage());
         }
 
     } else {

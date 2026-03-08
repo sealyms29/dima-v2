@@ -34,7 +34,7 @@ class MailHelper {
         try {
             // Check if SMTP is configured
             if (empty(MAIL_USERNAME) || empty(MAIL_PASSWORD)) {
-                error_log('Mail not configured: MAIL_USERNAME or MAIL_PASSWORD is empty in mail-config.php');
+                error_log('[MailHelper] Mail not configured: MAIL_USERNAME or MAIL_PASSWORD is empty in mail-config.php');
                 return false;
             }
 
@@ -58,10 +58,11 @@ class MailHelper {
             $mail->AltBody = $altBody;
 
             $mail->send();
+            error_log("[MailHelper] Mail sent successfully to {$to} (subject: {$subject})");
             return true;
 
         } catch (Exception $e) {
-            error_log('Mail send error: ' . $mail->ErrorInfo);
+            error_log('[MailHelper] Mail send error: ' . $mail->ErrorInfo . ' Exception: ' . $e->getMessage());
             return false;
         }
     }
@@ -126,27 +127,24 @@ HTML;
      */
     public static function sendSubmissionNotification(string $type, array $data): bool {
         // Get admin email from settings
-        // Ensure helper functions are available
         if (!function_exists('get_admin_email')) {
             require_once __DIR__ . '/Database.php';
             require_once __DIR__ . '/config.php';
-            
-            // Inline get_admin_email if bootstrap not loaded
             try {
                 $result = Database::fetchOne(
                     "SELECT setting_value FROM site_settings WHERE setting_key = 'email_1' AND setting_group = 'contact'"
                 );
                 $adminEmail = $result['setting_value'] ?? null;
             } catch (Exception $e) {
-                error_log('Failed to get admin email: ' . $e->getMessage());
+                error_log('[MailHelper] Failed to get admin email: ' . $e->getMessage());
                 return false;
             }
         } else {
             $adminEmail = get_admin_email();
         }
-        
+
         if (empty($adminEmail)) {
-            error_log('Admin email not configured in site settings');
+            error_log('[MailHelper] Admin email not configured in admin_users');
             return false;
         }
 
@@ -159,11 +157,20 @@ HTML;
 
         $typeLabel = $typeLabels[$type] ?? 'Submission';
         $subject = "New {$typeLabel} - DIMA Website";
-        
+
         $body = self::getSubmissionEmailHtml($typeLabel, $data);
         $altBody = self::getSubmissionEmailText($typeLabel, $data);
 
-        return self::send($adminEmail, $subject, $body, $altBody);
+        // Debug log: attempt
+        error_log("[MailHelper] Attempting to send submission notification: type={$typeLabel}, recipient={$adminEmail}");
+
+        $result = self::send($adminEmail, $subject, $body, $altBody);
+        if ($result) {
+            error_log("[MailHelper] Submission notification sent successfully to {$adminEmail}.");
+        } else {
+            error_log("[MailHelper] Submission notification FAILED to send to {$adminEmail}.");
+        }
+        return $result;
     }
 
     /**

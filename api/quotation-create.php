@@ -123,6 +123,7 @@ try {
     // Send Email Notification to Admin
     // ========================================================================
     
+    error_log('[quotation-create] API called');
     try {
         MailHelper::sendSubmissionNotification('quotation', [
             'Name' => $name,
@@ -134,6 +135,7 @@ try {
     } catch (Exception $mailError) {
         error_log('Failed to send quotation notification email: ' . $mailError->getMessage());
     }
+    error_log('[quotation-create] MailHelper::sendSubmissionNotification called');
 
     // Return success response
     APIResponse::send(APIResponse::success(

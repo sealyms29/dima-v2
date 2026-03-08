@@ -84,6 +84,7 @@ try {
     create_notification('contact', $contact_id, $name, $email);
 
     // Send email notification to admin
+    error_log('[contact-create] API called');
     try {
         MailHelper::sendSubmissionNotification('contact', [
             'Name' => $name,
@@ -95,6 +96,7 @@ try {
     } catch (Exception $mailError) {
         error_log('Failed to send contact notification email: ' . $mailError->getMessage());
     }
+    error_log('[contact-create] MailHelper::sendSubmissionNotification called');
 
     APIResponse::send(APIResponse::success(
         ['id' => $contact_id],
