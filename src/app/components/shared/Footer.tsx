@@ -27,12 +27,13 @@ export function Footer() {
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data) {
-          setContactInfo(prev => ({
-            address: data.data.address || prev.address,
-            phone: data.data.phone || prev.phone,
-            email: data.data.email || prev.email,
-            hours: data.data.hours || prev.hours
-          }));
+          const d = data.data;
+          setContactInfo({
+            address: [d.office_name, d.office_address].filter(Boolean).join('\n') || contactInfo.address,
+            phone: [d.phone_1, d.phone_2].filter(Boolean).join('\n') || contactInfo.phone,
+            email: d.email_1 || contactInfo.email,
+            hours: d.business_hours || contactInfo.hours
+          });
         }
       })
       .catch(() => { /* keep defaults */ });
