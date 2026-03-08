@@ -299,18 +299,18 @@ export function ContactPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Map Section */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              initial={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
               <div className="relative bg-slate-100 rounded-3xl overflow-hidden shadow-lg h-[350px] lg:h-full lg:min-h-[400px]">
                 <iframe
-                  src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=18&ie=UTF8&iwloc=&output=embed`}
+                  src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&t=&z=17&ie=UTF8&iwloc=&output=embed`}
                   width="100%"
                   height="100%"
                   style={{ border: 0, position: 'absolute', inset: 0 }}
                   allowFullScreen
-                  loading="lazy"
+                  loading="eager"
                   referrerPolicy="no-referrer-when-downgrade"
                   title="DIMA Certification Location - Kuching, Sarawak, Malaysia"
                 ></iframe>
@@ -319,8 +319,8 @@ export function ContactPage() {
 
             {/* Email Reach Out Section */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              initial={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <div className="relative h-full">
