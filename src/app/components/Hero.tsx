@@ -262,7 +262,7 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
                 transition={{ duration: 0.2 }}
               >
                 <div className="text-2xl md:text-3xl font-bold mb-0.5 bg-gradient-to-r from-[#d4af37] via-amber-400 to-[#d4af37] bg-clip-text text-transparent">
-                  <CountUp to={2018} from={2000} duration={2} delay={0.8} />
+                  <CountUp to={2018} from={new Date().getFullYear()} direction="down" duration={2.5} delay={0.8} />
                 </div>
                 <div className="text-xs text-white/70 font-medium uppercase tracking-wider">
                   Established
