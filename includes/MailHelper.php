@@ -126,15 +126,15 @@ HTML;
      * Send notification email to admin for new submissions
      */
     public static function sendSubmissionNotification(string $type, array $data): bool {
-        // Get admin email from settings
+        // Get admin email from admin_users table
         if (!function_exists('get_admin_email')) {
             require_once __DIR__ . '/Database.php';
             require_once __DIR__ . '/config.php';
             try {
                 $result = Database::fetchOne(
-                    "SELECT setting_value FROM site_settings WHERE setting_key = 'email_1' AND setting_group = 'contact'"
+                    "SELECT email FROM admin_users WHERE email IS NOT NULL AND email != '' ORDER BY id ASC LIMIT 1"
                 );
-                $adminEmail = $result['setting_value'] ?? null;
+                $adminEmail = $result['email'] ?? null;
             } catch (Exception $e) {
                 error_log('[MailHelper] Failed to get admin email: ' . $e->getMessage());
                 return false;
