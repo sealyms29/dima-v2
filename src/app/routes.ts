@@ -24,6 +24,7 @@ import { ISOOverviewPage } from './pages/ISOOverviewPage';
 import { ISOAuditProcessPage } from './pages/ISOAuditProcessPage';
 import { ISOComplaintsAppealsPage } from './pages/ISOComplaintsAppealsPage';
 import { ComplaintAppealPage } from './pages/ComplaintAppealPage';
+import { CertificationAgreementPage } from './pages/CertificationAgreementPage';
 
 export const router = createBrowserRouter([
   {
@@ -121,6 +122,10 @@ export const router = createBrowserRouter([
   {
     path: "/complaint-appeal",
     Component: ComplaintAppealPage,
+  },
+  {
+    path: "/certification-agreement",
+    Component: CertificationAgreementPage,
   },
   {
     path: "*",
