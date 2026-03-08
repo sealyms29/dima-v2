@@ -122,7 +122,7 @@ export function CertificationAgreementPage() {
                 )}
               </div>
             </div>
-            {agreementData?.has_pdf && (
+            {agreementData?.has_pdf ? (
               <button
                 onClick={handleDownload}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg text-sm"
@@ -130,6 +130,11 @@ export function CertificationAgreementPage() {
                 <Download size={18} />
                 <span>Download PDF</span>
               </button>
+            ) : (
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-200 text-slate-500 font-medium rounded-lg text-sm cursor-not-allowed">
+                <Download size={18} />
+                <span>PDF Not Available</span>
+              </span>
             )}
           </motion.div>
 
@@ -451,6 +456,24 @@ export function CertificationAgreementPage() {
           </div>
         </div>
       </section>
+
+      {/* Floating Download Button - Always Visible */}
+      {agreementData?.has_pdf && (
+        <motion.div 
+          className="fixed bottom-6 right-6 z-50"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <button
+            onClick={handleDownload}
+            className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-semibold rounded-full transition-all shadow-xl hover:shadow-2xl"
+          >
+            <Download size={20} />
+            <span>Download PDF</span>
+          </button>
+        </motion.div>
+      )}
     </PageLayout>
   );
 }
