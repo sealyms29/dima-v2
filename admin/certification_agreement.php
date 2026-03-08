@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (!empty($title)) {
             try {
-                Database::execute(
+                Database::query(
                     "UPDATE certification_agreement SET title = ?, description = ?, version = ?, issue_date = ?, updated_by = ?, updated_at = NOW() WHERE id = 1",
                     [$title, $description, $version, $issue_date, $_SESSION['admin_user_id']]
                 );
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($file['tmp_name'], $filepath)) {
                     $dbPath = '/uploads/documents/' . $filename;
                     try {
-                        Database::execute(
+                        Database::query(
                             "UPDATE certification_agreement SET file_path = ?, file_name = ?, file_size = ?, updated_by = ?, updated_at = NOW() WHERE id = 1",
                             [$dbPath, $file['name'], $file['size'], $_SESSION['admin_user_id']]
                         );
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 unlink($oldFile);
             }
             try {
-                Database::execute(
+                Database::query(
                     "UPDATE certification_agreement SET file_path = NULL, file_name = NULL, file_size = NULL, updated_by = ?, updated_at = NOW() WHERE id = 1",
                     [$_SESSION['admin_user_id']]
                 );
