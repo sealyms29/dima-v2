@@ -2,7 +2,7 @@ import { motion, useInView } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
-import { ChevronDown, ChevronUp, FileText, Download, ArrowLeft, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, Download, ArrowLeft, BookOpen } from 'lucide-react';
 import { Link } from 'react-router';
 
 interface AgreementData {
@@ -27,33 +27,35 @@ function AccordionSection({ number, title, children, defaultOpen = false }: Sect
   const [isOpen, setIsOpen] = useState(defaultOpen);
   
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden mb-4">
+    <div className="border border-slate-200 rounded-2xl overflow-hidden mb-5 shadow-sm hover:shadow-md transition-shadow">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-5 bg-white hover:bg-slate-50 transition-colors text-left min-h-[56px]"
+        className="w-full flex items-center justify-between p-5 md:p-6 bg-gradient-to-r from-white to-slate-50 hover:from-slate-50 hover:to-white transition-colors text-left min-h-[64px]"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-4">
-          <span className="w-10 h-10 bg-gradient-to-br from-[#d4af37] to-amber-600 text-white rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
+          <span className="w-11 h-11 bg-gradient-to-br from-[#d4af37] to-amber-600 text-white rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0 shadow-md">
             {number}
           </span>
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900">{title}</h3>
         </div>
-        {isOpen ? (
-          <ChevronUp className="text-slate-500 flex-shrink-0" size={20} />
-        ) : (
-          <ChevronDown className="text-slate-500 flex-shrink-0" size={20} />
-        )}
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-[#d4af37] text-white' : 'bg-slate-100 text-slate-500'}`}>
+          {isOpen ? (
+            <ChevronUp size={18} />
+          ) : (
+            <ChevronDown size={18} />
+          )}
+        </div>
       </button>
       
       <motion.div
         initial={false}
         animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
         style={{ overflow: 'hidden' }}
       >
-        <div className="p-5 pt-0 bg-white">
-          <div className="pt-4 border-t border-slate-100 text-slate-700 leading-relaxed space-y-3">
+        <div className="px-5 md:px-6 pb-6 bg-white">
+          <div className="pt-5 border-t border-slate-100 text-slate-700 text-base leading-relaxed space-y-4">
             {children}
           </div>
         </div>
@@ -78,10 +80,6 @@ export function CertificationAgreementPage() {
       .catch(err => console.error('Error fetching agreement:', err));
   }, []);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handleDownload = () => {
     if (agreementData?.file_path) {
       const link = document.createElement('a');
@@ -103,100 +101,93 @@ export function CertificationAgreementPage() {
   return (
     <PageLayout>
       <PageHero
-        badge="Certification Agreement"
-        title="Terms & Conditions"
+        badge="Legal Document"
+        title="Certification Terms & Conditions"
         subtitle={agreementData?.title || "DMC/ISO/QCA Quotation Certification Agreement"}
       />
 
-      <section className="relative py-16 md:py-24 bg-white" ref={ref}>
+      <section className="relative py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white" ref={ref}>
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
-          {/* Navigation & Actions */}
+          {/* Introduction Card */}
           <motion.div
-            className="flex flex-wrap items-center justify-between gap-4 mb-10"
+            className="mb-10 p-6 md:p-8 bg-white rounded-2xl border border-slate-200 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.4 }}
           >
-            <Link 
-              to="/about" 
-              className="inline-flex items-center gap-2 text-slate-600 hover:text-[#d4af37] transition-colors min-h-[44px]"
-            >
-              <ArrowLeft size={18} />
-              <span>Back to About Us</span>
-            </Link>
-            
-            <div className="flex gap-3">
-              {agreementData?.has_pdf && (
-                <button
-                  onClick={handleDownload}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-lg transition-all shadow-lg hover:shadow-xl min-h-[44px]"
-                >
-                  <Download size={18} />
-                  <span>Download PDF</span>
-                </button>
-              )}
-              <button
-                onClick={handlePrint}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors min-h-[44px]"
-              >
-                <ExternalLink size={18} />
-                <span>Print Page</span>
-              </button>
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-5">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#d4af37] to-amber-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <BookOpen className="text-white" size={26} />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
+                  {agreementData?.title || 'Certification Agreement'}
+                </h2>
+                <p className="text-slate-600 leading-relaxed">
+                  {agreementData?.description || 'This document outlines the general conditions, payment terms, rights and duties of client organizations, confidentiality requirements, and the responsibilities of DIMA Certification throughout the certification process.'}
+                </p>
+                {agreementData?.version && (
+                  <p className="text-sm text-slate-500 mt-3">
+                    {agreementData.version}
+                    {agreementData.issue_date && ` • ${new Date(agreementData.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`}
+                  </p>
+                )}
+              </div>
             </div>
           </motion.div>
 
           {/* PDF Download Card (if available) */}
           {agreementData?.has_pdf && (
             <motion.div
-              className="mb-10 p-6 bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-200"
+              className="mb-10 p-6 bg-gradient-to-r from-amber-50 via-white to-amber-50 rounded-2xl border-2 border-[#d4af37]/30"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.05 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FileText className="text-white" size={28} />
+              <div className="flex flex-col sm:flex-row items-center gap-5">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <FileText className="text-white" size={30} />
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-semibold text-slate-900 mb-1">
-                    {agreementData.file_name || 'Certification Agreement PDF'}
+                  <h3 className="font-bold text-slate-900 text-lg mb-1">
+                    Download Official PDF Document
                   </h3>
-                  <p className="text-sm text-slate-600">
-                    {agreementData.version && <span>{agreementData.version}</span>}
-                    {agreementData.issue_date && <span> • {new Date(agreementData.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
-                    {agreementData.file_size && <span> • {formatFileSize(agreementData.file_size)}</span>}
+                  <p className="text-slate-600 text-sm">
+                    Get the complete certification agreement in PDF format for your records.
+                    {agreementData.file_size && <span className="text-slate-500"> ({formatFileSize(agreementData.file_size)})</span>}
                   </p>
                 </div>
                 <button
                   onClick={handleDownload}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[52px]"
                 >
-                  <Download size={18} />
-                  <span>Download</span>
+                  <Download size={20} />
+                  <span>Download PDF</span>
                 </button>
               </div>
             </motion.div>
           )}
 
-          {/* Document Header */}
+          {/* Table of Contents */}
           <motion.div
-            className="text-center mb-12 p-8 bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-8"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.4, delay: 0.15 }}
           >
-            <FileText className="text-[#d4af37] mx-auto mb-4" size={48} />
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-              DMC/ISO/QCA Quotation Certification Agreement
-            </h2>
-            <p className="text-slate-600">Issue 1, 17 October 2024</p>
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-[#d4af37] rounded-full"></span>
+              Document Contents
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Click on any section below to expand and read the full terms. All sections must be understood and agreed upon before certification.
+            </p>
           </motion.div>
-
           {/* Sections */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
             <AccordionSection number="1" title="General Conditions" defaultOpen={true}>
               <p><strong>1.1</strong> Certification Audit of Client's management system shall be performed based on the requirements of applicable standards.</p>
@@ -413,14 +404,14 @@ export function CertificationAgreementPage() {
 
           {/* Footer Actions */}
           <motion.div
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+            className="mt-12 flex flex-wrap items-center justify-center gap-4"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
           >
             <Link 
               to="/about" 
-              className="inline-flex items-center gap-2 px-6 py-3 border border-slate-300 hover:border-slate-400 text-slate-700 rounded-xl transition-colors min-h-[48px]"
+              className="inline-flex items-center gap-2 px-6 py-3 border-2 border-slate-300 hover:border-[#d4af37] text-slate-700 hover:text-[#d4af37] rounded-xl transition-colors min-h-[52px] font-medium"
             >
               <ArrowLeft size={18} />
               <span>Back to About Us</span>
@@ -428,19 +419,12 @@ export function CertificationAgreementPage() {
             {agreementData?.has_pdf && (
               <button
                 onClick={handleDownload}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+                className="inline-flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[52px]"
               >
                 <Download size={18} />
                 <span>Download PDF</span>
               </button>
             )}
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-6 py-3 border border-slate-300 hover:border-slate-400 text-slate-700 rounded-xl transition-colors min-h-[48px]"
-            >
-              <ExternalLink size={18} />
-              <span>Print Page</span>
-            </button>
           </motion.div>
         </div>
       </section>

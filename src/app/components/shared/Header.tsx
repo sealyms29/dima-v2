@@ -152,7 +152,7 @@ export function Header() {
                         { label: 'Quality Policy', path: '/quality-policy' },
                         { label: 'Policy on Impartiality', path: '/impartiality-policy' },
                         { label: 'Quality Objectives', path: '/quality-objectives' },
-                        { label: 'Certification Terms', path: '/certification-agreement' }
+                        { label: 'Certification Terms and Conditions', path: '/certification-agreement' }
                       ].map((item, index) => (
                         <Link key={item.path} to={item.path}>
                           <motion.div
@@ -390,7 +390,7 @@ export function Header() {
                           { label: 'Quality Policy', path: '/quality-policy' },
                           { label: 'Policy on Impartiality', path: '/impartiality-policy' },
                           { label: 'Quality Objectives', path: '/quality-objectives' },
-                          { label: 'Certification Terms', path: '/certification-agreement' }
+                          { label: 'Certification Terms and Conditions', path: '/certification-agreement' }
                         ].map((item) => (
                           <Link key={item.path} to={item.path} className="focus-visible:outline-none">
                             <motion.div
