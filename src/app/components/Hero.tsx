@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowRight } from 'lucide-react';
@@ -13,21 +13,9 @@ interface HeroProps {
 }
 
 export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
-  const [scrollY, setScrollY] = useState(0);
   const [imgHero, setImgHero] = useState(defaultHero);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
   const navigate = useNavigate();
   const { togglePanel } = useQuotation();
-
-  const offsetX = useTransform(mouseX, [0, 1000], [-20, 20]);
-  const offsetY = useTransform(mouseY, [0, 1000], [-20, 20]);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Fetch hero image from database
   useEffect(() => {
@@ -40,11 +28,6 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
       })
       .catch(() => { /* keep default */ });
   }, []);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-  };
 
   const handleGetQuotation = () => {
     if (onGetQuotation) {
@@ -65,7 +48,6 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
   return (
     <section 
       className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
-      onMouseMove={handleMouseMove}
     >
       {/* Mesh Gradient Overlay */}
       <div className="mesh-gradient absolute inset-0 opacity-40" />
@@ -124,26 +106,17 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       
-      {/* Background Image with Parallax */}
-      <motion.div 
-        className="absolute inset-0"
-        style={{
-          y: scrollY * 0.5,
-        }}
-      >
-        <motion.img 
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img 
           src={imgHero} 
           alt="Sustainable Solutions" 
-          className="w-full h-full object-cover scale-110 opacity-40"
-          style={{
-            x: offsetX,
-            y: offsetY,
-          }}
+          className="w-full h-full object-cover opacity-40"
         />
         {/* Dark overlay gradient - top darker to bottom lighter for readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-900/85 to-slate-950/80"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-transparent to-slate-950/70"></div>
-      </motion.div>
+      </div>
 
       {/* Animated Gradient Orbs */}
       <motion.div
