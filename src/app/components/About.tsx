@@ -1,6 +1,7 @@
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
 import { Award, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
+import BlurText from './BlurText';
 // Figma assets removed - use actual image files
 const imgTeamPhoto = '/assets/96ff7a0755cc20b25bbf7b4dd3c95cef7add2941.png';
 const imgOffice1 = '/assets/c5cb03644bd86d72dab99e848ae8f9b1512ef00d.png';
@@ -170,14 +171,13 @@ export function About() {
                   <Sparkles size={16} />
                   Our Slogan
                 </motion.div>
-                <motion.h3 
+                <BlurText
+                  text='"Towards Sustainable Solution"'
+                  delay={150}
+                  animateBy="words"
+                  direction="top"
                   className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 mb-6 md:mb-8 italic"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                  "Towards Sustainable Solution"
-                </motion.h3>
+                />
               </div>
 
               <motion.div 

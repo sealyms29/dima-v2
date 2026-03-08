@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { PageLayout } from '../components/shared/PageLayout';
 import { PageHero } from '../components/shared/PageHero';
 import { Award, Users, TrendingUp, Sparkles, Target, Eye } from 'lucide-react';
+import BlurText from '../components/BlurText';
 // Figma assets removed - use actual image files
 const imgTeamPhoto = '/assets/96ff7a0755cc20b25bbf7b4dd3c95cef7add2941.png';
 const imgOffice1 = '/assets/c5cb03644bd86d72dab99e848ae8f9b1512ef00d.png';
@@ -131,9 +132,13 @@ export function AboutPage() {
             
             <div className="relative bg-white border border-slate-200 rounded-[2rem] p-10 md:p-16 shadow-2xl text-center">
               <Sparkles className="text-[#d4af37] mx-auto mb-6" size={40} />
-              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-8 italic">
-                "Towards Sustainable Solution"
-              </h3>
+              <BlurText
+                text='"Towards Sustainable Solution"'
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-8 italic justify-center"
+              />
               <p className="text-lg md:text-xl text-slate-700 max-w-3xl mx-auto mb-12">
                 Through our commitment to quality, approachability, and affordability, we aim to exceed our clients' expectations.
               </p>

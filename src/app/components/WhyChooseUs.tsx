@@ -1,6 +1,7 @@
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
 import { Award, Users, Shield, Clock } from 'lucide-react';
+import BlurText from './BlurText';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -129,9 +130,13 @@ export function WhyChooseUs() {
           >
             Why Choose DIMA
           </motion.span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6">
-            Your Certification Partner
-          </h2>
+          <BlurText
+            text="Your Certification Partner"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 justify-center"
+          />
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Delivering quality and professionalism in every engagement
           </p>

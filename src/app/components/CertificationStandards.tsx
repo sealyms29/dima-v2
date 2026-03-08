@@ -4,6 +4,7 @@ const imgISO9001Logo = '/assets/f6b29378242e360ef76c08104138a1ba5b1221cf.png';
 const imgISO14001Logo = '/assets/2d9026f9e22edaafe364adfbbe2c34557e69572a.png';
 const imgISO45001Logo = '/assets/87b8275a2bdc8c27df956c8d594d5a341e9c6866.png';
 import { Award } from 'lucide-react';
+import BlurText from './BlurText';
 
 export function CertificationStandards() {
   const certifications = [
@@ -66,9 +67,13 @@ export function CertificationStandards() {
             <Award className="text-[#d4af37]" size={18} />
             <span className="text-sm font-bold text-[#d4af37]">Certification Standards</span>
           </div>
-          <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
-            Our Certification Programmes
-          </h2>
+          <BlurText
+            text="Our Certification Programmes"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4 justify-center"
+          />
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             DIMA Certification provides expert audit and certification services across four internationally 
             recognized standards, helping your organization achieve excellence.

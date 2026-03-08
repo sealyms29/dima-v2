@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ReactNode } from 'react';
+import BlurText from '../BlurText';
 
 interface PageHeroProps {
   badge?: string;
@@ -93,14 +94,13 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
           )}
           
           {/* Title with gradient highlight */}
-          <motion.h1 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: logo ? 0.2 : 0.1 }}
-          >
-            {title}
-          </motion.h1>
+          <BlurText
+            text={title}
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight max-w-4xl mx-auto justify-center"
+          />
           
           {/* Subtitle */}
           {subtitle && (
