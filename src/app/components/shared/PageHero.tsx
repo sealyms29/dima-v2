@@ -21,14 +21,14 @@ export function PageHero({ badge, title, subtitle, children, logo, logoAlt, logo
 
       {/* Liquid Ether Background */}
       <LiquidEther
-        colors={['#d4af37', '#334155', '#f59e0b']}
+        colors={['#0f172a', '#1e40af', '#06b6d4']}
         resolution={0.4}
         mouseForce={15}
         cursorSize={80}
         autoDemo={true}
         autoSpeed={0.3}
         autoIntensity={1.8}
-        className="opacity-35 z-[5]"
+        className="opacity-45 z-[5]"
         style={{ pointerEvents: 'auto' }}
       />
       

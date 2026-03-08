@@ -72,14 +72,14 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
 
       {/* Liquid Ether Background */}
       <LiquidEther
-        colors={['#d4af37', '#1e293b', '#f59e0b']}
+        colors={['#0f172a', '#1e40af', '#06b6d4']}
         resolution={0.4}
         mouseForce={15}
         cursorSize={80}
         autoDemo={true}
         autoSpeed={0.3}
         autoIntensity={1.8}
-        className="opacity-40 z-[5]"
+        className="opacity-50 z-[5]"
         style={{ pointerEvents: 'auto' }}
       />
       
