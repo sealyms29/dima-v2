@@ -457,19 +457,19 @@ export function CertificationAgreementPage() {
         </div>
       </section>
 
-      {/* Floating Download Button - Always Visible */}
+      {/* Floating Download Button - Always Visible on All Devices */}
       {agreementData?.has_pdf && (
         <motion.div 
-          className="fixed bottom-6 right-6 z-50"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
         >
           <button
             onClick={handleDownload}
-            className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-semibold rounded-full transition-all shadow-xl hover:shadow-2xl"
+            className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#d4af37] to-amber-600 hover:from-amber-600 hover:to-[#d4af37] text-white font-bold rounded-full transition-all shadow-2xl hover:shadow-xl text-base"
           >
-            <Download size={20} />
+            <Download size={22} />
             <span>Download PDF</span>
           </button>
         </motion.div>
