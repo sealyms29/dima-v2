@@ -503,7 +503,7 @@ export function ContactPage() {
                           <option value="">Type of Feedback</option>
                           <option value="General Feedback">General Feedback</option>
                           <option value="Suggestion">Suggestion</option>
-                          <option value="Service Inquiry">Service Inquiry</option>
+                          <option value="General Inquiry">General Inquiry</option>
                           <option value="Other">Other</option>
                         </select>
                         {feedbackErrors.feedback_type && <p id="feedback_type-error" className="text-red-500 text-sm mt-1 ml-1" role="alert">{feedbackErrors.feedback_type}</p>}
