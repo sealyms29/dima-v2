@@ -197,7 +197,7 @@ export function CertificationMarkPage() {
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
-                    The official artwork of certification marks in Annex 1 may be obtained from DIMA via email to <a href="mailto:dimacertification@gmail.com" className="text-[#d4af37] font-semibold hover:underline transition-colors">dimacertification@gmail.com</a> in the case of preprinted material e.g. letterhead, stationery, newspaper and magazine articles, the certification marks may be reproduced in the predominant colour of these items. The marks and associated text shall always follow the relative proportions as illustrated in Annex 1 although they may be uniformly enlarged or reduced The lower limit of the size of the marks shall be such that the associated text is clearly legible. The marks shall always be used with the associated text.
+                    The official artwork of certification marks in Annex 1 may be obtained from DIMA via email to <a href="mailto:adimacertification@gmail.com" className="text-[#d4af37] font-semibold hover:underline transition-colors">adimacertification@gmail.com</a> in the case of preprinted material e.g. letterhead, stationery, newspaper and magazine articles, the certification marks may be reproduced in the predominant colour of these items. The marks and associated text shall always follow the relative proportions as illustrated in Annex 1 although they may be uniformly enlarged or reduced The lower limit of the size of the marks shall be such that the associated text is clearly legible. The marks shall always be used with the associated text.
                   </p>
                   
                   <div className="bg-slate-900 rounded-xl p-6 md:p-7 mt-6">
@@ -243,7 +243,7 @@ export function CertificationMarkPage() {
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
-                    The marks, when used in combination, shall be used as depicted in Annex 2. The client, however, may use the Standards Malaysia mark in black and white and may be obtained the official artwork from DIMA via email to <a href="mailto:dimacertification@gmail.com" className="text-[#d4af37] font-semibold hover:underline transition-colors">dimacertification@gmail.com</a>.
+                    The marks, when used in combination, shall be used as depicted in Annex 2. The client, however, may use the Standards Malaysia mark in black and white and may be obtained the official artwork from DIMA via email to <a href="mailto:adimacertification@gmail.com" className="text-[#d4af37] font-semibold hover:underline transition-colors">adimacertification@gmail.com</a>.
                   </p>
                   
                   <p className="text-[1.0625rem] text-slate-800 leading-[1.85]">
