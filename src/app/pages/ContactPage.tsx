@@ -346,7 +346,6 @@ export function ContactPage() {
                         <h3 className="text-xl lg:text-2xl font-bold text-slate-900">
                           Prefer Email?
                         </h3>
-                        <p className="text-slate-500 text-sm">We respond within 24-48 hours</p>
                       </div>
                     </div>
                     
