@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { motion, useInView } from 'motion/react';
 import { PageLayout } from '../components/shared/PageLayout';
@@ -111,6 +111,19 @@ function HighlightedText({ text, keyword }: { text: string; keyword: string }) {
 export function MSPOAppealProcedurePage() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.05 });
+  const [contactEmail, setContactEmail] = useState('dimacertification@gmail.com');
+
+  // Fetch contact email from admin settings
+  useEffect(() => {
+    fetch('/api/public-contact-settings.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.email_1) {
+          setContactEmail(data.data.email_1);
+        }
+      })
+      .catch(() => { /* keep default */ });
+  }, []);
 
   return (
     <PageLayout>
@@ -302,11 +315,11 @@ export function MSPOAppealProcedurePage() {
                           <p className="text-slate-700 leading-relaxed text-sm">
                             The appeal can be submitted through email{' '}
                             <a
-                              href="mailto:dimacertification@gmail.com"
+                              href={`mailto:${contactEmail}`}
                               className="inline-flex items-center gap-1 font-semibold text-slate-900 underline underline-offset-2 decoration-[#d4af37] hover:text-[#d4af37] transition-colors"
                             >
                               <Mail size={13} />
-                              dimacertification@gmail.com
+                              {contactEmail}
                             </a>{' '}
                             or DIMA website{' '}
                             <a
@@ -365,7 +378,7 @@ export function MSPOAppealProcedurePage() {
                 <div className="flex-1 text-center sm:text-left">
                   <p className="font-bold text-white text-lg mb-1">Submit an Appeal</p>
                   <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Email us at <span className="text-[#d4af37] font-semibold">dimacertification@gmail.com</span> or use the portal.
+                    Email us at <span className="text-[#d4af37] font-semibold">{contactEmail}</span> or use the portal.
                   </p>
                 </div>
 
