@@ -267,24 +267,46 @@ export function About() {
           <p className="text-base md:text-lg text-slate-600 mb-10 md:mb-12 max-w-2xl mx-auto">
             Recognized by leading national and international certification bodies
           </p>
-          
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 lg:gap-24">
-            {[imgMSPO, imgAccreditation].map((img, index) => (
+            {[
+              {
+                img: imgMSPO,
+                alt: "MSPO Certification",
+                label: "Malaysian Sustainable Palm Oil",
+                desc: "Certified for sustainable palm oil production."
+              },
+              {
+                img: imgAccreditation,
+                alt: "Standards Malaysia Accredited",
+                label: "Standards Malaysia",
+                desc: "National accreditation for quality and trust."
+              }
+            ].map((item, index) => (
               <motion.div
                 key={index}
                 className="relative group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 1.0 + index * 0.1 }}
-                whileHover={{ scale: 1.1, y: -10 }}
+                whileHover={{ scale: 1.12, y: -14, rotate: [0, 2, -2, 0] }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#d4af37]/20 to-transparent rounded-2xl md:rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-lg group-hover:shadow-2xl transition-shadow">
+                {/* Gold Glow & Check Badge */}
+                <div className="absolute -top-3 -right-3 z-10">
+                  <span className="inline-flex items-center px-2 py-1 bg-gradient-to-br from-[#d4af37] to-amber-400 text-white text-xs font-bold rounded-full shadow-lg border-2 border-white">
+                    <CheckCircle className="w-4 h-4 mr-1" /> Verified
+                  </span>
+                </div>
+                <div className="absolute inset-0 rounded-2xl md:rounded-3xl pointer-events-none group-hover:shadow-[0_0_0_6px_rgba(212,175,55,0.18)] group-hover:ring-4 group-hover:ring-[#d4af37]/30 transition-all duration-300" />
+                <div className="relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-lg group-hover:shadow-2xl transition-shadow flex flex-col items-center">
                   <img 
-                    src={img} 
-                    alt={index === 0 ? "MSPO Certification" : "Accreditation Body"} 
-                    className="h-24 md:h-32 lg:h-40 w-auto object-contain"
+                    src={item.img} 
+                    alt={item.alt} 
+                    className="h-24 md:h-32 lg:h-40 w-auto object-contain drop-shadow-xl mb-3"
                   />
+                  <div className="font-semibold text-slate-900 text-base md:text-lg mb-1 flex items-center gap-1">
+                    <Sparkles className="w-4 h-4 text-[#d4af37]" /> {item.label}
+                  </div>
+                  <div className="text-xs md:text-sm text-slate-500 mb-1">{item.desc}</div>
                 </div>
               </motion.div>
             ))}
