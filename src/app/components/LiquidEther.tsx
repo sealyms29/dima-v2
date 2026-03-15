@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './LiquidEther.css';
 
@@ -22,6 +22,15 @@ interface LiquidEtherProps {
   takeoverDuration?: number;
   autoResumeDelay?: number;
   autoRampDuration?: number;
+}
+
+// Check if device is mobile or low-power
+function shouldDisableEffect(): boolean {
+  if (typeof window === 'undefined') return false;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isLowPower = navigator.hardwareConcurrency !== undefined && navigator.hardwareConcurrency <= 4;
+  const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  return isMobile || prefersReducedMotion || isLowPower;
 }
 
 export default function LiquidEther({
@@ -52,9 +61,17 @@ export default function LiquidEther({
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const isVisibleRef = useRef(true);
   const resizeRafRef = useRef<number | null>(null);
+  const [disabled, setDisabled] = useState(false);
+
+  // Check on mount if we should disable the effect
+  useEffect(() => {
+    if (shouldDisableEffect()) {
+      setDisabled(true);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (disabled || !mountRef.current) return;
 
     function makePaletteTexture(stops: string[]) {
       let arr: string[];
@@ -556,7 +573,10 @@ export default function LiquidEther({
       webglRef.current?.dispose(); webglRef.current = null;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [disabled]);
+
+  // Don't render on mobile/low-power devices
+  if (disabled) return null;
 
   return <div ref={mountRef} className={`liquid-ether-container ${className || ''}`} style={style} />;
 }

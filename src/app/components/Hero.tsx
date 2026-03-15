@@ -53,23 +53,19 @@ export function Hero({ onGetQuotation, onViewProgrammes }: HeroProps) {
       {/* Mesh Gradient Overlay */}
       <div className="mesh-gradient absolute inset-0 opacity-40" />
 
-      {/* Liquid Ether Background */}
+      {/* Liquid Ether Background - optimized for performance */}
       <LiquidEther
         colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-        resolution={0.5}
-        mouseForce={20}
-        cursorSize={100}
-        isViscous={true}
-        viscous={30}
-        iterationsViscous={32}
-        iterationsPoisson={32}
+        resolution={0.2}
+        mouseForce={15}
+        cursorSize={80}
+        isViscous={false}
+        iterationsPoisson={8}
         isBounce={false}
         autoDemo={true}
-        autoSpeed={0.5}
-        autoIntensity={2.2}
-        takeoverDuration={0.25}
+        autoSpeed={0.4}
+        autoIntensity={1.5}
         autoResumeDelay={3000}
-        autoRampDuration={0.6}
         className="opacity-50 z-[5]"
         style={{ pointerEvents: 'auto' }}
       />
